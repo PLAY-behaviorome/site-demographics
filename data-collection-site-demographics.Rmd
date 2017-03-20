@@ -13,7 +13,10 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      error = FALSE,
+                      message = FALSE)
 
 # Install packman for subsequent package management
 if (!("pacman" %in% installed.packages()[,])) {

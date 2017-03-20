@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-03-20 05:05:41
+2017-03-20 05:11:23
 
 Background
 ----------
@@ -28,19 +28,8 @@ counties <- left_join(counties, county.regions,
                                 "State" = "state.abb"))
 
 demo <- get_county_demographics(endyear=2010, span=5)
-```
 
-    ## Warning: NAs introduced by coercion
-
-    ## Warning: NAs introduced by coercion
-
-``` r
 county.demo <- left_join(counties, demo)
-```
-
-    ## Joining, by = "region"
-
-``` r
 str(county.demo)
 ```
 

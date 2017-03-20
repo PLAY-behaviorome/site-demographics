@@ -1,0 +1,149 @@
+---
+title: "Data collection site demographics"
+author: "Rick O. Gilmore"
+date: "`r Sys.time()`"
+output:
+  github_document:
+  html_document:
+    toc: true
+    toc_levels: 2
+    toc_floating: true
+    code_folding: hide
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Install packman for subsequent package management
+if (!("pacman" %in% installed.packages()[,])) {
+    install.packages("pacman")
+}
+
+# Load packages
+pacman::p_load(ggplot2, dplyr, stringr, choroplethr, choroplethrMaps)
+
+# Paths
+csv.dir <- "analysis/csv/"
+```
+
+## Background
+
+This report provides preliminary analysis of the demographic characteristics of the sites under consideration to collect data for the PLAY project. This report focuses on data at the county level. It uses the [`choroplethr`](https://cran.r-project.org/web/packages/choroplethr/index.html) package.
+
+## Generate data file(s)
+
+Load county names, and add county FIPS from `choroplethr` package's `county.regions` dataset. With this, I can extract demographic data using the `get_county_demographics()` function.
+
+```{r generate-data-files}
+counties <- read.csv(paste0(csv.dir, "city-state-county.csv"), stringsAsFactors = FALSE)
+
+# convert counties so can pull FIPS codes
+counties$County <- tolower(counties$County)
+
+# Load county data from choroplethr
+# Could also use acs package to get updated info.
+data("county.regions")
+
+counties <- left_join(counties, county.regions,
+                         by = c("County" = "county.name",
+                                "State" = "state.abb"))
+
+demo <- get_county_demographics(endyear=2010, span=5)
+
+county.demo <- left_join(counties, demo)
+str(county.demo)
+
+# Function to add initial capital
+Init.cap <- function(s) {
+  stopifnot(is.character(s))
+  paste0(toupper(str_sub(s,1,1)), str_sub(s,2,str_length(s)))
+}
+
+# Recapitalize county
+county.demo$County <- Init.cap(county.demo$County)
+```
+
+## Tabular summary
+
+```{r tabular-summary}
+county.demo %>%
+  arrange(US.Region, State, City, County) %>%
+  select(US.Region, City, State, County, total_population, percent_white,
+         percent_black, percent_asian, percent_hispanic) %>%
+  knitr::kable()
+```
+
+## Population by region
+
+```{r pop-by-region-boxplot}
+county.demo %>%
+  ggplot() +
+  aes(x = US.Region, y = total_population) +
+  geom_violin() +
+  geom_point() +
+  ggtitle("Population by region")
+```
+
+## Race & ethnicity
+
+```{r black}
+county.demo %>%
+  ggplot() +
+  aes(x = US.Region, y = percent_black) +
+  geom_violin() +
+  geom_point() +
+  ggtitle("African American population by region") +
+  ylab("% African American")
+```
+```{r hispanic}
+county.demo %>%
+  ggplot() +
+  aes(x = US.Region, y = percent_hispanic) +
+  geom_violin() +
+  geom_point() +
+  ggtitle("Hispanic population by region") +
+  ylab("% Hispanic")
+```
+
+```{r asian}
+county.demo %>%
+  ggplot() +
+  aes(x = US.Region, y = percent_asian) +
+  geom_violin() +
+  geom_point() +
+  ggtitle("Asian population by region") +
+  ylab("% Asian")
+```
+
+```{r black-hispanic-region}
+county.demo %>%
+  ggplot() +
+  aes(x = percent_black, y = percent_hispanic, 
+      color = US.Region,
+      size = total_population) +
+  geom_point() +
+  ggtitle("Percent African American vs. Hispanic") +
+  xlab("% African American") +
+  ylab("% Hispanic")
+```
+
+## Economic indicators
+
+```{r income-rent-region}
+county.demo %>%
+  ggplot() +
+  aes(x = per_capita_income, y = median_rent,
+      color = US.Region,
+      size = total_population) +
+  geom_point() +
+  ggtitle("Median rent by per capita income")
+```
+
+## Resources
+
+### R Session
+
+```{r session-info}
+sessionInfo()
+```

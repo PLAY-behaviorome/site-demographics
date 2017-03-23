@@ -28,6 +28,9 @@ pacman::p_load(ggplot2, dplyr, stringr, choroplethr, choroplethrMaps)
 
 # Paths
 csv.dir <- "analysis/csv/"
+
+# Helper functions
+source("R/Cap.all.R")
 ```
 
 ## Background
@@ -57,14 +60,8 @@ demo <- get_county_demographics(endyear=2010, span=5)
 county.demo <- left_join(counties, demo)
 str(county.demo)
 
-# Function to add initial capital
-Init.cap <- function(s) {
-  stopifnot(is.character(s))
-  paste0(toupper(str_sub(s,1,1)), str_sub(s,2,str_length(s)))
-}
-
 # Recapitalize county
-county.demo$County <- Init.cap(county.demo$County)
+county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
 ```
 
 ## Tabular summary
@@ -88,7 +85,7 @@ county.demo %>%
   ggtitle("Population by region")
 ```
 
-## Race & ethnicity
+## Race, ethnicity, & age
 
 ```{r black}
 county.demo %>%
@@ -131,7 +128,51 @@ county.demo %>%
   ylab("% Hispanic")
 ```
 
+```{r black-asian-region}
+county.demo %>%
+  ggplot() +
+  aes(x = percent_black, y = percent_asian, 
+      color = US.Region,
+      size = total_population) +
+  geom_point() +
+  ggtitle("Percent African American vs. Asian") +
+  xlab("% African American") +
+  ylab("% Asian")
+```
+
+```{r hispanic-asian-region}
+county.demo %>%
+  ggplot() +
+  aes(x = percent_hispanic, y = percent_asian, 
+      color = US.Region,
+      size = total_population) +
+  geom_point() +
+  ggtitle("Percent Hispanic vs. Asian") +
+  xlab("% Hispanic") +
+  ylab("% Asian")
+```
+
+
+
+```{r age}
+county.demo %>%
+  ggplot() +
+  aes(x = US.Region, y = median_age) +
+  geom_violin() +
+  geom_point() +
+  ggtitle("Median age by region") +
+  ylab("Age (yrs)")
+```
+
 ## Economic indicators
+
+```{r econ-tabular-summary}
+county.demo %>%
+  arrange(US.Region, State, City, County) %>%
+  select(US.Region, City, State, County, total_population,
+         per_capita_income, median_rent) %>%
+  knitr::kable()
+```
 
 ```{r income-rent-region}
 county.demo %>%

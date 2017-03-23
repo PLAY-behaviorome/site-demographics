@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-03-20 05:11:23
+2017-03-23 10:35:39
 
 Background
 ----------
@@ -52,14 +52,8 @@ str(county.demo)
     ##  $ median_age           : num  33.4 35.8 35.7 30.1 36.6 29.3 34.3 34.3 37.7 34 ...
 
 ``` r
-# Function to add initial capital
-Init.cap <- function(s) {
-  stopifnot(is.character(s))
-  paste0(toupper(str_sub(s,1,1)), str_sub(s,2,str_length(s)))
-}
-
 # Recapitalize county
-county.demo$County <- Init.cap(county.demo$County)
+county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
 ```
 
 Tabular summary
@@ -75,14 +69,14 @@ county.demo %>%
 
 | US.Region | City            | State | County               |  total\_population|  percent\_white|  percent\_black|  percent\_asian|  percent\_hispanic|
 |:----------|:----------------|:------|:---------------------|------------------:|---------------:|---------------:|---------------:|------------------:|
-| East      | Washington      | DC    | District of columbia |             584400|              33|              52|               3|                  9|
+| East      | Washington      | DC    | District Of columbia |             584400|              33|              52|               3|                  9|
 | East      | Boston          | MA    | Suffolk              |             704460|              49|              21|               8|                 19|
 | East      | Cambridge       | MA    | Middlesex            |            1479491|              78|               4|               9|                  6|
 | East      | Newark          | NJ    | Essex                |             780872|              34|              40|               5|                 19|
 | East      | Princeton       | NJ    | Mercer               |             364445|              56|              20|               9|                 14|
 | East      | Brooklyn        | NY    | Kings                |            2466782|              36|              33|              10|                 20|
 | East      | Ithaca          | NY    | Tompkins             |             100612|              81|               3|               9|                  4|
-| East      | New York        | NY    | New york             |            1583345|              48|              13|              11|                 26|
+| East      | New York        | NY    | New York             |            1583345|              48|              13|              11|                 26|
 | East      | Lehigh          | PA    | Lehigh               |             343946|              74|               5|               3|                 17|
 | East      | Philadelphia    | PA    | Philadelphia         |            1504950|              37|              43|               6|                 12|
 | East      | University Park | PA    | Centre               |             151411|              88|               3|               5|                  2|
@@ -93,21 +87,21 @@ county.demo %>%
 | Midwest   | East Lansing    | MI    | Ingham               |             281365|              73|              11|               5|                  7|
 | Midwest   | Columbus        | OH    | Franklin             |            1141117|              68|              21|               4|                  4|
 | Midwest   | Pittsburgh      | PA    | Allegheny            |            1223066|              81|              13|               3|                  1|
-| South     | Miami           | FL    | Miami-dade           |            2445374|              16|              18|               2|                 64|
+| South     | Miami           | FL    | Miami-Dade           |            2445374|              16|              18|               2|                 64|
 | South     | Atlanta         | GA    | Fulton               |             886982|              42|              43|               5|                  8|
 | South     | New Orleans     | LA    | Orleans              |             295285|              31|              59|               3|                  5|
 | South     | Nashville       | TN    | Davidson             |             612884|              59|              28|               3|                  9|
 | South     | Austin          | TX    | Travis               |             979712|              51|               8|               6|                 33|
 | South     | Houston         | TX    | Harris               |            3950999|              34|              19|               6|                 40|
 | South     | Richmond        | VA    | Henrico              |             300053|              59|              28|               6|                  4|
-| South     | Williamsburg    | VA    | James city           |              64386|              78|              13|               2|                  4|
+| South     | Williamsburg    | VA    | James City           |              64386|              78|              13|               2|                  4|
 | West      | Davis           | CA    | Yolo                 |             196418|              51|               2|              13|                 30|
 | West      | Fullerton       | CA    | Orange               |            2965525|              46|               2|              17|                 33|
-| West      | Long Beach      | CA    | Los angeles          |            9758256|              28|               8|              14|                 47|
+| West      | Long Beach      | CA    | Los Angeles          |            9758256|              28|               8|              14|                 47|
 | West      | Merced          | CA    | Merced               |             250699|              33|               4|               7|                 54|
-| West      | Palo Alto       | CA    | Santa clara          |            1739396|              37|               2|              31|                 26|
+| West      | Palo Alto       | CA    | Santa Clara          |            1739396|              37|               2|              31|                 26|
 | West      | Riverside       | CA    | Riverside            |            2109464|              41|               6|               6|                 44|
-| West      | Santa Cruz      | CA    | Santa cruz           |             256901|              61|               1|               4|                 31|
+| West      | Santa Cruz      | CA    | Santa Cruz           |             256901|              61|               1|               4|                 31|
 | West      | Eugene          | OR    | Lane                 |             347156|              85|               1|               2|                  7|
 | West      | Seattle         | WA    | King                 |            1879189|              66|               6|              14|                  8|
 
@@ -125,8 +119,8 @@ county.demo %>%
 
 ![](data-collection-site-demographics_files/figure-markdown_github/pop-by-region-boxplot-1.png)
 
-Race & ethnicity
-----------------
+Race, ethnicity, & age
+----------------------
 
 ``` r
 county.demo %>%
@@ -178,8 +172,94 @@ county.demo %>%
 
 ![](data-collection-site-demographics_files/figure-markdown_github/black-hispanic-region-1.png)
 
+``` r
+county.demo %>%
+  ggplot() +
+  aes(x = percent_black, y = percent_asian, 
+      color = US.Region,
+      size = total_population) +
+  geom_point() +
+  ggtitle("Percent African American vs. Asian") +
+  xlab("% African American") +
+  ylab("% Asian")
+```
+
+![](data-collection-site-demographics_files/figure-markdown_github/black-asian-region-1.png)
+
+``` r
+county.demo %>%
+  ggplot() +
+  aes(x = percent_hispanic, y = percent_asian, 
+      color = US.Region,
+      size = total_population) +
+  geom_point() +
+  ggtitle("Percent Hispanic vs. Asian") +
+  xlab("% Hispanic") +
+  ylab("% Asian")
+```
+
+![](data-collection-site-demographics_files/figure-markdown_github/hispanic-asian-region-1.png)
+
+``` r
+county.demo %>%
+  ggplot() +
+  aes(x = US.Region, y = median_age) +
+  geom_violin() +
+  geom_point() +
+  ggtitle("Median age by region") +
+  ylab("Age (yrs)")
+```
+
+![](data-collection-site-demographics_files/figure-markdown_github/age-1.png)
+
 Economic indicators
 -------------------
+
+``` r
+county.demo %>%
+  arrange(US.Region, State, City, County) %>%
+  select(US.Region, City, State, County, total_population,
+         per_capita_income, median_rent) %>%
+  knitr::kable()
+```
+
+| US.Region | City            | State | County               |  total\_population|  per\_capita\_income|  median\_rent|
+|:----------|:----------------|:------|:---------------------|------------------:|--------------------:|-------------:|
+| East      | Washington      | DC    | District Of columbia |             584400|                42078|           971|
+| East      | Boston          | MA    | Suffolk              |             704460|                30720|          1055|
+| East      | Cambridge       | MA    | Middlesex            |            1479491|                40139|          1085|
+| East      | Newark          | NJ    | Essex                |             780872|                31535|           856|
+| East      | Princeton       | NJ    | Mercer               |             364445|                36016|           900|
+| East      | Brooklyn        | NY    | Kings                |            2466782|                23605|           916|
+| East      | Ithaca          | NY    | Tompkins             |             100612|                25737|           744|
+| East      | New York        | NY    | New York             |            1583345|                59149|          1150|
+| East      | Lehigh          | PA    | Lehigh               |             343946|                27301|           708|
+| East      | Philadelphia    | PA    | Philadelphia         |            1504950|                21117|           656|
+| East      | University Park | PA    | Centre               |             151411|                23744|           711|
+| East      | Providence      | RI    | Providence           |             628413|                25169|           721|
+| Midwest   | Champaign       | IL    | Champaign            |             197867|                24553|           599|
+| Midwest   | Bloomington     | IN    | Monroe               |             134442|                21882|           618|
+| Midwest   | W. Lafayette    | IN    | Tippecanoe           |             168635|                22203|           608|
+| Midwest   | East Lansing    | MI    | Ingham               |             281365|                23883|           631|
+| Midwest   | Columbus        | OH    | Franklin             |            1141117|                26909|           616|
+| Midwest   | Pittsburgh      | PA    | Allegheny            |            1223066|                29549|           555|
+| South     | Miami           | FL    | Miami-Dade           |            2445374|                22957|           877|
+| South     | Atlanta         | GA    | Fulton               |             886982|                37211|           773|
+| South     | New Orleans     | LA    | Orleans              |             295285|                24929|           739|
+| South     | Nashville       | TN    | Davidson             |             612884|                27780|           646|
+| South     | Austin          | TX    | Travis               |             979712|                31785|           745|
+| South     | Houston         | TX    | Harris               |            3950999|                26788|           656|
+| South     | Richmond        | VA    | Henrico              |             300053|                33001|           801|
+| South     | Williamsburg    | VA    | James City           |              64386|                38162|           887|
+| West      | Davis           | CA    | Yolo                 |             196418|                27420|           945|
+| West      | Fullerton       | CA    | Orange               |            2965525|                34017|          1344|
+| West      | Long Beach      | CA    | Los Angeles          |            9758256|                27344|          1017|
+| West      | Merced          | CA    | Merced               |             250699|                18041|           678|
+| West      | Palo Alto       | CA    | Santa Clara          |            1739396|                39804|          1325|
+| West      | Riverside       | CA    | Riverside            |            2109464|                24431|           975|
+| West      | Santa Cruz      | CA    | Santa Cruz           |             256901|                32862|          1170|
+| West      | Eugene          | OR    | Lane                 |             347156|                23869|           666|
+| West      | Seattle         | WA    | King                 |            1879189|                38211|           899|
 
 ``` r
 county.demo %>%

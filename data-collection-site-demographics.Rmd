@@ -56,7 +56,7 @@ counties <- left_join(counties, county.regions,
                          by = c("County" = "county.name",
                                 "State" = "state.abb"))
 
-demo <- get_county_demographics(endyear=2010, span=5)
+demo <- get_county_demographics(endyear=2013, span=5)
 
 county.demo <- left_join(counties, demo)
 #str(county.demo)
@@ -68,6 +68,11 @@ county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
 ## Tabular summary
 
 ```{r tabular-summary}
+# Select collecting sites only
+county.demo %>%
+  filter(Collecting == "Collecting") ->
+  county.demo
+
 county.demo %>%
   arrange(US.Region, State, City, County) %>%
   select(US.Region, City, State, County, total_population, percent_white,
@@ -189,25 +194,26 @@ The `acs` package manual can be found here: <https://cran.r-project.org/web/pack
 
 ### Generate geography for sites
 
-```{r generate-geo}
+This is a work in progress.
 
-```
+<!-- ```{r generate-geo} -->
+
+<!-- ``` -->
 
 
-```{r}
-ed <- acs.lookup(table.name="Education", endyear=2011)
+<!-- ```{r} -->
+<!-- ed <- acs.lookup(table.name="Education", endyear=2011) -->
 
-# Looks like 1:6
-acs.fetch(geography = centre, endyear = 2011, variable = ed[1:6],
-          col.names = c("Total",
-                        "<HS",
-                        "HS",
-                        "Some Coll",
-                        "BA",
-                        "Grad/Prof")
-)
-```
-
+<!-- # Looks like 1:6 -->
+<!-- acs.fetch(geography = centre, endyear = 2011, variable = ed[1:6], -->
+<!--           col.names = c("Total", -->
+<!--                         "<HS", -->
+<!--                         "HS", -->
+<!--                         "Some Coll", -->
+<!--                         "BA", -->
+<!--                         "Grad/Prof") -->
+<!-- ) -->
+<!-- ``` -->
 
 ## Next steps
 

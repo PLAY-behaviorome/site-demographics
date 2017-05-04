@@ -2,7 +2,9 @@
 title: "PLAY Planned Enrollment"
 author: "Rick O. Gilmore"
 date: "`r Sys.time()`"
-output: html_notebook
+output: 
+  github_document: default
+  html_notebook: default
 ---
 
 ```{r setup, include=FALSE}
@@ -58,7 +60,6 @@ county.demo <- left_join(counties, demo)
 
 # Recapitalize county
 county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
-
 ```
 
 ## Tabular summary
@@ -66,7 +67,7 @@ county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
 Select the $n$=30 from among the 35 prospects. Then produce a tablular summary.
 
 ```{r tabular-summary}
-
+# Select collecting sites only
 county.demo %>%
   filter(Collecting == "Collecting") ->
   county.demo

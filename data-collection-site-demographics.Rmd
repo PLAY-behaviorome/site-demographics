@@ -16,7 +16,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE, 
                       warning = FALSE, 
                       error = FALSE,
-                      message = FALSE)
+                      message = FALSE,
+                      fig.path = "img/")
 
 # Install packman for subsequent package management
 if (!("pacman" %in% installed.packages()[,])) {
@@ -30,7 +31,7 @@ pacman::p_load(ggplot2, dplyr, stringr, choroplethr, choroplethrMaps)
 csv.dir <- "analysis/csv/"
 
 # Helper functions
-source("R/Cap.all.R")
+source("analysis/R/Cap.all.R")
 ```
 
 ## Background
@@ -58,7 +59,7 @@ counties <- left_join(counties, county.regions,
 demo <- get_county_demographics(endyear=2010, span=5)
 
 county.demo <- left_join(counties, demo)
-str(county.demo)
+#str(county.demo)
 
 # Recapitalize county
 county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
@@ -152,8 +153,6 @@ county.demo %>%
   ylab("% Asian")
 ```
 
-
-
 ```{r age}
 county.demo %>%
   ggplot() +
@@ -184,9 +183,43 @@ county.demo %>%
   ggtitle("Median rent by per capita income")
 ```
 
+## Further exploration of the ACS
+
+The `acs` package manual can be found here: <https://cran.r-project.org/web/packages/acs/acs.pdf>. A useful guide to the ACS can be found here: <https://www.census.gov/content/dam/Census/library/publications/2008/acs/ACSGeneralHandbook.pdf>. And, an especially useful guide by the `acs` package author can be found here: <http://dusp.mit.edu/sites/dusp.mit.edu/files/attachments/publications/working_with_acs_R_v_2.0.pdf>
+
+### Generate geography for sites
+
+```{r generate-geo}
+
+```
+
+
+```{r}
+ed <- acs.lookup(table.name="Education", endyear=2011)
+
+# Looks like 1:6
+acs.fetch(geography = centre, endyear = 2011, variable = ed[1:6],
+          col.names = c("Total",
+                        "<HS",
+                        "HS",
+                        "Some Coll",
+                        "BA",
+                        "Grad/Prof")
+)
+```
+
+
+## Next steps
+
+1. We should confirm that our target sites collect data from the counties listed, and that the county-wide demographics are plausible.
+2. We should also see if there are *other* counties target sites collect from and consider asking them to estimate the proportion of their recruiting that comes from county A vs. county B. It would be fun to have a Shiny app to collect this.
+3. We should explore the `acs` package to grab additional demographic data, especially the indicators used in the draft grant proposal. The `choroplethr` package used in the above had demographic variables similar, but not identical to the ones we have used in the proposal.
+
 ## Resources
 
 ### R Session
+
+This document was prepared in RStudio 1.0.136. Session information follows.
 
 ```{r session-info}
 sessionInfo()

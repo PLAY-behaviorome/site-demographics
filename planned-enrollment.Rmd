@@ -1,0 +1,125 @@
+---
+title: "PLAY Planned Enrollment"
+author: "Rick O. Gilmore"
+date: "`r Sys.time()`"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      error = FALSE,
+                      message = FALSE,
+                      fig.path = "img/")
+
+# Install packman for subsequent package management
+if (!("pacman" %in% installed.packages()[,])) {
+    install.packages("pacman")
+}
+
+# Load packages
+pacman::p_load(ggplot2, dplyr, stringr, choroplethr, choroplethrMaps)
+
+# Paths
+csv.dir <- "analysis/csv/"
+
+# Helper functions
+source("analysis/R/Cap.all.R")
+```
+
+## Background/Rationale
+
+This notebook describes the projected enrollment across the $n$=30 data collection sites based upon Census data about the race and ethnicity composition of the surrounding counties.
+
+## Generate data files
+
+Load county names, and add county FIPS from `choroplethr` package's `county.regions` dataset. With this, I can extract demographic data using the `get_county_demographics()` function.
+
+Note, that to access Census API, one must first acquire an API key from <http://www.census.gov/developers/>. Then, one must run `api.key.install()` to avoid throwing the API error; alternatively give the api key value as `key = <api.key>`.
+
+```{r generate-data-files}
+counties <- read.csv(paste0(csv.dir, "city-state-county.csv"), stringsAsFactors = FALSE)
+
+# convert counties so can pull FIPS codes
+counties$County <- tolower(counties$County)
+
+# Load county data from choroplethr
+# Could also use acs package to get updated info.
+data("county.regions")
+
+counties <- left_join(counties, county.regions,
+                         by = c("County" = "county.name",
+                                "State" = "state.abb"))
+
+demo <- get_county_demographics(endyear=2013, span=5)
+
+county.demo <- left_join(counties, demo)
+#str(county.demo)
+
+# Recapitalize county
+county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
+
+```
+
+## Tabular summary
+
+Select the $n$=30 from among the 35 prospects. Then produce a tablular summary.
+
+```{r tabular-summary}
+
+county.demo %>%
+  filter(Collecting == "Collecting") ->
+  county.demo
+
+county.demo %>%
+  arrange(US.Region, State, City, County) %>%
+  select(US.Region, City, State, County, total_population, percent_white,
+         percent_black, percent_asian, percent_hispanic) %>%
+  knitr::kable()
+```
+
+## Calculating planned enrollment by site
+
+We calculate expected proportions of participants based on county-level race percentages, assuming an $n$=30. Take the floor of `N_white` and the ceiling of others since we hope to increase sample diversity.
+
+```{r planned-enrollment-by-race}
+county.demo %>%
+  arrange(US.Region, State, City, County) %>%
+  select(US.Region, City, State, County, total_population,
+         percent_white, percent_black, percent_asian,
+         percent_hispanic) -> 
+  county.race.ethnicity
+
+county.race.ethnicity %>%
+  mutate(N_white = floor(percent_white*30/100),
+         N_black = ceiling(percent_black*30/100),
+         N_asian = ceiling(percent_asian*30/100),
+         N_hispanic = ceiling(percent_hispanic*30/100)) %>%
+  select(County, State, N_white, N_black, N_asian, N_hispanic) %>%
+  mutate(N_site = N_white + N_black + N_asian + N_hispanic) ->
+  county.planned.enrollment
+
+county.planned.enrollment %>%
+  knitr::kable()
+```
+
+```{r planned-enrollment-across-sample}
+county.planned.enrollment %>%
+  summarize(Tot_white = sum(N_white),
+            Tot_black = sum(N_black),
+            Tot_asian = sum(N_asian),
+            Tot_hispanic = sum(N_hispanic)) %>%
+  mutate(Tot_sample = Tot_white + Tot_black + Tot_asian + Tot_hispanic) %>%
+  knitr::kable()
+```
+
+
+This is close to the projected total $n$=900. We will need to do some hand-tweaking, of course.
+
+## Resources
+
+This document was prepared in RStudio 1.0.143. Session information follows.
+
+```{r session-info}
+sessionInfo()
+```

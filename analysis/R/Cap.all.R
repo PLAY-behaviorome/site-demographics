@@ -1,4 +1,16 @@
 Cap.all <- function(s, before.hyphen = TRUE) {
+  # Capitalizes i) initial words, ii) words separated by a space or hypen
+  # 
+  # Parameters:
+  # s: character array
+  # before.hyphen: Logical value determining whether to capitalize
+  #   words separated by a hyphen, default is TRUE
+  #
+  # Returns:
+  #   Capitalized character array
+  
+  require(stringr)
+  
   stopifnot(is.character(s))
   
   # Initial cap

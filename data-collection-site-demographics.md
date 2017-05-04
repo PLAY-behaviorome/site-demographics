@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-03-23 10:35:39
+2017-04-07 11:07:42
 
 Background
 ----------
@@ -28,7 +28,11 @@ counties <- left_join(counties, county.regions,
                                 "State" = "state.abb"))
 
 demo <- get_county_demographics(endyear=2010, span=5)
+```
 
+    ## Operation in progressOperation in progressOperation in progressOperation in progress
+
+``` r
 county.demo <- left_join(counties, demo)
 str(county.demo)
 ```
@@ -117,7 +121,7 @@ county.demo %>%
   ggtitle("Population by region")
 ```
 
-![](data-collection-site-demographics_files/figure-markdown_github/pop-by-region-boxplot-1.png)
+![](img/pop-by-region-boxplot-1.png)
 
 Race, ethnicity, & age
 ----------------------
@@ -132,7 +136,7 @@ county.demo %>%
   ylab("% African American")
 ```
 
-![](data-collection-site-demographics_files/figure-markdown_github/black-1.png)
+![](img/black-1.png)
 
 ``` r
 county.demo %>%
@@ -144,7 +148,7 @@ county.demo %>%
   ylab("% Hispanic")
 ```
 
-![](data-collection-site-demographics_files/figure-markdown_github/hispanic-1.png)
+![](img/hispanic-1.png)
 
 ``` r
 county.demo %>%
@@ -156,7 +160,7 @@ county.demo %>%
   ylab("% Asian")
 ```
 
-![](data-collection-site-demographics_files/figure-markdown_github/asian-1.png)
+![](img/asian-1.png)
 
 ``` r
 county.demo %>%
@@ -170,7 +174,7 @@ county.demo %>%
   ylab("% Hispanic")
 ```
 
-![](data-collection-site-demographics_files/figure-markdown_github/black-hispanic-region-1.png)
+![](img/black-hispanic-region-1.png)
 
 ``` r
 county.demo %>%
@@ -184,7 +188,7 @@ county.demo %>%
   ylab("% Asian")
 ```
 
-![](data-collection-site-demographics_files/figure-markdown_github/black-asian-region-1.png)
+![](img/black-asian-region-1.png)
 
 ``` r
 county.demo %>%
@@ -198,7 +202,7 @@ county.demo %>%
   ylab("% Asian")
 ```
 
-![](data-collection-site-demographics_files/figure-markdown_github/hispanic-asian-region-1.png)
+![](img/hispanic-asian-region-1.png)
 
 ``` r
 county.demo %>%
@@ -210,7 +214,7 @@ county.demo %>%
   ylab("Age (yrs)")
 ```
 
-![](data-collection-site-demographics_files/figure-markdown_github/age-1.png)
+![](img/age-1.png)
 
 Economic indicators
 -------------------
@@ -271,7 +275,14 @@ county.demo %>%
   ggtitle("Median rent by per capita income")
 ```
 
-![](data-collection-site-demographics_files/figure-markdown_github/income-rent-region-1.png)
+![](img/income-rent-region-1.png)
+
+Next steps
+----------
+
+1.  We should confirm that our target sites collect data from the counties listed, and that the county-wide demographics are plausible.
+2.  We should also see if there are *other* counties target sites collect from and consider asking them to estimate the proportion of their recruiting that comes from county A vs. county B. It would be fun to have a Shiny app to collect this.
+3.  We should explore the `acs` package to grab additional demographic data, especially the indicators used in the draft grant proposal. The `choroplethr` package used in the above had demographic variables similar, but not identical to the ones we have used in the proposal.
 
 Resources
 ---------

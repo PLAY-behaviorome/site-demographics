@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-05-04 10:56:12
+2017-05-09 09:30:27
 
 Background
 ----------
@@ -56,13 +56,15 @@ county.demo %>%
 |:----------|:----------------|:------|:---------------------|------------------:|---------------:|---------------:|---------------:|------------------:|
 | East      | Washington      | DC    | District Of columbia |             619371|              35|              49|               3|                 10|
 | East      | Boston          | MA    | Suffolk              |             735701|              48|              20|               8|                 20|
+| East      | Bethesda        | MD    | Montgomery           |             989474|              48|              17|              14|                 17|
 | East      | Newark          | NJ    | Essex                |             785853|              33|              39|               5|                 21|
 | East      | Princeton       | NJ    | Mercer               |             368094|              54|              19|               9|                 16|
 | East      | Ithaca          | NY    | Tompkins             |             102270|              79|               4|              10|                  4|
 | East      | New York        | NY    | New York             |            1605272|              48|              13|              11|                 26|
 | East      | Philadelphia    | PA    | Philadelphia         |            1536704|              37|              42|               6|                 13|
 | East      | University Park | PA    | Centre               |             154460|              88|               3|               5|                  3|
-| Midwest   | Champaign       | IL    | Champaign            |             202428|              70|              12|               9|                  5|
+| East      | Providence      | RI    | Providence           |             627469|              65|               8|               4|                 19|
+| East      | Arlington       | VA    | Arlington            |             214861|              64|               8|               9|                 15|
 | Midwest   | Bloomington     | IN    | Monroe               |             139634|              86|               3|               6|                  3|
 | Midwest   | W. Lafayette    | IN    | Tippecanoe           |             175628|              80|               4|               7|                  8|
 | Midwest   | East Lansing    | MI    | Ingham               |             281531|              72|              11|               5|                  7|
@@ -80,6 +82,7 @@ county.demo %>%
 | West      | Fullerton       | CA    | Orange               |            3051771|              43|               2|              18|                 34|
 | West      | Long Beach      | CA    | Los Angeles          |            9893481|              28|               8|              14|                 48|
 | West      | Merced          | CA    | Merced               |             258707|              31|               3|               8|                 56|
+| West      | Palo Alto       | CA    | San Mateo            |             729543|              42|               3|              25|                 25|
 | West      | Palo Alto       | CA    | Santa Clara          |            1812208|              35|               2|              32|                 27|
 | West      | Riverside       | CA    | Riverside            |            2228528|              39|               6|               6|                 46|
 | West      | Santa Cruz      | CA    | Santa Cruz           |             264808|              59|               1|               4|                 32|
@@ -207,13 +210,15 @@ county.demo %>%
 |:----------|:----------------|:------|:---------------------|------------------:|--------------------:|-------------:|
 | East      | Washington      | DC    | District Of columbia |             619371|                45290|          1154|
 | East      | Boston          | MA    | Suffolk              |             735701|                32835|          1135|
+| East      | Bethesda        | MD    | Montgomery           |             989474|                49038|          1423|
 | East      | Newark          | NJ    | Essex                |             785853|                32181|           917|
 | East      | Princeton       | NJ    | Mercer               |             368094|                37465|           959|
 | East      | Ithaca          | NY    | Tompkins             |             102270|                27418|           857|
 | East      | New York        | NY    | New York             |            1605272|                62498|          1342|
 | East      | Philadelphia    | PA    | Philadelphia         |            1536704|                22279|           721|
 | East      | University Park | PA    | Centre               |             154460|                25545|           795|
-| Midwest   | Champaign       | IL    | Champaign            |             202428|                25713|           658|
+| East      | Providence      | RI    | Providence           |             627469|                26308|           740|
+| East      | Arlington       | VA    | Arlington            |             214861|                62018|          1659|
 | Midwest   | Bloomington     | IN    | Monroe               |             139634|                23032|           679|
 | Midwest   | W. Lafayette    | IN    | Tippecanoe           |             175628|                23691|           650|
 | Midwest   | East Lansing    | MI    | Ingham               |             281531|                24754|           664|
@@ -231,6 +236,7 @@ county.demo %>%
 | West      | Fullerton       | CA    | Orange               |            3051771|                34057|          1413|
 | West      | Long Beach      | CA    | Los Angeles          |            9893481|                27749|          1110|
 | West      | Merced          | CA    | Merced               |             258707|                18177|           725|
+| West      | Palo Alto       | CA    | San Mateo            |             729543|                45732|          1509|
 | West      | Palo Alto       | CA    | Santa Clara          |            1812208|                41513|          1473|
 | West      | Riverside       | CA    | Riverside            |            2228528|                23591|          1015|
 | West      | Santa Cruz      | CA    | Santa Cruz           |             264808|                32295|          1282|

@@ -1,7 +1,7 @@
 PLAY Planned Enrollment
 ================
 Rick O. Gilmore
-2017-05-04 10:58:10
+2017-05-09 09:32:59
 
 Background/Rationale
 --------------------
@@ -60,13 +60,15 @@ county.demo %>%
 |:----------|:----------------|:------|:---------------------|------------------:|---------------:|---------------:|---------------:|------------------:|
 | East      | Washington      | DC    | District Of columbia |             619371|              35|              49|               3|                 10|
 | East      | Boston          | MA    | Suffolk              |             735701|              48|              20|               8|                 20|
+| East      | Bethesda        | MD    | Montgomery           |             989474|              48|              17|              14|                 17|
 | East      | Newark          | NJ    | Essex                |             785853|              33|              39|               5|                 21|
 | East      | Princeton       | NJ    | Mercer               |             368094|              54|              19|               9|                 16|
 | East      | Ithaca          | NY    | Tompkins             |             102270|              79|               4|              10|                  4|
 | East      | New York        | NY    | New York             |            1605272|              48|              13|              11|                 26|
 | East      | Philadelphia    | PA    | Philadelphia         |            1536704|              37|              42|               6|                 13|
 | East      | University Park | PA    | Centre               |             154460|              88|               3|               5|                  3|
-| Midwest   | Champaign       | IL    | Champaign            |             202428|              70|              12|               9|                  5|
+| East      | Providence      | RI    | Providence           |             627469|              65|               8|               4|                 19|
+| East      | Arlington       | VA    | Arlington            |             214861|              64|               8|               9|                 15|
 | Midwest   | Bloomington     | IN    | Monroe               |             139634|              86|               3|               6|                  3|
 | Midwest   | W. Lafayette    | IN    | Tippecanoe           |             175628|              80|               4|               7|                  8|
 | Midwest   | East Lansing    | MI    | Ingham               |             281531|              72|              11|               5|                  7|
@@ -84,6 +86,7 @@ county.demo %>%
 | West      | Fullerton       | CA    | Orange               |            3051771|              43|               2|              18|                 34|
 | West      | Long Beach      | CA    | Los Angeles          |            9893481|              28|               8|              14|                 48|
 | West      | Merced          | CA    | Merced               |             258707|              31|               3|               8|                 56|
+| West      | Palo Alto       | CA    | San Mateo            |             729543|              42|               3|              25|                 25|
 | West      | Palo Alto       | CA    | Santa Clara          |            1812208|              35|               2|              32|                 27|
 | West      | Riverside       | CA    | Riverside            |            2228528|              39|               6|               6|                 46|
 | West      | Santa Cruz      | CA    | Santa Cruz           |             264808|              59|               1|               4|                 32|
@@ -119,13 +122,15 @@ county.planned.enrollment %>%
 |:---------------------|:------|---------:|---------:|---------:|------------:|--------:|
 | District Of columbia | DC    |        10|        15|         1|            3|       29|
 | Suffolk              | MA    |        14|         6|         3|            6|       29|
+| Montgomery           | MD    |        14|         6|         5|            6|       31|
 | Essex                | NJ    |         9|        12|         2|            7|       30|
 | Mercer               | NJ    |        16|         6|         3|            5|       30|
 | Tompkins             | NY    |        23|         2|         3|            2|       30|
 | New York             | NY    |        14|         4|         4|            8|       30|
 | Philadelphia         | PA    |        11|        13|         2|            4|       30|
 | Centre               | PA    |        26|         1|         2|            1|       30|
-| Champaign            | IL    |        21|         4|         3|            2|       30|
+| Providence           | RI    |        19|         3|         2|            6|       30|
+| Arlington            | VA    |        19|         3|         3|            5|       30|
 | Monroe               | IN    |        25|         1|         2|            1|       29|
 | Tippecanoe           | IN    |        24|         2|         3|            3|       32|
 | Ingham               | MI    |        21|         4|         2|            3|       30|
@@ -143,6 +148,7 @@ county.planned.enrollment %>%
 | Orange               | CA    |        12|         1|         6|           11|       30|
 | Los Angeles          | CA    |         8|         3|         5|           15|       31|
 | Merced               | CA    |         9|         1|         3|           17|       30|
+| San Mateo            | CA    |        12|         1|         8|            8|       29|
 | Santa Clara          | CA    |        10|         1|        10|            9|       30|
 | Riverside            | CA    |        11|         2|         2|           14|       29|
 | Santa Cruz           | CA    |        17|         1|         2|           10|       30|
@@ -160,7 +166,7 @@ county.planned.enrollment %>%
 
 |  Tot\_white|  Tot\_black|  Tot\_asian|  Tot\_hispanic|  Tot\_sample|
 |-----------:|-----------:|-----------:|--------------:|------------:|
-|         469|         161|          79|            193|          902|
+|         512|         170|          94|            216|          992|
 
 This is close to the projected total *n*=900. We will need to do some hand-tweaking, of course.
 

@@ -169,7 +169,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">PLAY Planned Enrollment</h1>
 <h4 class="author"><em>Rick O. Gilmore</em></h4>
-<h4 class="date"><em>2017-05-10 09:33:11</em></h4>
+<h4 class="date"><em>2017-05-10 15:54:36</em></h4>
 
 </div>
 
@@ -187,13 +187,12 @@ $(document).ready(function () {
 <p>Note, that to access Census API, one must first acquire an API key from <a href="http://www.census.gov/developers/" class="uri">http://www.census.gov/developers/</a>. Then, one must run <code>api.key.install()</code> to avoid throwing the API error; alternatively give the api key value as <code>key = &lt;api.key&gt;</code>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY291bnRpZXMgPC0gcmVhZC5jc3YocGFzdGUwKGNzdi5kaXIsIFwiY2l0eS1zdGF0ZS1jb3VudHkuY3N2XCIpLCBzdHJpbmdzQXNGYWN0b3JzID0gRkFMU0UpXG5cbmBgYCJ9 -->
-<pre class="r"><code>counties &lt;- read.csv(paste0(csv.dir, &quot;city-state-county.csv&quot;), stringsAsFactors = FALSE)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY291bnR5LmRlbW8gPC0gbGVmdF9qb2luKGNvdW50aWVzLCBkZW1vKVxuXG5gYGAifQ== -->
+<pre class="r"><code>county.demo &lt;- left_join(counties, demo)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gcGFzdGUwKGNzdi5kaXIsIFwiY2l0eS1zdGF0ZS1jb3VudHkuY3N2XCIpIDogXG4gIG9iamVjdCAnY3N2LmRpcicgbm90IGZvdW5kXG4ifQ== -->
-<pre><code>Error in paste0(csv.dir, &quot;city-state-county.csv&quot;) : 
-  object 'csv.dir' not found</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IE5vIGNvbW1vbiB2YXJpYWJsZXMuIFBsZWFzZSBzcGVjaWZ5IGBieWAgcGFyYW0uXG4ifQ== -->
+<pre><code>Error: No common variables. Please specify `by` param.</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -203,13 +202,14 @@ $(document).ready(function () {
 <p>Select the <span class="math inline">\(n\)</span>=30 from among the 35 prospects. Then produce a tablular summary.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY291bnR5LmRlbW8gJT4lXG4gIGZpbHRlcihDb2xsZWN0aW5nID09IFwiQ29sbGVjdGluZ1wiKSAtPlxuICBjb3VudHkuZGVtb1xuY291bnR5LmRlbW8gJT4lXG4gIGFycmFuZ2UoVVMuUmVnaW9uLCBTdGF0ZSwgQ2l0eSwgQ291bnR5KSAlPiVcbiAgc2VsZWN0KFVTLlJlZ2lvbiwgQ2l0eSwgU3RhdGUsIENvdW50eSwgdG90YWxfcG9wdWxhdGlvbiwgcGVyY2VudF93aGl0ZSxcbiAgICAgICAgIHBlcmNlbnRfYmxhY2ssIHBlcmNlbnRfYXNpYW4sIHBlcmNlbnRfaGlzcGFuaWMpICU+JVxuICBrbml0cjo6a2FibGUoKVxuYGBgIn0= -->
-<pre class="r"><code>county.demo %&gt;%
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTZWxlY3QgY29sbGVjdGluZyBzaXRlcyBvbmx5XG5jb3VudHkuZGVtbyAlPiVcbiAgZmlsdGVyKENvbGxlY3RpbmcgPT0gXCJDb2xsZWN0aW5nXCIpIC0+XG4gIGNvdW50eS5kZW1vXG5jb3VudHkuZGVtbyAlPiVcbiAgYXJyYW5nZShVUy5SZWdpb24sIFNpdGUuY29kZSwgU3RhdGUsIENvdW50eSkgJT4lXG4gIHNlbGVjdChVUy5SZWdpb24sIFNpdGUuY29kZSwgU3RhdGUsIENvdW50eSwgdG90YWxfcG9wdWxhdGlvbiwgcGVyY2VudF93aGl0ZSxcbiAgICAgICAgIHBlcmNlbnRfYmxhY2ssIHBlcmNlbnRfYXNpYW4sIHBlcmNlbnRfaGlzcGFuaWMpICU+JVxuICBrbml0cjo6a2FibGUoKVxuYGBgIn0= -->
+<pre class="r"><code># Select collecting sites only
+county.demo %&gt;%
   filter(Collecting == &quot;Collecting&quot;) -&gt;
   county.demo
 county.demo %&gt;%
-  arrange(US.Region, State, City, County) %&gt;%
-  select(US.Region, City, State, County, total_population, percent_white,
+  arrange(US.Region, Site.code, State, County) %&gt;%
+  select(US.Region, Site.code, State, County, total_population, percent_white,
          percent_black, percent_asian, percent_hispanic) %&gt;%
   knitr::kable()</code></pre>
 <!-- rnb-source-end -->
@@ -218,20 +218,20 @@ county.demo %&gt;%
 
 <table style="width:100%;">
 <colgroup>
-<col width="7%" />
-<col width="12%" />
+<col width="8%" />
+<col width="8%" />
 <col width="5%" />
-<col width="15%" />
+<col width="16%" />
 <col width="13%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
 <col width="13%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th align="left">US.Region</th>
-<th align="left">City</th>
+<th align="left">Site.code</th>
 <th align="left">State</th>
 <th align="left">County</th>
 <th align="right">total_population</th>
@@ -244,18 +244,7 @@ county.demo %&gt;%
 <tbody>
 <tr class="odd">
 <td align="left">East</td>
-<td align="left">Washington</td>
-<td align="left">DC</td>
-<td align="left">District Of columbia</td>
-<td align="right">619371</td>
-<td align="right">35</td>
-<td align="right">49</td>
-<td align="right">3</td>
-<td align="right">10</td>
-</tr>
-<tr class="even">
-<td align="left">East</td>
-<td align="left">Boston</td>
+<td align="left">BU</td>
 <td align="left">MA</td>
 <td align="left">Suffolk</td>
 <td align="right">735701</td>
@@ -264,31 +253,86 @@ county.demo %&gt;%
 <td align="right">8</td>
 <td align="right">20</td>
 </tr>
+<tr class="even">
+<td align="left">East</td>
+<td align="left">CHOP</td>
+<td align="left">NJ</td>
+<td align="left">Camden</td>
+<td align="right">513512</td>
+<td align="right">60</td>
+<td align="right">18</td>
+<td align="right">5</td>
+<td align="right">15</td>
+</tr>
 <tr class="odd">
 <td align="left">East</td>
-<td align="left">Newark</td>
+<td align="left">CHOP</td>
 <td align="left">NJ</td>
-<td align="left">Essex</td>
-<td align="right">785853</td>
-<td align="right">33</td>
-<td align="right">39</td>
+<td align="left">Gloucester</td>
+<td align="right">289098</td>
+<td align="right">80</td>
+<td align="right">10</td>
+<td align="right">3</td>
 <td align="right">5</td>
-<td align="right">21</td>
 </tr>
 <tr class="even">
 <td align="left">East</td>
-<td align="left">Princeton</td>
-<td align="left">NJ</td>
-<td align="left">Mercer</td>
-<td align="right">368094</td>
-<td align="right">54</td>
-<td align="right">19</td>
-<td align="right">9</td>
-<td align="right">16</td>
+<td align="left">CHOP</td>
+<td align="left">PA</td>
+<td align="left">Bucks</td>
+<td align="right">625977</td>
+<td align="right">86</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">4</td>
 </tr>
 <tr class="odd">
 <td align="left">East</td>
-<td align="left">Ithaca</td>
+<td align="left">CHOP</td>
+<td align="left">PA</td>
+<td align="left">Chester</td>
+<td align="right">503075</td>
+<td align="right">82</td>
+<td align="right">6</td>
+<td align="right">4</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="left">East</td>
+<td align="left">CHOP</td>
+<td align="left">PA</td>
+<td align="left">Delaware</td>
+<td align="right">559771</td>
+<td align="right">70</td>
+<td align="right">20</td>
+<td align="right">5</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">East</td>
+<td align="left">CHOP</td>
+<td align="left">PA</td>
+<td align="left">Montgomery</td>
+<td align="right">804621</td>
+<td align="right">78</td>
+<td align="right">9</td>
+<td align="right">7</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">East</td>
+<td align="left">CHOP</td>
+<td align="left">PA</td>
+<td align="left">Philadelphia</td>
+<td align="right">1536704</td>
+<td align="right">37</td>
+<td align="right">42</td>
+<td align="right">6</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="left">East</td>
+<td align="left">COR</td>
 <td align="left">NY</td>
 <td align="left">Tompkins</td>
 <td align="right">102270</td>
@@ -299,7 +343,51 @@ county.demo %&gt;%
 </tr>
 <tr class="even">
 <td align="left">East</td>
-<td align="left">New York</td>
+<td align="left">CUNYSI</td>
+<td align="left">NY</td>
+<td align="left">Richmond</td>
+<td align="right">470223</td>
+<td align="right">64</td>
+<td align="right">10</td>
+<td align="right">8</td>
+<td align="right">17</td>
+</tr>
+<tr class="odd">
+<td align="left">East</td>
+<td align="left">GTN</td>
+<td align="left">DC</td>
+<td align="left">District Of columbia</td>
+<td align="right">619371</td>
+<td align="right">35</td>
+<td align="right">49</td>
+<td align="right">3</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">East</td>
+<td align="left">GTN</td>
+<td align="left">MD</td>
+<td align="left">Montgomery</td>
+<td align="right">989474</td>
+<td align="right">48</td>
+<td align="right">17</td>
+<td align="right">14</td>
+<td align="right">17</td>
+</tr>
+<tr class="odd">
+<td align="left">East</td>
+<td align="left">GTN</td>
+<td align="left">VA</td>
+<td align="left">Arlington</td>
+<td align="right">214861</td>
+<td align="right">64</td>
+<td align="right">8</td>
+<td align="right">9</td>
+<td align="right">15</td>
+</tr>
+<tr class="even">
+<td align="left">East</td>
+<td align="left">NYU</td>
 <td align="left">NY</td>
 <td align="left">New York</td>
 <td align="right">1605272</td>
@@ -310,18 +398,18 @@ county.demo %&gt;%
 </tr>
 <tr class="odd">
 <td align="left">East</td>
-<td align="left">Philadelphia</td>
-<td align="left">PA</td>
-<td align="left">Philadelphia</td>
-<td align="right">1536704</td>
-<td align="right">37</td>
-<td align="right">42</td>
-<td align="right">6</td>
-<td align="right">13</td>
+<td align="left">PRIN</td>
+<td align="left">NJ</td>
+<td align="left">Mercer</td>
+<td align="right">368094</td>
+<td align="right">54</td>
+<td align="right">19</td>
+<td align="right">9</td>
+<td align="right">16</td>
 </tr>
 <tr class="even">
 <td align="left">East</td>
-<td align="left">University Park</td>
+<td align="left">PSU</td>
 <td align="left">PA</td>
 <td align="left">Centre</td>
 <td align="right">154460</td>
@@ -331,19 +419,19 @@ county.demo %&gt;%
 <td align="right">3</td>
 </tr>
 <tr class="odd">
-<td align="left">Midwest</td>
-<td align="left">Champaign</td>
-<td align="left">IL</td>
-<td align="left">Champaign</td>
-<td align="right">202428</td>
-<td align="right">70</td>
-<td align="right">12</td>
-<td align="right">9</td>
+<td align="left">East</td>
+<td align="left">RUTG</td>
+<td align="left">NJ</td>
+<td align="left">Essex</td>
+<td align="right">785853</td>
+<td align="right">33</td>
+<td align="right">39</td>
 <td align="right">5</td>
+<td align="right">21</td>
 </tr>
 <tr class="even">
 <td align="left">Midwest</td>
-<td align="left">Bloomington</td>
+<td align="left">IU</td>
 <td align="left">IN</td>
 <td align="left">Monroe</td>
 <td align="right">139634</td>
@@ -354,18 +442,7 @@ county.demo %&gt;%
 </tr>
 <tr class="odd">
 <td align="left">Midwest</td>
-<td align="left">W. Lafayette</td>
-<td align="left">IN</td>
-<td align="left">Tippecanoe</td>
-<td align="right">175628</td>
-<td align="right">80</td>
-<td align="right">4</td>
-<td align="right">7</td>
-<td align="right">8</td>
-</tr>
-<tr class="even">
-<td align="left">Midwest</td>
-<td align="left">East Lansing</td>
+<td align="left">MSU</td>
 <td align="left">MI</td>
 <td align="left">Ingham</td>
 <td align="right">281531</td>
@@ -374,9 +451,9 @@ county.demo %&gt;%
 <td align="right">5</td>
 <td align="right">7</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Midwest</td>
-<td align="left">Columbus</td>
+<td align="left">OSU</td>
 <td align="left">OH</td>
 <td align="left">Franklin</td>
 <td align="right">1181824</td>
@@ -385,9 +462,9 @@ county.demo %&gt;%
 <td align="right">4</td>
 <td align="right">5</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Midwest</td>
-<td align="left">Pittsburgh</td>
+<td align="left">PITT</td>
 <td align="left">PA</td>
 <td align="left">Allegheny</td>
 <td align="right">1226933</td>
@@ -396,20 +473,20 @@ county.demo %&gt;%
 <td align="right">3</td>
 <td align="right">2</td>
 </tr>
+<tr class="even">
+<td align="left">Midwest</td>
+<td align="left">PUR</td>
+<td align="left">IN</td>
+<td align="left">Tippecanoe</td>
+<td align="right">175628</td>
+<td align="right">80</td>
+<td align="right">4</td>
+<td align="right">7</td>
+<td align="right">8</td>
+</tr>
 <tr class="odd">
 <td align="left">South</td>
-<td align="left">Miami</td>
-<td align="left">FL</td>
-<td align="left">Miami-Dade</td>
-<td align="right">2549075</td>
-<td align="right">16</td>
-<td align="right">17</td>
-<td align="right">2</td>
-<td align="right">65</td>
-</tr>
-<tr class="even">
-<td align="left">South</td>
-<td align="left">Atlanta</td>
+<td align="left">EMRY</td>
 <td align="left">GA</td>
 <td align="left">Fulton</td>
 <td align="right">948554</td>
@@ -418,42 +495,9 @@ county.demo %&gt;%
 <td align="right">6</td>
 <td align="right">8</td>
 </tr>
-<tr class="odd">
-<td align="left">South</td>
-<td align="left">New Orleans</td>
-<td align="left">LA</td>
-<td align="left">Orleans</td>
-<td align="right">357013</td>
-<td align="right">31</td>
-<td align="right">59</td>
-<td align="right">3</td>
-<td align="right">5</td>
-</tr>
 <tr class="even">
 <td align="left">South</td>
-<td align="left">Nashville</td>
-<td align="left">TN</td>
-<td align="left">Davidson</td>
-<td align="right">638395</td>
-<td align="right">57</td>
-<td align="right">28</td>
-<td align="right">3</td>
-<td align="right">10</td>
-</tr>
-<tr class="odd">
-<td align="left">South</td>
-<td align="left">Austin</td>
-<td align="left">TX</td>
-<td align="left">Travis</td>
-<td align="right">1063248</td>
-<td align="right">50</td>
-<td align="right">8</td>
-<td align="right">6</td>
-<td align="right">34</td>
-</tr>
-<tr class="even">
-<td align="left">South</td>
-<td align="left">Houston</td>
+<td align="left">HOU</td>
 <td align="left">TX</td>
 <td align="left">Harris</td>
 <td align="right">4182285</td>
@@ -464,7 +508,51 @@ county.demo %&gt;%
 </tr>
 <tr class="odd">
 <td align="left">South</td>
-<td align="left">Richmond</td>
+<td align="left">TUL</td>
+<td align="left">LA</td>
+<td align="left">Orleans</td>
+<td align="right">357013</td>
+<td align="right">31</td>
+<td align="right">59</td>
+<td align="right">3</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">South</td>
+<td align="left">UMIA</td>
+<td align="left">FL</td>
+<td align="left">Miami-Dade</td>
+<td align="right">2549075</td>
+<td align="right">16</td>
+<td align="right">17</td>
+<td align="right">2</td>
+<td align="right">65</td>
+</tr>
+<tr class="odd">
+<td align="left">South</td>
+<td align="left">UT</td>
+<td align="left">TX</td>
+<td align="left">Travis</td>
+<td align="right">1063248</td>
+<td align="right">50</td>
+<td align="right">8</td>
+<td align="right">6</td>
+<td align="right">34</td>
+</tr>
+<tr class="even">
+<td align="left">South</td>
+<td align="left">VBLT</td>
+<td align="left">TN</td>
+<td align="left">Davidson</td>
+<td align="right">638395</td>
+<td align="right">57</td>
+<td align="right">28</td>
+<td align="right">3</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">South</td>
+<td align="left">VCU</td>
 <td align="left">VA</td>
 <td align="left">Henrico</td>
 <td align="right">311314</td>
@@ -475,7 +563,7 @@ county.demo %&gt;%
 </tr>
 <tr class="even">
 <td align="left">South</td>
-<td align="left">Williamsburg</td>
+<td align="left">WM</td>
 <td align="left">VA</td>
 <td align="left">James City</td>
 <td align="right">68171</td>
@@ -486,7 +574,51 @@ county.demo %&gt;%
 </tr>
 <tr class="odd">
 <td align="left">West</td>
-<td align="left">Davis</td>
+<td align="left">CSF</td>
+<td align="left">CA</td>
+<td align="left">Orange</td>
+<td align="right">3051771</td>
+<td align="right">43</td>
+<td align="right">2</td>
+<td align="right">18</td>
+<td align="right">34</td>
+</tr>
+<tr class="even">
+<td align="left">West</td>
+<td align="left">CSL</td>
+<td align="left">CA</td>
+<td align="left">Los Angeles</td>
+<td align="right">9893481</td>
+<td align="right">28</td>
+<td align="right">8</td>
+<td align="right">14</td>
+<td align="right">48</td>
+</tr>
+<tr class="odd">
+<td align="left">West</td>
+<td align="left">STAN</td>
+<td align="left">CA</td>
+<td align="left">San Mateo</td>
+<td align="right">729543</td>
+<td align="right">42</td>
+<td align="right">3</td>
+<td align="right">25</td>
+<td align="right">25</td>
+</tr>
+<tr class="even">
+<td align="left">West</td>
+<td align="left">STAN</td>
+<td align="left">CA</td>
+<td align="left">Santa Clara</td>
+<td align="right">1812208</td>
+<td align="right">35</td>
+<td align="right">2</td>
+<td align="right">32</td>
+<td align="right">27</td>
+</tr>
+<tr class="odd">
+<td align="left">West</td>
+<td align="left">UCD</td>
 <td align="left">CA</td>
 <td align="left">Yolo</td>
 <td align="right">202288</td>
@@ -497,29 +629,7 @@ county.demo %&gt;%
 </tr>
 <tr class="even">
 <td align="left">West</td>
-<td align="left">Fullerton</td>
-<td align="left">CA</td>
-<td align="left">Orange</td>
-<td align="right">3051771</td>
-<td align="right">43</td>
-<td align="right">2</td>
-<td align="right">18</td>
-<td align="right">34</td>
-</tr>
-<tr class="odd">
-<td align="left">West</td>
-<td align="left">Long Beach</td>
-<td align="left">CA</td>
-<td align="left">Los Angeles</td>
-<td align="right">9893481</td>
-<td align="right">28</td>
-<td align="right">8</td>
-<td align="right">14</td>
-<td align="right">48</td>
-</tr>
-<tr class="even">
-<td align="left">West</td>
-<td align="left">Merced</td>
+<td align="left">UCM</td>
 <td align="left">CA</td>
 <td align="left">Merced</td>
 <td align="right">258707</td>
@@ -530,18 +640,7 @@ county.demo %&gt;%
 </tr>
 <tr class="odd">
 <td align="left">West</td>
-<td align="left">Palo Alto</td>
-<td align="left">CA</td>
-<td align="left">Santa Clara</td>
-<td align="right">1812208</td>
-<td align="right">35</td>
-<td align="right">2</td>
-<td align="right">32</td>
-<td align="right">27</td>
-</tr>
-<tr class="even">
-<td align="left">West</td>
-<td align="left">Riverside</td>
+<td align="left">UCR</td>
 <td align="left">CA</td>
 <td align="left">Riverside</td>
 <td align="right">2228528</td>
@@ -550,9 +649,9 @@ county.demo %&gt;%
 <td align="right">6</td>
 <td align="right">46</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">West</td>
-<td align="left">Santa Cruz</td>
+<td align="left">UCSC</td>
 <td align="left">CA</td>
 <td align="left">Santa Cruz</td>
 <td align="right">264808</td>
@@ -561,9 +660,9 @@ county.demo %&gt;%
 <td align="right">4</td>
 <td align="right">32</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">West</td>
-<td align="left">Eugene</td>
+<td align="left">UO</td>
 <td align="left">OR</td>
 <td align="left">Lane</td>
 <td align="right">353382</td>
@@ -586,316 +685,13 @@ county.demo %&gt;%
 <p>We calculate expected proportions of participants based on county-level race percentages, assuming an <span class="math inline">\(n\)</span>=30. Take the floor of <code>N_white</code> and the ceiling of others since we hope to increase sample diversity.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY291bnR5LmRlbW8gJT4lXG4gIGFycmFuZ2UoVVMuUmVnaW9uLCBTdGF0ZSwgQ2l0eSwgQ291bnR5KSAlPiVcbiAgc2VsZWN0KFVTLlJlZ2lvbiwgQ2l0eSwgU3RhdGUsIENvdW50eSwgdG90YWxfcG9wdWxhdGlvbixcbiAgICAgICAgIHBlcmNlbnRfd2hpdGUsIHBlcmNlbnRfYmxhY2ssIHBlcmNlbnRfYXNpYW4sXG4gICAgICAgICBwZXJjZW50X2hpc3BhbmljKSAtPiBcbiAgY291bnR5LnJhY2UuZXRobmljaXR5XG5jb3VudHkucmFjZS5ldGhuaWNpdHkgJT4lXG4gIG11dGF0ZShOX3doaXRlID0gZmxvb3IocGVyY2VudF93aGl0ZSozMC8xMDApLFxuICAgICAgICAgTl9ibGFjayA9IGNlaWxpbmcocGVyY2VudF9ibGFjayozMC8xMDApLFxuICAgICAgICAgTl9hc2lhbiA9IGNlaWxpbmcocGVyY2VudF9hc2lhbiozMC8xMDApLFxuICAgICAgICAgTl9oaXNwYW5pYyA9IGNlaWxpbmcocGVyY2VudF9oaXNwYW5pYyozMC8xMDApKSAlPiVcbiAgc2VsZWN0KENvdW50eSwgU3RhdGUsIE5fd2hpdGUsIE5fYmxhY2ssIE5fYXNpYW4sIE5faGlzcGFuaWMpICU+JVxuICBtdXRhdGUoTl9zaXRlID0gTl93aGl0ZSArIE5fYmxhY2sgKyBOX2FzaWFuICsgTl9oaXNwYW5pYykgLT5cbiAgY291bnR5LnBsYW5uZWQuZW5yb2xsbWVudFxuY291bnR5LnBsYW5uZWQuZW5yb2xsbWVudCAlPiVcbiAga25pdHI6OmthYmxlKClcbmBgYCJ9 -->
-<pre class="r"><code>county.demo %&gt;%
-  arrange(US.Region, State, City, County) %&gt;%
-  select(US.Region, City, State, County, total_population,
-         percent_white, percent_black, percent_asian,
-         percent_hispanic) -&gt; 
-  county.race.ethnicity
-county.race.ethnicity %&gt;%
-  mutate(N_white = floor(percent_white*30/100),
-         N_black = ceiling(percent_black*30/100),
-         N_asian = ceiling(percent_asian*30/100),
-         N_hispanic = ceiling(percent_hispanic*30/100)) %&gt;%
-  select(County, State, N_white, N_black, N_asian, N_hispanic) %&gt;%
-  mutate(N_site = N_white + N_black + N_asian + N_hispanic) -&gt;
-  county.planned.enrollment
-county.planned.enrollment %&gt;%
-  knitr::kable()</code></pre>
-<!-- rnb-source-end -->
-
-<!-- rnb-html-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImtuaXRfYXNpcyJdLCJzaXppbmdQb2xpY3kiOltdfX0= -->
-
-<table>
-<thead>
-<tr class="header">
-<th align="left">County</th>
-<th align="left">State</th>
-<th align="right">N_white</th>
-<th align="right">N_black</th>
-<th align="right">N_asian</th>
-<th align="right">N_hispanic</th>
-<th align="right">N_site</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">District Of columbia</td>
-<td align="left">DC</td>
-<td align="right">10</td>
-<td align="right">15</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">29</td>
-</tr>
-<tr class="even">
-<td align="left">Suffolk</td>
-<td align="left">MA</td>
-<td align="right">14</td>
-<td align="right">6</td>
-<td align="right">3</td>
-<td align="right">6</td>
-<td align="right">29</td>
-</tr>
-<tr class="odd">
-<td align="left">Essex</td>
-<td align="left">NJ</td>
-<td align="right">9</td>
-<td align="right">12</td>
-<td align="right">2</td>
-<td align="right">7</td>
-<td align="right">30</td>
-</tr>
-<tr class="even">
-<td align="left">Mercer</td>
-<td align="left">NJ</td>
-<td align="right">16</td>
-<td align="right">6</td>
-<td align="right">3</td>
-<td align="right">5</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Tompkins</td>
-<td align="left">NY</td>
-<td align="right">23</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">30</td>
-</tr>
-<tr class="even">
-<td align="left">New York</td>
-<td align="left">NY</td>
-<td align="right">14</td>
-<td align="right">4</td>
-<td align="right">4</td>
-<td align="right">8</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Philadelphia</td>
-<td align="left">PA</td>
-<td align="right">11</td>
-<td align="right">13</td>
-<td align="right">2</td>
-<td align="right">4</td>
-<td align="right">30</td>
-</tr>
-<tr class="even">
-<td align="left">Centre</td>
-<td align="left">PA</td>
-<td align="right">26</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Champaign</td>
-<td align="left">IL</td>
-<td align="right">21</td>
-<td align="right">4</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">30</td>
-</tr>
-<tr class="even">
-<td align="left">Monroe</td>
-<td align="left">IN</td>
-<td align="right">25</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">29</td>
-</tr>
-<tr class="odd">
-<td align="left">Tippecanoe</td>
-<td align="left">IN</td>
-<td align="right">24</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">32</td>
-</tr>
-<tr class="even">
-<td align="left">Ingham</td>
-<td align="left">MI</td>
-<td align="right">21</td>
-<td align="right">4</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Franklin</td>
-<td align="left">OH</td>
-<td align="right">20</td>
-<td align="right">7</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">31</td>
-</tr>
-<tr class="even">
-<td align="left">Allegheny</td>
-<td align="left">PA</td>
-<td align="right">24</td>
-<td align="right">4</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Miami-Dade</td>
-<td align="left">FL</td>
-<td align="right">4</td>
-<td align="right">6</td>
-<td align="right">1</td>
-<td align="right">20</td>
-<td align="right">31</td>
-</tr>
-<tr class="even">
-<td align="left">Fulton</td>
-<td align="left">GA</td>
-<td align="right">12</td>
-<td align="right">14</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">31</td>
-</tr>
-<tr class="odd">
-<td align="left">Orleans</td>
-<td align="left">LA</td>
-<td align="right">9</td>
-<td align="right">18</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">30</td>
-</tr>
-<tr class="even">
-<td align="left">Davidson</td>
-<td align="left">TN</td>
-<td align="right">17</td>
-<td align="right">9</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Travis</td>
-<td align="left">TX</td>
-<td align="right">15</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">11</td>
-<td align="right">31</td>
-</tr>
-<tr class="even">
-<td align="left">Harris</td>
-<td align="left">TX</td>
-<td align="right">9</td>
-<td align="right">6</td>
-<td align="right">2</td>
-<td align="right">13</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Henrico</td>
-<td align="left">VA</td>
-<td align="right">16</td>
-<td align="right">9</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">30</td>
-</tr>
-<tr class="even">
-<td align="left">James City</td>
-<td align="left">VA</td>
-<td align="right">23</td>
-<td align="right">4</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Yolo</td>
-<td align="left">CA</td>
-<td align="right">14</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">10</td>
-<td align="right">29</td>
-</tr>
-<tr class="even">
-<td align="left">Orange</td>
-<td align="left">CA</td>
-<td align="right">12</td>
-<td align="right">1</td>
-<td align="right">6</td>
-<td align="right">11</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Los Angeles</td>
-<td align="left">CA</td>
-<td align="right">8</td>
-<td align="right">3</td>
-<td align="right">5</td>
-<td align="right">15</td>
-<td align="right">31</td>
-</tr>
-<tr class="even">
-<td align="left">Merced</td>
-<td align="left">CA</td>
-<td align="right">9</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">17</td>
-<td align="right">30</td>
-</tr>
-<tr class="odd">
-<td align="left">Santa Clara</td>
-<td align="left">CA</td>
-<td align="right">10</td>
-<td align="right">1</td>
-<td align="right">10</td>
-<td align="right">9</td>
-<td align="right">30</td>
-</tr>
-<tr class="even">
-<td align="left">Riverside</td>
-<td align="left">CA</td>
-<td align="right">11</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">14</td>
-<td align="right">29</td>
-</tr>
-<tr class="odd">
-<td align="left">Santa Cruz</td>
-<td align="left">CA</td>
-<td align="right">17</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">10</td>
-<td align="right">30</td>
-</tr>
-<tr class="even">
-<td align="left">Lane</td>
-<td align="left">OR</td>
-<td align="right">25</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">30</td>
-</tr>
-</tbody>
-</table>
-
-
-<!-- rnb-html-end -->
-
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibmNvbCI6OCwibnJvdyI6Mzl9LCJyZGYiOiJINHNJQUFBQUFBQUFBNjFYYlc4YVJ4QStBellIYVNLaytrTlY1UU9xcXJpcWJOcTZpZm9pSlRFK1lwdUlBd1NIYXo1WjYyTU5LeSs3YU8rSWszN3FUKzR2U0x1MmR3WVlmSFVxQmVsNDVtVm41dG5aUGUxZXIzRzJYejRyZTU2WDgvSUYrNSszWWlGbi96YThnbGU2d2ZlZWwvL1NDcjU5S3ZiWmNZN2M0Y0JKaGVDazAvM01jajdvOUp5NEZRemF3MzRUSE1kUis3L0Y5aENKZFh0Tk5IZjdhTzROb21PWVJST3MrUkFINUR1THNkMW1GR0dLQVhBcXZBbDdRekNmZERBd0dyUmd4Q0JzMXFISUFGSVVUZzlibU80MGdMamNIeUhPdTMrMEVERlpQNnEzNzVIemc2Q3hFTU9GaUR3SFFUOUFGaDI2aENFeWJMOWRsN3IxL3l1MWgrdFNBK3VId0RWM2VsL0VQWFVYTmx6SFhBZzdJZGM1V1k5WWpEdEdXM1FHVWd0dFI2MTFMMjZoSlg0TEtmak1rdDNmcTZ0UjdNOHZMN1c4d20zUHBpT3VuRlkrbG5vZTh5VGx4bGsyRCtmeFZRS3h3V1RaNXplNFpOZk1jSWdPdFVySGVzck5CMmY1b2pzUmtvMjRuRTBFZzZoSVQyZFhRa0ZTdnlmaXlWU3JrZE8zR3lKSmpZalRhdWV5R21zNW4xNWc3SHFGVXQxSW9jYXBoaW40Ylg1ZEhXcURFd3k1aVpIeVZzQlZpb1EzM3lRSmY0OER0VElhWEZ0Tk5aNndLU1E5TWt4ZDJVSllWVW8rbm5BRk5NcVJtTTE0ek5RaXdkRmNMbGh0blRCakJQYXhZeVJuMklGeUtOaFU3RFZzbzJCNFpOZzdITzQzckRKS01GbnhoQ3ZiSUEzaGI5bVVKOVZBcE1CbXEyUHBqaUhabzVaT3FuV3JTdzRaUzMybXFpRkxPZVI0WkEwcHF3YVNHZWgxWWFpbFhta2lyRkNwSjk1eGt3aWtXM2JSWnY0bkJMZVk0aGFmM095OGcxM3Y5bmV3Ny9CWGg3OFIvWVhEWHh3K0kvclBEcjkxdUV2c29QL284SGVIMzVCNlVPYzVxUS80SFlrRHJEaXNPZnlKMUFPZUVGOGxPdVVOZVdHZWtNL3g5S0IvWHprN29PL1FJMGo5M3hNLzJHc1o0eXVyOXRkL3IvSkhIY1k5SlRyVWdmbEIvbjJpUTcyTS9tSWRmMVhQUXFoTDdSNzB6NzkvSFBLbFNQdnJyeUxHYnhOL0pTUCtBYVR6emZKbnpYZU5GL1FaK0ZVZHd2NTdnT2RhLzJnK09nOWFIK3dWb3RQMXorSzVUZkk5SlhyV2VwSjFXdHYvOEw0L0krUG9mTUFQN3dud2duMEtmWVQzZFpmWVhWNFArdmZTMlY4N2ZFWDBMUHVyREh0V3ZvZndKZEZwL01FbjF2L1V1cFJ2RmcrcU95VGZDSnZxNXB6ejdxNHpQcDVrSXVXMVdPTlp0TmxQN2JtR3g3MmVLendXaSszejY0bEFwMVV2Skl1dkZpcExCTU9yVVB0OElwSVpVeUtHWk8zejVDWjZsVlhKNk9zYU1IdHNuOXhmZDl4M0tQMVlzZ1RvZzdFOFlpbXJYUm9iYjdXUEpLU29aNm5ROXA3ZzVXNitqY3J1MlhEUGNxSU5zK1QwaUxNZ3B1TWZpTzNybVdSSzhkR2V2VXRvS2FmMlhyUjM4V0hQc0ppVFRGbnlZeWZ2TE1uKzNReHkvN2hxWldEQTR3bGVKcmdhQzRYcnhZM1JlS084Rk9QYWpLVVRjRXAyd1NWMHcvWTRZWGl0S2RxYnA3SlhQNmMrc2V0d3V3eTFtUkVxaGY1YWExSkxkY29nUzlsZUtjRnkyM0h2NDcvdmRTL2RudzRBQUE9PSJ9 -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Site.code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["State"],"name":[2],"type":["chr"],"align":["left"]},{"label":["County"],"name":[3],"type":["chr"],"align":["left"]},{"label":["N_white"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["N_black"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["N_asian"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["N_hispanic"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["N_site"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"BU","2":"MA","3":"Suffolk","4":"14","5":"6","6":"3","7":"6","8":"29"},{"1":"CHOP","2":"NJ","3":"Camden","4":"18","5":"6","6":"2","7":"5","8":"31"},{"1":"CHOP","2":"NJ","3":"Gloucester","4":"24","5":"3","6":"1","7":"2","8":"30"},{"1":"CHOP","2":"PA","3":"Bucks","4":"25","5":"2","6":"2","7":"2","8":"31"},{"1":"CHOP","2":"PA","3":"Chester","4":"24","5":"2","6":"2","7":"3","8":"31"},{"1":"CHOP","2":"PA","3":"Delaware","4":"21","5":"6","6":"2","7":"1","8":"30"},{"1":"CHOP","2":"PA","3":"Montgomery","4":"23","5":"3","6":"3","7":"2","8":"31"},{"1":"CHOP","2":"PA","3":"Philadelphia","4":"11","5":"13","6":"2","7":"4","8":"30"},{"1":"COR","2":"NY","3":"Tompkins","4":"23","5":"2","6":"3","7":"2","8":"30"},{"1":"CUNYSI","2":"NY","3":"Richmond","4":"19","5":"3","6":"3","7":"6","8":"31"},{"1":"GTN","2":"DC","3":"District Of columbia","4":"10","5":"15","6":"1","7":"3","8":"29"},{"1":"GTN","2":"MD","3":"Montgomery","4":"14","5":"6","6":"5","7":"6","8":"31"},{"1":"GTN","2":"VA","3":"Arlington","4":"19","5":"3","6":"3","7":"5","8":"30"},{"1":"NYU","2":"NY","3":"New York","4":"14","5":"4","6":"4","7":"8","8":"30"},{"1":"PRIN","2":"NJ","3":"Mercer","4":"16","5":"6","6":"3","7":"5","8":"30"},{"1":"PSU","2":"PA","3":"Centre","4":"26","5":"1","6":"2","7":"1","8":"30"},{"1":"RUTG","2":"NJ","3":"Essex","4":"9","5":"12","6":"2","7":"7","8":"30"},{"1":"IU","2":"IN","3":"Monroe","4":"25","5":"1","6":"2","7":"1","8":"29"},{"1":"MSU","2":"MI","3":"Ingham","4":"21","5":"4","6":"2","7":"3","8":"30"},{"1":"OSU","2":"OH","3":"Franklin","4":"20","5":"7","6":"2","7":"2","8":"31"},{"1":"PITT","2":"PA","3":"Allegheny","4":"24","5":"4","6":"1","7":"1","8":"30"},{"1":"PUR","2":"IN","3":"Tippecanoe","4":"24","5":"2","6":"3","7":"3","8":"32"},{"1":"EMRY","2":"GA","3":"Fulton","4":"12","5":"14","6":"2","7":"3","8":"31"},{"1":"HOU","2":"TX","3":"Harris","4":"9","5":"6","6":"2","7":"13","8":"30"},{"1":"TUL","2":"LA","3":"Orleans","4":"9","5":"18","6":"1","7":"2","8":"30"},{"1":"UMIA","2":"FL","3":"Miami-Dade","4":"4","5":"6","6":"1","7":"20","8":"31"},{"1":"UT","2":"TX","3":"Travis","4":"15","5":"3","6":"2","7":"11","8":"31"},{"1":"VBLT","2":"TN","3":"Davidson","4":"17","5":"9","6":"1","7":"3","8":"30"},{"1":"VCU","2":"VA","3":"Henrico","4":"16","5":"9","6":"3","7":"2","8":"30"},{"1":"WM","2":"VA","3":"James City","4":"23","5":"4","6":"1","7":"2","8":"30"},{"1":"CSF","2":"CA","3":"Orange","4":"12","5":"1","6":"6","7":"11","8":"30"},{"1":"CSL","2":"CA","3":"Los Angeles","4":"8","5":"3","6":"5","7":"15","8":"31"},{"1":"STAN","2":"CA","3":"San Mateo","4":"12","5":"1","6":"8","7":"8","8":"29"},{"1":"STAN","2":"CA","3":"Santa Clara","4":"10","5":"1","6":"10","7":"9","8":"30"},{"1":"UCD","2":"CA","3":"Yolo","4":"14","5":"1","6":"4","7":"10","8":"29"},{"1":"UCM","2":"CA","3":"Merced","4":"9","5":"1","6":"3","7":"17","8":"30"},{"1":"UCR","2":"CA","3":"Riverside","4":"11","5":"2","6":"2","7":"14","8":"29"},{"1":"UCSC","2":"CA","3":"Santa Cruz","4":"17","5":"1","6":"2","7":"10","8":"30"},{"1":"UO","2":"OR","3":"Lane","4":"25","5":"1","6":"1","7":"3","8":"30"}],"options":{"columns":{"min":{},"max":[10],"total":[8]},"rows":{"min":[10],"max":[10],"total":[39]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -975,7 +771,7 @@ loaded via a namespace (and not attached):
 <!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUExBWSBQbGFubmVkIEVucm9sbG1lbnQiCmF1dGhvcjogIlJpY2sgTy4gR2lsbW9yZSIKZGF0ZTogImByIFN5cy50aW1lKClgIgpvdXRwdXQ6IAogIGdpdGh1Yl9kb2N1bWVudDogZGVmYXVsdAogIGh0bWxfbm90ZWJvb2s6IGRlZmF1bHQKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFLCAKICAgICAgICAgICAgICAgICAgICAgIHdhcm5pbmcgPSBGQUxTRSwgCiAgICAgICAgICAgICAgICAgICAgICBlcnJvciA9IEZBTFNFLAogICAgICAgICAgICAgICAgICAgICAgbWVzc2FnZSA9IEZBTFNFLAogICAgICAgICAgICAgICAgICAgICAgZmlnLnBhdGggPSAiaW1nLyIpCgojIEluc3RhbGwgcGFja21hbiBmb3Igc3Vic2VxdWVudCBwYWNrYWdlIG1hbmFnZW1lbnQKaWYgKCEoInBhY21hbiIgJWluJSBpbnN0YWxsZWQucGFja2FnZXMoKVssXSkpIHsKICAgIGluc3RhbGwucGFja2FnZXMoInBhY21hbiIpCn0KCiMgTG9hZCBwYWNrYWdlcwpwYWNtYW46OnBfbG9hZChnZ3Bsb3QyLCBkcGx5ciwgc3RyaW5nciwgY2hvcm9wbGV0aHIsIGNob3JvcGxldGhyTWFwcykKCiMgUGF0aHMKY3N2LmRpciA8LSAiYW5hbHlzaXMvY3N2LyIKCiMgSGVscGVyIGZ1bmN0aW9ucwpzb3VyY2UoImFuYWx5c2lzL1IvQ2FwLmFsbC5SIikKYGBgCgojIyBCYWNrZ3JvdW5kL1JhdGlvbmFsZQoKVGhpcyBub3RlYm9vayBkZXNjcmliZXMgdGhlIHByb2plY3RlZCBlbnJvbGxtZW50IGFjcm9zcyB0aGUgJG4kPTMwIGRhdGEgY29sbGVjdGlvbiBzaXRlcyBiYXNlZCB1cG9uIENlbnN1cyBkYXRhIGFib3V0IHRoZSByYWNlIGFuZCBldGhuaWNpdHkgY29tcG9zaXRpb24gb2YgdGhlIHN1cnJvdW5kaW5nIGNvdW50aWVzLgoKIyMgR2VuZXJhdGUgZGF0YSBmaWxlcwoKTG9hZCBjb3VudHkgbmFtZXMsIGFuZCBhZGQgY291bnR5IEZJUFMgZnJvbSBgY2hvcm9wbGV0aHJgIHBhY2thZ2UncyBgY291bnR5LnJlZ2lvbnNgIGRhdGFzZXQuIFdpdGggdGhpcywgSSBjYW4gZXh0cmFjdCBkZW1vZ3JhcGhpYyBkYXRhIHVzaW5nIHRoZSBgZ2V0X2NvdW50eV9kZW1vZ3JhcGhpY3MoKWAgZnVuY3Rpb24uCgpOb3RlLCB0aGF0IHRvIGFjY2VzcyBDZW5zdXMgQVBJLCBvbmUgbXVzdCBmaXJzdCBhY3F1aXJlIGFuIEFQSSBrZXkgZnJvbSA8aHR0cDovL3d3dy5jZW5zdXMuZ292L2RldmVsb3BlcnMvPi4gVGhlbiwgb25lIG11c3QgcnVuIGBhcGkua2V5Lmluc3RhbGwoKWAgdG8gYXZvaWQgdGhyb3dpbmcgdGhlIEFQSSBlcnJvcjsgYWx0ZXJuYXRpdmVseSBnaXZlIHRoZSBhcGkga2V5IHZhbHVlIGFzIGBrZXkgPSA8YXBpLmtleT5gLgoKYGBge3IgZ2VuZXJhdGUtZGF0YS1maWxlc30KY291bnRpZXMgPC0gcmVhZC5jc3YocGFzdGUwKGNzdi5kaXIsICJjaXR5LXN0YXRlLWNvdW50eS5jc3YiKSwgc3RyaW5nc0FzRmFjdG9ycyA9IEZBTFNFKQoKIyBjb252ZXJ0IGNvdW50aWVzIHNvIGNhbiBwdWxsIEZJUFMgY29kZXMKY291bnRpZXMkQ291bnR5IDwtIHRvbG93ZXIoY291bnRpZXMkQ291bnR5KQoKIyBMb2FkIGNvdW50eSBkYXRhIGZyb20gY2hvcm9wbGV0aHIKIyBDb3VsZCBhbHNvIHVzZSBhY3MgcGFja2FnZSB0byBnZXQgdXBkYXRlZCBpbmZvLgpkYXRhKCJjb3VudHkucmVnaW9ucyIpCgpjb3VudGllcyA8LSBsZWZ0X2pvaW4oY291bnRpZXMsIGNvdW50eS5yZWdpb25zLAogICAgICAgICAgICAgICAgICAgICAgICAgYnkgPSBjKCJDb3VudHkiID0gImNvdW50eS5uYW1lIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiU3RhdGUiID0gInN0YXRlLmFiYiIpKQoKZGVtbyA8LSBnZXRfY291bnR5X2RlbW9ncmFwaGljcyhlbmR5ZWFyPTIwMTMsIHNwYW49NSkKCmNvdW50eS5kZW1vIDwtIGxlZnRfam9pbihjb3VudGllcywgZGVtbykKI3N0cihjb3VudHkuZGVtbykKCiMgUmVjYXBpdGFsaXplIGNvdW50eQpjb3VudHkuZGVtbyRDb3VudHkgPC0gdW5saXN0KGxhcHBseShjb3VudHkuZGVtbyRDb3VudHksIENhcC5hbGwpKQpgYGAKCiMjIFRhYnVsYXIgc3VtbWFyeQoKU2VsZWN0IHRoZSAkbiQ9MzAgZnJvbSBhbW9uZyB0aGUgMzUgcHJvc3BlY3RzLiBUaGVuIHByb2R1Y2UgYSB0YWJsdWxhciBzdW1tYXJ5LgoKYGBge3IgdGFidWxhci1zdW1tYXJ5fQojIFNlbGVjdCBjb2xsZWN0aW5nIHNpdGVzIG9ubHkKY291bnR5LmRlbW8gJT4lCiAgZmlsdGVyKENvbGxlY3RpbmcgPT0gIkNvbGxlY3RpbmciKSAtPgogIGNvdW50eS5kZW1vCgpjb3VudHkuZGVtbyAlPiUKICBhcnJhbmdlKFVTLlJlZ2lvbiwgU2l0ZS5jb2RlLCBTdGF0ZSwgQ291bnR5KSAlPiUKICBzZWxlY3QoVVMuUmVnaW9uLCBTaXRlLmNvZGUsIFN0YXRlLCBDb3VudHksIHRvdGFsX3BvcHVsYXRpb24sIHBlcmNlbnRfd2hpdGUsCiAgICAgICAgIHBlcmNlbnRfYmxhY2ssIHBlcmNlbnRfYXNpYW4sIHBlcmNlbnRfaGlzcGFuaWMpICU+JQogIGtuaXRyOjprYWJsZSgpCmBgYAoKIyMgQ2FsY3VsYXRpbmcgcGxhbm5lZCBlbnJvbGxtZW50IGJ5IHNpdGUKCldlIGNhbGN1bGF0ZSBleHBlY3RlZCBwcm9wb3J0aW9ucyBvZiBwYXJ0aWNpcGFudHMgYmFzZWQgb24gY291bnR5LWxldmVsIHJhY2UgcGVyY2VudGFnZXMsIGFzc3VtaW5nIGFuICRuJD0zMC4gVGFrZSB0aGUgZmxvb3Igb2YgYE5fd2hpdGVgIGFuZCB0aGUgY2VpbGluZyBvZiBvdGhlcnMgc2luY2Ugd2UgaG9wZSB0byBpbmNyZWFzZSBzYW1wbGUgZGl2ZXJzaXR5LgoKYGBge3IgcGxhbm5lZC1lbnJvbGxtZW50LWJ5LXJhY2V9CmNvdW50eS5kZW1vICU+JQogIGFycmFuZ2UoVVMuUmVnaW9uLCBTaXRlLmNvZGUsIFN0YXRlLCBDb3VudHkpICU+JQogIHNlbGVjdChVUy5SZWdpb24sIFNpdGUuY29kZSwgU3RhdGUsIENvdW50eSwgdG90YWxfcG9wdWxhdGlvbiwKICAgICAgICAgcGVyY2VudF93aGl0ZSwgcGVyY2VudF9ibGFjaywgcGVyY2VudF9hc2lhbiwKICAgICAgICAgcGVyY2VudF9oaXNwYW5pYykgLT4gCiAgY291bnR5LnJhY2UuZXRobmljaXR5Cgpjb3VudHkucmFjZS5ldGhuaWNpdHkgJT4lCiAgbXV0YXRlKE5fd2hpdGUgPSBmbG9vcihwZXJjZW50X3doaXRlKjMwLzEwMCksCiAgICAgICAgIE5fYmxhY2sgPSBjZWlsaW5nKHBlcmNlbnRfYmxhY2sqMzAvMTAwKSwKICAgICAgICAgTl9hc2lhbiA9IGNlaWxpbmcocGVyY2VudF9hc2lhbiozMC8xMDApLAogICAgICAgICBOX2hpc3BhbmljID0gY2VpbGluZyhwZXJjZW50X2hpc3BhbmljKjMwLzEwMCkpICU+JQogIHNlbGVjdChTaXRlLmNvZGUsIFN0YXRlLCBDb3VudHksIE5fd2hpdGUsIE5fYmxhY2ssIE5fYXNpYW4sIE5faGlzcGFuaWMpICU+JQogIG11dGF0ZShOX3NpdGUgPSBOX3doaXRlICsgTl9ibGFjayArIE5fYXNpYW4gKyBOX2hpc3BhbmljKSAtPgogIGNvdW50eS5wbGFubmVkLmVucm9sbG1lbnQKCmNvdW50eS5wbGFubmVkLmVucm9sbG1lbnQgJT4lCiAga25pdHI6OmthYmxlKCkKYGBgCgpgYGB7ciBwbGFubmVkLWVucm9sbG1lbnQtYWNyb3NzLXNhbXBsZX0KY291bnR5LnBsYW5uZWQuZW5yb2xsbWVudCAlPiUKICBzdW1tYXJpemUoVG90X3doaXRlID0gc3VtKE5fd2hpdGUpLAogICAgICAgICAgICBUb3RfYmxhY2sgPSBzdW0oTl9ibGFjayksCiAgICAgICAgICAgIFRvdF9hc2lhbiA9IHN1bShOX2FzaWFuKSwKICAgICAgICAgICAgVG90X2hpc3BhbmljID0gc3VtKE5faGlzcGFuaWMpKSAlPiUKICBtdXRhdGUoVG90X3NhbXBsZSA9IFRvdF93aGl0ZSArIFRvdF9ibGFjayArIFRvdF9hc2lhbiArIFRvdF9oaXNwYW5pYywKICAgICAgICAgUGN0X3doaXRlID0gVG90X3doaXRlL1RvdF9zYW1wbGUsCiAgICAgICAgIFBjdF9ibGFjayA9IFRvdF9ibGFjay9Ub3Rfc2FtcGxlLAogICAgICAgICBQY3RfYXNpYW4gPSBUb3RfYXNpYW4vVG90X3NhbXBsZSwKICAgICAgICAgUGN0X2hpc3BhbmljID0gVG90X2hpc3BhbmljL1RvdF9zYW1wbGUpICU+JQogIHNlbGVjdChQY3Rfd2hpdGUsIFBjdF9ibGFjaywgUGN0X2FzaWFuLCBQY3RfaGlzcGFuaWMpICU+JQogIGtuaXRyOjprYWJsZSgpCmBgYAoKIyMgUmVzb3VyY2VzCgpUaGlzIGRvY3VtZW50IHdhcyBwcmVwYXJlZCBpbiBSU3R1ZGlvIDEuMC4xNDMuIFNlc3Npb24gaW5mb3JtYXRpb24gZm9sbG93cy4KCmBgYHtyIHNlc3Npb24taW5mb30Kc2Vzc2lvbkluZm8oKQpgYGAK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUExBWSBQbGFubmVkIEVucm9sbG1lbnQiCmF1dGhvcjogIlJpY2sgTy4gR2lsbW9yZSIKZGF0ZTogImByIFN5cy50aW1lKClgIgpvdXRwdXQ6IAogIGdpdGh1Yl9kb2N1bWVudDogZGVmYXVsdAogIGh0bWxfbm90ZWJvb2s6IGRlZmF1bHQKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFLCAKICAgICAgICAgICAgICAgICAgICAgIHdhcm5pbmcgPSBGQUxTRSwgCiAgICAgICAgICAgICAgICAgICAgICBlcnJvciA9IEZBTFNFLAogICAgICAgICAgICAgICAgICAgICAgbWVzc2FnZSA9IEZBTFNFLAogICAgICAgICAgICAgICAgICAgICAgZmlnLnBhdGggPSAiaW1nLyIpCgojIEluc3RhbGwgcGFja21hbiBmb3Igc3Vic2VxdWVudCBwYWNrYWdlIG1hbmFnZW1lbnQKaWYgKCEoInBhY21hbiIgJWluJSBpbnN0YWxsZWQucGFja2FnZXMoKVssXSkpIHsKICAgIGluc3RhbGwucGFja2FnZXMoInBhY21hbiIpCn0KCiMgTG9hZCBwYWNrYWdlcwpwYWNtYW46OnBfbG9hZChnZ3Bsb3QyLCBkcGx5ciwgc3RyaW5nciwgY2hvcm9wbGV0aHIsIGNob3JvcGxldGhyTWFwcykKCiMgUGF0aHMKY3N2LmRpciA8LSAiYW5hbHlzaXMvY3N2LyIKCiMgSGVscGVyIGZ1bmN0aW9ucwpzb3VyY2UoImFuYWx5c2lzL1IvQ2FwLmFsbC5SIikKYGBgCgojIyBCYWNrZ3JvdW5kL1JhdGlvbmFsZQoKVGhpcyBub3RlYm9vayBkZXNjcmliZXMgdGhlIHByb2plY3RlZCBlbnJvbGxtZW50IGFjcm9zcyB0aGUgJG4kPTMwIGRhdGEgY29sbGVjdGlvbiBzaXRlcyBiYXNlZCB1cG9uIENlbnN1cyBkYXRhIGFib3V0IHRoZSByYWNlIGFuZCBldGhuaWNpdHkgY29tcG9zaXRpb24gb2YgdGhlIHN1cnJvdW5kaW5nIGNvdW50aWVzLgoKIyMgR2VuZXJhdGUgZGF0YSBmaWxlcwoKTG9hZCBjb3VudHkgbmFtZXMsIGFuZCBhZGQgY291bnR5IEZJUFMgZnJvbSBgY2hvcm9wbGV0aHJgIHBhY2thZ2UncyBgY291bnR5LnJlZ2lvbnNgIGRhdGFzZXQuIFdpdGggdGhpcywgSSBjYW4gZXh0cmFjdCBkZW1vZ3JhcGhpYyBkYXRhIHVzaW5nIHRoZSBgZ2V0X2NvdW50eV9kZW1vZ3JhcGhpY3MoKWAgZnVuY3Rpb24uCgpOb3RlLCB0aGF0IHRvIGFjY2VzcyBDZW5zdXMgQVBJLCBvbmUgbXVzdCBmaXJzdCBhY3F1aXJlIGFuIEFQSSBrZXkgZnJvbSA8aHR0cDovL3d3dy5jZW5zdXMuZ292L2RldmVsb3BlcnMvPi4gVGhlbiwgb25lIG11c3QgcnVuIGBhcGkua2V5Lmluc3RhbGwoKWAgdG8gYXZvaWQgdGhyb3dpbmcgdGhlIEFQSSBlcnJvcjsgYWx0ZXJuYXRpdmVseSBnaXZlIHRoZSBhcGkga2V5IHZhbHVlIGFzIGBrZXkgPSA8YXBpLmtleT5gLgoKYGBge3IgZ2VuZXJhdGUtZGF0YS1maWxlc30KY291bnRpZXMgPC0gcmVhZC5jc3YocGFzdGUwKGNzdi5kaXIsICJjaXR5LXN0YXRlLWNvdW50eS5jc3YiKSwgc3RyaW5nc0FzRmFjdG9ycyA9IEZBTFNFKQoKIyBjb252ZXJ0IGNvdW50aWVzIHNvIGNhbiBwdWxsIEZJUFMgY29kZXMKI2NvdW50aWVzJENvdW50eSA8LSB0b2xvd2VyKGNvdW50aWVzJENvdW50eSkKCiMgTG9hZCBjb3VudHkgZGF0YSBmcm9tIGNob3JvcGxldGhyCiMgQ291bGQgYWxzbyB1c2UgYWNzIHBhY2thZ2UgdG8gZ2V0IHVwZGF0ZWQgaW5mby4KZGF0YSgiY291bnR5LnJlZ2lvbnMiKQoKY291bnRpZXMgPC0gbGVmdF9qb2luKGNvdW50aWVzLCBjb3VudHkucmVnaW9ucykKCmRlbW8gPC0gZ2V0X2NvdW50eV9kZW1vZ3JhcGhpY3MoZW5keWVhcj0yMDEzLCBzcGFuPTUpCgpjb3VudHkuZGVtbyA8LSBsZWZ0X2pvaW4oY291bnRpZXMsIGRlbW8pCgojIFJlY2FwaXRhbGl6ZSBjb3VudHkKY291bnR5LmRlbW8kQ291bnR5IDwtIHVubGlzdChsYXBwbHkoY291bnR5LmRlbW8kQ291bnR5LCBDYXAuYWxsKSkKYGBgCgojIyBUYWJ1bGFyIHN1bW1hcnkKClNlbGVjdCB0aGUgJG4kPTMwIGZyb20gYW1vbmcgdGhlIDM1IHByb3NwZWN0cy4gVGhlbiBwcm9kdWNlIGEgdGFibHVsYXIgc3VtbWFyeS4KCmBgYHtyIHRhYnVsYXItc3VtbWFyeX0KIyBTZWxlY3QgY29sbGVjdGluZyBzaXRlcyBvbmx5CmNvdW50eS5kZW1vICU+JQogIGZpbHRlcihDb2xsZWN0aW5nID09ICJDb2xsZWN0aW5nIikgLT4KICBjb3VudHkuZGVtbwoKY291bnR5LmRlbW8gJT4lCiAgYXJyYW5nZShVUy5SZWdpb24sIFNpdGUuY29kZSwgU3RhdGUsIENvdW50eSkgJT4lCiAgc2VsZWN0KFVTLlJlZ2lvbiwgU2l0ZS5jb2RlLCBTdGF0ZSwgQ291bnR5LCB0b3RhbF9wb3B1bGF0aW9uLCBwZXJjZW50X3doaXRlLAogICAgICAgICBwZXJjZW50X2JsYWNrLCBwZXJjZW50X2FzaWFuLCBwZXJjZW50X2hpc3BhbmljKSAlPiUKICBrbml0cjo6a2FibGUoKQpgYGAKCiMjIENhbGN1bGF0aW5nIHBsYW5uZWQgZW5yb2xsbWVudCBieSBzaXRlCgpXZSBjYWxjdWxhdGUgZXhwZWN0ZWQgcHJvcG9ydGlvbnMgb2YgcGFydGljaXBhbnRzIGJhc2VkIG9uIGNvdW50eS1sZXZlbCByYWNlIHBlcmNlbnRhZ2VzLCBhc3N1bWluZyBhbiAkbiQ9MzAuIFRha2UgdGhlIGZsb29yIG9mIGBOX3doaXRlYCBhbmQgdGhlIGNlaWxpbmcgb2Ygb3RoZXJzIHNpbmNlIHdlIGhvcGUgdG8gaW5jcmVhc2Ugc2FtcGxlIGRpdmVyc2l0eS4KCmBgYHtyIHBsYW5uZWQtZW5yb2xsbWVudC1ieS1yYWNlfQpjb3VudHkuZGVtbyAlPiUKICBhcnJhbmdlKFVTLlJlZ2lvbiwgU2l0ZS5jb2RlLCBTdGF0ZSwgQ291bnR5KSAlPiUKICBzZWxlY3QoVVMuUmVnaW9uLCBTaXRlLmNvZGUsIFN0YXRlLCBDb3VudHksIHRvdGFsX3BvcHVsYXRpb24sCiAgICAgICAgIHBlcmNlbnRfd2hpdGUsIHBlcmNlbnRfYmxhY2ssIHBlcmNlbnRfYXNpYW4sCiAgICAgICAgIHBlcmNlbnRfaGlzcGFuaWMpIC0+IAogIGNvdW50eS5yYWNlLmV0aG5pY2l0eQoKY291bnR5LnJhY2UuZXRobmljaXR5ICU+JQogIG11dGF0ZShOX3doaXRlID0gZmxvb3IocGVyY2VudF93aGl0ZSozMC8xMDApLAogICAgICAgICBOX2JsYWNrID0gY2VpbGluZyhwZXJjZW50X2JsYWNrKjMwLzEwMCksCiAgICAgICAgIE5fYXNpYW4gPSBjZWlsaW5nKHBlcmNlbnRfYXNpYW4qMzAvMTAwKSwKICAgICAgICAgTl9oaXNwYW5pYyA9IGNlaWxpbmcocGVyY2VudF9oaXNwYW5pYyozMC8xMDApKSAlPiUKICBzZWxlY3QoU2l0ZS5jb2RlLCBTdGF0ZSwgQ291bnR5LCBOX3doaXRlLCBOX2JsYWNrLCBOX2FzaWFuLCBOX2hpc3BhbmljKSAlPiUKICBtdXRhdGUoTl9zaXRlID0gTl93aGl0ZSArIE5fYmxhY2sgKyBOX2FzaWFuICsgTl9oaXNwYW5pYykgLT4KICBjb3VudHkucGxhbm5lZC5lbnJvbGxtZW50CiAgCmNvdW50eS5wbGFubmVkLmVucm9sbG1lbnQgJT4lCiAga25pdHI6OmthYmxlKCkKYGBgCgpgYGB7ciBwbGFubmVkLWVucm9sbG1lbnQtYWNyb3NzLXNhbXBsZX0KY291bnR5LnBsYW5uZWQuZW5yb2xsbWVudCAlPiUKICBzdW1tYXJpemUoVG90X3doaXRlID0gc3VtKE5fd2hpdGUpLAogICAgICAgICAgICBUb3RfYmxhY2sgPSBzdW0oTl9ibGFjayksCiAgICAgICAgICAgIFRvdF9hc2lhbiA9IHN1bShOX2FzaWFuKSwKICAgICAgICAgICAgVG90X2hpc3BhbmljID0gc3VtKE5faGlzcGFuaWMpKSAlPiUKICBtdXRhdGUoVG90X3NhbXBsZSA9IFRvdF93aGl0ZSArIFRvdF9ibGFjayArIFRvdF9hc2lhbiArIFRvdF9oaXNwYW5pYywKICAgICAgICAgUGN0X3doaXRlID0gVG90X3doaXRlL1RvdF9zYW1wbGUsCiAgICAgICAgIFBjdF9ibGFjayA9IFRvdF9ibGFjay9Ub3Rfc2FtcGxlLAogICAgICAgICBQY3RfYXNpYW4gPSBUb3RfYXNpYW4vVG90X3NhbXBsZSwKICAgICAgICAgUGN0X2hpc3BhbmljID0gVG90X2hpc3BhbmljL1RvdF9zYW1wbGUpICU+JQogIHNlbGVjdChQY3Rfd2hpdGUsIFBjdF9ibGFjaywgUGN0X2FzaWFuLCBQY3RfaGlzcGFuaWMpICU+JQogIGtuaXRyOjprYWJsZSgpCmBgYAoKIyMgUmVzb3VyY2VzCgpUaGlzIGRvY3VtZW50IHdhcyBwcmVwYXJlZCBpbiBSU3R1ZGlvIDEuMC4xNDMuIFNlc3Npb24gaW5mb3JtYXRpb24gZm9sbG93cy4KCmBgYHtyIHNlc3Npb24taW5mb30Kc2Vzc2lvbkluZm8oKQpgYGAK</div>
 
 
 

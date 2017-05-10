@@ -1,7 +1,7 @@
 PLAY Planned Enrollment
 ================
 Rick O. Gilmore
-2017-05-10 09:33:13
+2017-05-10 15:54:37
 
 Background/Rationale
 --------------------
@@ -19,20 +19,17 @@ Note, that to access Census API, one must first acquire an API key from <http://
 counties <- read.csv(paste0(csv.dir, "city-state-county.csv"), stringsAsFactors = FALSE)
 
 # convert counties so can pull FIPS codes
-counties$County <- tolower(counties$County)
+#counties$County <- tolower(counties$County)
 
 # Load county data from choroplethr
 # Could also use acs package to get updated info.
 data("county.regions")
 
-counties <- left_join(counties, county.regions,
-                         by = c("County" = "county.name",
-                                "State" = "state.abb"))
+counties <- left_join(counties, county.regions)
 
 demo <- get_county_demographics(endyear=2013, span=5)
 
 county.demo <- left_join(counties, demo)
-#str(county.demo)
 
 # Recapitalize county
 county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
@@ -75,6 +72,8 @@ county.demo %>%
 | East      | PRIN      | NJ    | Mercer               |             368094|              54|              19|               9|                 16|
 | East      | PSU       | PA    | Centre               |             154460|              88|               3|               5|                  3|
 | East      | RUTG      | NJ    | Essex                |             785853|              33|              39|               5|                 21|
+| East      | VCU       | VA    | Chesterfield         |             320430|              65|              22|               3|                  7|
+| East      | VCU       | VA    | Richmond             |             207878|              39|              49|               2|                  6|
 | Midwest   | IU        | IN    | Monroe               |             139634|              86|               3|               6|                  3|
 | Midwest   | MSU       | MI    | Ingham               |             281531|              72|              11|               5|                  7|
 | Midwest   | OSU       | OH    | Franklin             |            1181824|              67|              21|               4|                  5|
@@ -119,7 +118,7 @@ county.race.ethnicity %>%
   select(Site.code, State, County, N_white, N_black, N_asian, N_hispanic) %>%
   mutate(N_site = N_white + N_black + N_asian + N_hispanic) ->
   county.planned.enrollment
-
+  
 county.planned.enrollment %>%
   knitr::kable()
 ```
@@ -143,6 +142,8 @@ county.planned.enrollment %>%
 | PRIN      | NJ    | Mercer               |        16|         6|         3|            5|       30|
 | PSU       | PA    | Centre               |        26|         1|         2|            1|       30|
 | RUTG      | NJ    | Essex                |         9|        12|         2|            7|       30|
+| VCU       | VA    | Chesterfield         |        19|         7|         1|            3|       30|
+| VCU       | VA    | Richmond             |        11|        15|         1|            2|       29|
 | IU        | IN    | Monroe               |        25|         1|         2|            1|       29|
 | MSU       | MI    | Ingham               |        21|         4|         2|            3|       30|
 | OSU       | OH    | Franklin             |        20|         7|         2|            2|       31|
@@ -183,7 +184,7 @@ county.planned.enrollment %>%
 
 |  Pct\_white|  Pct\_black|  Pct\_asian|  Pct\_hispanic|
 |-----------:|-----------:|-----------:|--------------:|
-|   0.5497026|   0.1631266|   0.0909091|      0.1962617|
+|   0.5477346|   0.1731392|   0.0881877|      0.1909385|
 
 Resources
 ---------

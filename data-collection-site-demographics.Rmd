@@ -46,20 +46,17 @@ Load county names, and add county FIPS from `choroplethr` package's `county.regi
 counties <- read.csv(paste0(csv.dir, "city-state-county.csv"), stringsAsFactors = FALSE)
 
 # convert counties so can pull FIPS codes
-counties$County <- tolower(counties$County)
+#counties$County <- tolower(counties$County)
 
 # Load county data from choroplethr
 # Could also use acs package to get updated info.
 data("county.regions")
 
-counties <- left_join(counties, county.regions,
-                         by = c("County" = "county.name",
-                                "State" = "state.abb"))
+counties <- left_join(counties, county.regions)
 
 demo <- get_county_demographics(endyear=2013, span=5)
 
 county.demo <- left_join(counties, demo)
-#str(county.demo)
 
 # Recapitalize county
 county.demo$County <- unlist(lapply(county.demo$County, Cap.all))

@@ -1,1 +1,42 @@
-City,State,County,US.Region,Site.code,CollectingBrooklyn,NY,Kings,East,BKLN,PossibleCambridge,MA,Middlesex,East,HVD,PossibleLehigh,PA,Lehigh,East,LEH,PossibleProvidence,RI,Providence,East,BRN,Not collectingSeattle,WA,King,West,UW,PossibleAtlanta,GA,Fulton,South,EMRY,CollectingAustin,TX,Travis,South,UT,CollectingBloomington,IN,Monroe,Midwest,IU,CollectingBoston,MA,Suffolk,East,BU,CollectingColumbus,OH,Franklin,Midwest,OSU,CollectingDavis,CA,Yolo,West,UCD,CollectingEast Lansing,MI,Ingham,Midwest,MSU,CollectingEugene,OR,Lane,West,UO,CollectingFullerton,CA,Orange,West,CSF,CollectingHouston,TX,Harris,South,HOU,CollectingIthaca,NY,Tompkins,East,COR,CollectingLong Beach,CA,Los Angeles,West,CSL,CollectingMerced,CA,Merced,West,UCM,CollectingMiami,FL,Miami-Dade,South,UMIA,CollectingNashville,TN,Davidson,South,VBLT,CollectingNew Orleans,LA,Orleans,South,TUL,CollectingNew York,NY,New York,East,NYU,CollectingNewark,NJ,Essex,East,RUTG,CollectingPalo Alto,CA,Santa Clara,West,STAN,CollectingPhiladelphia,PA,Philadelphia,East,CHOP,CollectingPittsburgh,PA,Allegheny,Midwest,PITT,CollectingPrinceton,NJ,Mercer,East,PRIN,CollectingRichmond,VA,Henrico,South,VCU,CollectingRiverside,CA,Riverside,West,UCR,CollectingSanta Cruz,CA,Santa Cruz,West,UCSC,CollectingUniversity Park,PA,Centre,East,PSU,CollectingW. Lafayette,IN,Tippecanoe,Midwest,PUR,CollectingWashington,DC,District of Columbia,East,GTN,CollectingWilliamsburg,VA,James City,South,WM,CollectingPalo Alto,CA,San Mateo,West,STAN,CollectingArlington,VA,Arlington,East,GTN,CollectingBethesda,MD,Montgomery,East,GTN,CollectingStaten Island,NY,Richmond,East,CUNYSI,CollectingMedia,PA,Delaware,East,CHOP,CollectingNorristown,PA,Montgomery,East,CHOP,CollectingWest Chester,PA,Chester,East,CHOP,CollectingDoylestown,PA,Bucks,East,CHOP,CollectingCamden,NJ,Camden,East,CHOP,CollectingWoodbury,NJ,Gloucester,East,CHOP,Collecting
+City,State,County,US.Region,Site.code,Collecting,region
+Boston,MA,suffolk,East,BU,Collecting,"25025"
+Philadelphia,PA,philadelphia,East,CHOP,Collecting,"42101"
+Media,PA,delaware,East,CHOP,Collecting,"42045"
+Norristown,PA,montgomery,East,CHOP,Collecting,"42091"
+West Chester,PA,chester,East,CHOP,Collecting,"42029"
+Doylestown,PA,bucks,East,CHOP,Collecting,"42017"
+Camden,NJ,camden,East,CHOP,Collecting,"34007"
+Woodbury,NJ,gloucester,East,CHOP,Collecting,"34015"
+Ithaca,NY,tompkins,East,COR,Collecting,"36109"
+Fullerton,CA,orange,West,CSF,Collecting,"06059"
+Long Beach,CA,los angeles,West,CSL,Collecting,"06037"
+Staten Island,NY,richmond,East,CUNYSI,Collecting,"36085"
+Atlanta,GA,fulton,South,EMRY,Collecting,"13121"
+Washington,DC,district of columbia,East,GTN,Collecting,"11001"
+Arlington,VA,arlington,East,GTN,Collecting,"51013"
+Bethesda,MD,montgomery,East,GTN,Collecting,"24031"
+Houston,TX,harris,South,HOU,Collecting,"48201"
+Bloomington,IN,monroe,Midwest,IU,Collecting,"18105"
+East Lansing,MI,ingham,Midwest,MSU,Collecting,"26065"
+New York,NY,new york,East,NYU,Collecting,"36061"
+Columbus,OH,franklin,Midwest,OSU,Collecting,"39049"
+Pittsburgh,PA,allegheny,Midwest,PITT,Collecting,"42003"
+Princeton,NJ,mercer,East,PRIN,Collecting,"34021"
+University Park,PA,centre,East,PSU,Collecting,"42027"
+W. Lafayette,IN,tippecanoe,Midwest,PUR,Collecting,"18157"
+Newark,NJ,essex,East,RUTG,Collecting,"34013"
+Palo Alto,CA,santa clara,West,STAN,Collecting,"06085"
+Palo Alto,CA,san mateo,West,STAN,Collecting,"06081"
+New Orleans,LA,orleans,South,TUL,Collecting,"22071"
+Davis,CA,yolo,West,UCD,Collecting,"06113"
+Merced,CA,merced,West,UCM,Collecting,"06047"
+Riverside,CA,riverside,West,UCR,Collecting,"06065"
+Santa Cruz,CA,santa cruz,West,UCSC,Collecting,"06087"
+Miami,FL,miami-dade,South,UMIA,Collecting,"12086"
+Eugene,OR,lane,West,UO,Collecting,"41039"
+Austin,TX,travis,South,UT,Collecting,"48453"
+Nashville,TN,davidson,South,VBLT,Collecting,"47037"
+Richmond,VA,henrico,South,VCU,Collecting,"51087"
+Chesterfield,VA,chesterfield,East,VCU,Collecting,"51041"
+Richmond,VA,richmond,East,VCU,Collecting,"51760"
+Williamsburg,VA,james city,South,WM,Collecting,"51095"

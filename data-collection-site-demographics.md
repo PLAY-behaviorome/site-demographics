@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-05-10 09:15:14
+2017-05-10 15:56:38
 
 Background
 ----------
@@ -17,20 +17,17 @@ Load county names, and add county FIPS from `choroplethr` package's `county.regi
 counties <- read.csv(paste0(csv.dir, "city-state-county.csv"), stringsAsFactors = FALSE)
 
 # convert counties so can pull FIPS codes
-counties$County <- tolower(counties$County)
+#counties$County <- tolower(counties$County)
 
 # Load county data from choroplethr
 # Could also use acs package to get updated info.
 data("county.regions")
 
-counties <- left_join(counties, county.regions,
-                         by = c("County" = "county.name",
-                                "State" = "state.abb"))
+counties <- left_join(counties, county.regions)
 
 demo <- get_county_demographics(endyear=2013, span=5)
 
 county.demo <- left_join(counties, demo)
-#str(county.demo)
 
 # Recapitalize county
 county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
@@ -71,6 +68,8 @@ county.demo %>%
 | East      | University Park | PA    | Centre               |             154460|              88|               3|               5|                  3|
 | East      | West Chester    | PA    | Chester              |             503075|              82|               6|               4|                  7|
 | East      | Arlington       | VA    | Arlington            |             214861|              64|               8|               9|                 15|
+| East      | Chesterfield    | VA    | Chesterfield         |             320430|              65|              22|               3|                  7|
+| East      | Richmond        | VA    | Richmond             |             207878|              39|              49|               2|                  6|
 | Midwest   | Bloomington     | IN    | Monroe               |             139634|              86|               3|               6|                  3|
 | Midwest   | W. Lafayette    | IN    | Tippecanoe           |             175628|              80|               4|               7|                  8|
 | Midwest   | East Lansing    | MI    | Ingham               |             281531|              72|              11|               5|                  7|
@@ -231,6 +230,8 @@ county.demo %>%
 | East      | University Park | PA    | Centre               |             154460|                25545|           795|
 | East      | West Chester    | PA    | Chester              |             503075|                42210|          1004|
 | East      | Arlington       | VA    | Arlington            |             214861|                62018|          1659|
+| East      | Chesterfield    | VA    | Chesterfield         |             320430|                32572|           918|
+| East      | Richmond        | VA    | Richmond             |             207878|                27184|           719|
 | Midwest   | Bloomington     | IN    | Monroe               |             139634|                23032|           679|
 | Midwest   | W. Lafayette    | IN    | Tippecanoe           |             175628|                23691|           650|
 | Midwest   | East Lansing    | MI    | Ingham               |             281531|                24754|           664|

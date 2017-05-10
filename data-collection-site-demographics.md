@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-05-09 09:30:27
+2017-05-10 09:15:14
 
 Background
 ----------
@@ -57,13 +57,19 @@ county.demo %>%
 | East      | Washington      | DC    | District Of columbia |             619371|              35|              49|               3|                 10|
 | East      | Boston          | MA    | Suffolk              |             735701|              48|              20|               8|                 20|
 | East      | Bethesda        | MD    | Montgomery           |             989474|              48|              17|              14|                 17|
+| East      | Camden          | NJ    | Camden               |             513512|              60|              18|               5|                 15|
 | East      | Newark          | NJ    | Essex                |             785853|              33|              39|               5|                 21|
 | East      | Princeton       | NJ    | Mercer               |             368094|              54|              19|               9|                 16|
+| East      | Woodbury        | NJ    | Gloucester           |             289098|              80|              10|               3|                  5|
 | East      | Ithaca          | NY    | Tompkins             |             102270|              79|               4|              10|                  4|
 | East      | New York        | NY    | New York             |            1605272|              48|              13|              11|                 26|
+| East      | Staten Island   | NY    | Richmond             |             470223|              64|              10|               8|                 17|
+| East      | Doylestown      | PA    | Bucks                |             625977|              86|               4|               4|                  4|
+| East      | Media           | PA    | Delaware             |             559771|              70|              20|               5|                  3|
+| East      | Norristown      | PA    | Montgomery           |             804621|              78|               9|               7|                  4|
 | East      | Philadelphia    | PA    | Philadelphia         |            1536704|              37|              42|               6|                 13|
 | East      | University Park | PA    | Centre               |             154460|              88|               3|               5|                  3|
-| East      | Providence      | RI    | Providence           |             627469|              65|               8|               4|                 19|
+| East      | West Chester    | PA    | Chester              |             503075|              82|               6|               4|                  7|
 | East      | Arlington       | VA    | Arlington            |             214861|              64|               8|               9|                 15|
 | Midwest   | Bloomington     | IN    | Monroe               |             139634|              86|               3|               6|                  3|
 | Midwest   | W. Lafayette    | IN    | Tippecanoe           |             175628|              80|               4|               7|                  8|
@@ -211,13 +217,19 @@ county.demo %>%
 | East      | Washington      | DC    | District Of columbia |             619371|                45290|          1154|
 | East      | Boston          | MA    | Suffolk              |             735701|                32835|          1135|
 | East      | Bethesda        | MD    | Montgomery           |             989474|                49038|          1423|
+| East      | Camden          | NJ    | Camden               |             513512|                30592|           835|
 | East      | Newark          | NJ    | Essex                |             785853|                32181|           917|
 | East      | Princeton       | NJ    | Mercer               |             368094|                37465|           959|
+| East      | Woodbury        | NJ    | Gloucester           |             289098|                32600|           893|
 | East      | Ithaca          | NY    | Tompkins             |             102270|                27418|           857|
 | East      | New York        | NY    | New York             |            1605272|                62498|          1342|
+| East      | Staten Island   | NY    | Richmond             |             470223|                31823|          1017|
+| East      | Doylestown      | PA    | Bucks                |             625977|                37466|           964|
+| East      | Media           | PA    | Delaware             |             559771|                33179|           826|
+| East      | Norristown      | PA    | Montgomery           |             804621|                41472|           976|
 | East      | Philadelphia    | PA    | Philadelphia         |            1536704|                22279|           721|
 | East      | University Park | PA    | Centre               |             154460|                25545|           795|
-| East      | Providence      | RI    | Providence           |             627469|                26308|           740|
+| East      | West Chester    | PA    | Chester              |             503075|                42210|          1004|
 | East      | Arlington       | VA    | Arlington            |             214861|                62018|          1659|
 | Midwest   | Bloomington     | IN    | Monroe               |             139634|                23032|           679|
 | Midwest   | W. Lafayette    | IN    | Tippecanoe           |             175628|                23691|           650|
@@ -280,8 +292,8 @@ This is a work in progress.
 Next steps
 ----------
 
-1.  We should confirm that our target sites collect data from the counties listed, and that the county-wide demographics are plausible.
-2.  We should also see if there are *other* counties target sites collect from and consider asking them to estimate the proportion of their recruiting that comes from county A vs. county B. It would be fun to have a Shiny app to collect this.
+1.  ~~We should confirm that our target sites collect data from the counties listed, and that the county-wide demographics are plausible~~.
+2.  ~~We should also see if there are *other* counties target sites collect from and consider asking them to estimate the proportion of their recruiting that comes from county A vs. county B~~. It would be fun to have a Shiny app to collect this.
 3.  We should explore the `acs` package to grab additional demographic data, especially the indicators used in the draft grant proposal. The `choroplethr` package used in the above had demographic variables similar, but not identical to the ones we have used in the proposal.
 
 Resources

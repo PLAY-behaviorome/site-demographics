@@ -217,8 +217,8 @@ This is a work in progress.
 
 ## Next steps
 
-1. We should confirm that our target sites collect data from the counties listed, and that the county-wide demographics are plausible.
-2. We should also see if there are *other* counties target sites collect from and consider asking them to estimate the proportion of their recruiting that comes from county A vs. county B. It would be fun to have a Shiny app to collect this.
+1. ~~We should confirm that our target sites collect data from the counties listed, and that the county-wide demographics are plausible~~.
+2. ~~We should also see if there are *other* counties target sites collect from and consider asking them to estimate the proportion of their recruiting that comes from county A vs. county B~~. It would be fun to have a Shiny app to collect this.
 3. We should explore the `acs` package to grab additional demographic data, especially the indicators used in the draft grant proposal. The `choroplethr` package used in the above had demographic variables similar, but not identical to the ones we have used in the proposal.
 
 ## Resources

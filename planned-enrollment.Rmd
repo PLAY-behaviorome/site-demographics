@@ -73,8 +73,8 @@ county.demo %>%
   county.demo
 
 county.demo %>%
-  arrange(US.Region, State, City, County) %>%
-  select(US.Region, City, State, County, total_population, percent_white,
+  arrange(US.Region, Site.code, State, County) %>%
+  select(US.Region, Site.code, State, County, total_population, percent_white,
          percent_black, percent_asian, percent_hispanic) %>%
   knitr::kable()
 ```
@@ -85,8 +85,8 @@ We calculate expected proportions of participants based on county-level race per
 
 ```{r planned-enrollment-by-race}
 county.demo %>%
-  arrange(US.Region, State, City, County) %>%
-  select(US.Region, City, State, County, total_population,
+  arrange(US.Region, Site.code, State, County) %>%
+  select(US.Region, Site.code, State, County, total_population,
          percent_white, percent_black, percent_asian,
          percent_hispanic) -> 
   county.race.ethnicity
@@ -96,7 +96,7 @@ county.race.ethnicity %>%
          N_black = ceiling(percent_black*30/100),
          N_asian = ceiling(percent_asian*30/100),
          N_hispanic = ceiling(percent_hispanic*30/100)) %>%
-  select(County, State, N_white, N_black, N_asian, N_hispanic) %>%
+  select(Site.code, State, County, N_white, N_black, N_asian, N_hispanic) %>%
   mutate(N_site = N_white + N_black + N_asian + N_hispanic) ->
   county.planned.enrollment
 
@@ -110,12 +110,14 @@ county.planned.enrollment %>%
             Tot_black = sum(N_black),
             Tot_asian = sum(N_asian),
             Tot_hispanic = sum(N_hispanic)) %>%
-  mutate(Tot_sample = Tot_white + Tot_black + Tot_asian + Tot_hispanic) %>%
+  mutate(Tot_sample = Tot_white + Tot_black + Tot_asian + Tot_hispanic,
+         Pct_white = Tot_white/Tot_sample,
+         Pct_black = Tot_black/Tot_sample,
+         Pct_asian = Tot_asian/Tot_sample,
+         Pct_hispanic = Tot_hispanic/Tot_sample) %>%
+  select(Pct_white, Pct_black, Pct_asian, Pct_hispanic) %>%
   knitr::kable()
 ```
-
-
-This is close to the projected total $n$=900. We will need to do some hand-tweaking, of course.
 
 ## Resources
 

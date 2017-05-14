@@ -1,7 +1,7 @@
 PLAY Planned Enrollment
 ================
 Rick O. Gilmore
-2017-05-10 15:54:37
+2017-05-14 15:33:31
 
 Background/Rationale
 --------------------
@@ -38,7 +38,7 @@ county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
 Tabular summary
 ---------------
 
-Select the *n*=30 from among the 35 prospects. Then produce a tablular summary.
+There are 42 counties among the 30 data collection sites. Here are their demographics.
 
 ``` r
 # Select collecting sites only
@@ -75,6 +75,7 @@ county.demo %>%
 | East      | VCU       | VA    | Chesterfield         |             320430|              65|              22|               3|                  7|
 | East      | VCU       | VA    | Richmond             |             207878|              39|              49|               2|                  6|
 | Midwest   | IU        | IN    | Monroe               |             139634|              86|               3|               6|                  3|
+| Midwest   | MSU       | MI    | Clinton              |              14017|              96|               1|               1|                  1|
 | Midwest   | MSU       | MI    | Ingham               |             281531|              72|              11|               5|                  7|
 | Midwest   | OSU       | OH    | Franklin             |            1181824|              67|              21|               4|                  5|
 | Midwest   | PITT      | PA    | Allegheny            |            1226933|              80|              13|               3|                  2|
@@ -107,7 +108,7 @@ county.demo %>%
   arrange(US.Region, Site.code, State, County) %>%
   select(US.Region, Site.code, State, County, total_population,
          percent_white, percent_black, percent_asian,
-         percent_hispanic) -> 
+         percent_hispanic, multi) -> 
   county.race.ethnicity
 
 county.race.ethnicity %>%
@@ -115,7 +116,7 @@ county.race.ethnicity %>%
          N_black = ceiling(percent_black*30/100),
          N_asian = ceiling(percent_asian*30/100),
          N_hispanic = ceiling(percent_hispanic*30/100)) %>%
-  select(Site.code, State, County, N_white, N_black, N_asian, N_hispanic) %>%
+  select(US.Region, Site.code, State, County, N_white, N_black, N_asian, N_hispanic, multi) %>%
   mutate(N_site = N_white + N_black + N_asian + N_hispanic) ->
   county.planned.enrollment
   
@@ -123,68 +124,179 @@ county.planned.enrollment %>%
   knitr::kable()
 ```
 
-| Site.code | State | County               |  N\_white|  N\_black|  N\_asian|  N\_hispanic|  N\_site|
-|:----------|:------|:---------------------|---------:|---------:|---------:|------------:|--------:|
-| BU        | MA    | Suffolk              |        14|         6|         3|            6|       29|
-| CHOP      | NJ    | Camden               |        18|         6|         2|            5|       31|
-| CHOP      | NJ    | Gloucester           |        24|         3|         1|            2|       30|
-| CHOP      | PA    | Bucks                |        25|         2|         2|            2|       31|
-| CHOP      | PA    | Chester              |        24|         2|         2|            3|       31|
-| CHOP      | PA    | Delaware             |        21|         6|         2|            1|       30|
-| CHOP      | PA    | Montgomery           |        23|         3|         3|            2|       31|
-| CHOP      | PA    | Philadelphia         |        11|        13|         2|            4|       30|
-| COR       | NY    | Tompkins             |        23|         2|         3|            2|       30|
-| CUNYSI    | NY    | Richmond             |        19|         3|         3|            6|       31|
-| GTN       | DC    | District Of columbia |        10|        15|         1|            3|       29|
-| GTN       | MD    | Montgomery           |        14|         6|         5|            6|       31|
-| GTN       | VA    | Arlington            |        19|         3|         3|            5|       30|
-| NYU       | NY    | New York             |        14|         4|         4|            8|       30|
-| PRIN      | NJ    | Mercer               |        16|         6|         3|            5|       30|
-| PSU       | PA    | Centre               |        26|         1|         2|            1|       30|
-| RUTG      | NJ    | Essex                |         9|        12|         2|            7|       30|
-| VCU       | VA    | Chesterfield         |        19|         7|         1|            3|       30|
-| VCU       | VA    | Richmond             |        11|        15|         1|            2|       29|
-| IU        | IN    | Monroe               |        25|         1|         2|            1|       29|
-| MSU       | MI    | Ingham               |        21|         4|         2|            3|       30|
-| OSU       | OH    | Franklin             |        20|         7|         2|            2|       31|
-| PITT      | PA    | Allegheny            |        24|         4|         1|            1|       30|
-| PUR       | IN    | Tippecanoe           |        24|         2|         3|            3|       32|
-| EMRY      | GA    | Fulton               |        12|        14|         2|            3|       31|
-| HOU       | TX    | Harris               |         9|         6|         2|           13|       30|
-| TUL       | LA    | Orleans              |         9|        18|         1|            2|       30|
-| UMIA      | FL    | Miami-Dade           |         4|         6|         1|           20|       31|
-| UT        | TX    | Travis               |        15|         3|         2|           11|       31|
-| VBLT      | TN    | Davidson             |        17|         9|         1|            3|       30|
-| VCU       | VA    | Henrico              |        16|         9|         3|            2|       30|
-| WM        | VA    | James City           |        23|         4|         1|            2|       30|
-| CSF       | CA    | Orange               |        12|         1|         6|           11|       30|
-| CSL       | CA    | Los Angeles          |         8|         3|         5|           15|       31|
-| STAN      | CA    | San Mateo            |        12|         1|         8|            8|       29|
-| STAN      | CA    | Santa Clara          |        10|         1|        10|            9|       30|
-| UCD       | CA    | Yolo                 |        14|         1|         4|           10|       29|
-| UCM       | CA    | Merced               |         9|         1|         3|           17|       30|
-| UCR       | CA    | Riverside            |        11|         2|         2|           14|       29|
-| UCSC      | CA    | Santa Cruz           |        17|         1|         2|           10|       30|
-| UO        | OR    | Lane                 |        25|         1|         1|            3|       30|
+| US.Region | Site.code | State | County               |  N\_white|  N\_black|  N\_asian|  N\_hispanic| multi |  N\_site|
+|:----------|:----------|:------|:---------------------|---------:|---------:|---------:|------------:|:------|--------:|
+| East      | BU        | MA    | Suffolk              |        14|         6|         3|            6| no    |       29|
+| East      | CHOP      | NJ    | Camden               |        18|         6|         2|            5| yes   |       31|
+| East      | CHOP      | NJ    | Gloucester           |        24|         3|         1|            2| yes   |       30|
+| East      | CHOP      | PA    | Bucks                |        25|         2|         2|            2| yes   |       31|
+| East      | CHOP      | PA    | Chester              |        24|         2|         2|            3| yes   |       31|
+| East      | CHOP      | PA    | Delaware             |        21|         6|         2|            1| yes   |       30|
+| East      | CHOP      | PA    | Montgomery           |        23|         3|         3|            2| yes   |       31|
+| East      | CHOP      | PA    | Philadelphia         |        11|        13|         2|            4| yes   |       30|
+| East      | COR       | NY    | Tompkins             |        23|         2|         3|            2| no    |       30|
+| East      | CUNYSI    | NY    | Richmond             |        19|         3|         3|            6| no    |       31|
+| East      | GTN       | DC    | District Of columbia |        10|        15|         1|            3| yes   |       29|
+| East      | GTN       | MD    | Montgomery           |        14|         6|         5|            6| yes   |       31|
+| East      | GTN       | VA    | Arlington            |        19|         3|         3|            5| yes   |       30|
+| East      | NYU       | NY    | New York             |        14|         4|         4|            8| no    |       30|
+| East      | PRIN      | NJ    | Mercer               |        16|         6|         3|            5| no    |       30|
+| East      | PSU       | PA    | Centre               |        26|         1|         2|            1| no    |       30|
+| East      | RUTG      | NJ    | Essex                |         9|        12|         2|            7| no    |       30|
+| East      | VCU       | VA    | Chesterfield         |        19|         7|         1|            3| yes   |       30|
+| East      | VCU       | VA    | Richmond             |        11|        15|         1|            2| yes   |       29|
+| Midwest   | IU        | IN    | Monroe               |        25|         1|         2|            1| no    |       29|
+| Midwest   | MSU       | MI    | Clinton              |        28|         1|         1|            1| yes   |       31|
+| Midwest   | MSU       | MI    | Ingham               |        21|         4|         2|            3| yes   |       30|
+| Midwest   | OSU       | OH    | Franklin             |        20|         7|         2|            2| no    |       31|
+| Midwest   | PITT      | PA    | Allegheny            |        24|         4|         1|            1| no    |       30|
+| Midwest   | PUR       | IN    | Tippecanoe           |        24|         2|         3|            3| no    |       32|
+| South     | EMRY      | GA    | Fulton               |        12|        14|         2|            3| no    |       31|
+| South     | HOU       | TX    | Harris               |         9|         6|         2|           13| no    |       30|
+| South     | TUL       | LA    | Orleans              |         9|        18|         1|            2| no    |       30|
+| South     | UMIA      | FL    | Miami-Dade           |         4|         6|         1|           20| no    |       31|
+| South     | UT        | TX    | Travis               |        15|         3|         2|           11| no    |       31|
+| South     | VBLT      | TN    | Davidson             |        17|         9|         1|            3| no    |       30|
+| South     | VCU       | VA    | Henrico              |        16|         9|         3|            2| yes   |       30|
+| South     | WM        | VA    | James City           |        23|         4|         1|            2| yes   |       30|
+| West      | CSF       | CA    | Orange               |        12|         1|         6|           11| no    |       30|
+| West      | CSL       | CA    | Los Angeles          |         8|         3|         5|           15| no    |       31|
+| West      | STAN      | CA    | San Mateo            |        12|         1|         8|            8| yes   |       29|
+| West      | STAN      | CA    | Santa Clara          |        10|         1|        10|            9| yes   |       30|
+| West      | UCD       | CA    | Yolo                 |        14|         1|         4|           10| no    |       29|
+| West      | UCM       | CA    | Merced               |         9|         1|         3|           17| no    |       30|
+| West      | UCR       | CA    | Riverside            |        11|         2|         2|           14| no    |       29|
+| West      | UCSC      | CA    | Santa Cruz           |        17|         1|         2|           10| no    |       30|
+| West      | UO        | OR    | Lane                 |        25|         1|         1|            3| no    |       30|
+
+Separate out sites that recruit from multiple counties.
 
 ``` r
 county.planned.enrollment %>%
-  summarize(Tot_white = sum(N_white),
-            Tot_black = sum(N_black),
-            Tot_asian = sum(N_asian),
-            Tot_hispanic = sum(N_hispanic)) %>%
-  mutate(Tot_sample = Tot_white + Tot_black + Tot_asian + Tot_hispanic,
-         Pct_white = Tot_white/Tot_sample,
-         Pct_black = Tot_black/Tot_sample,
-         Pct_asian = Tot_asian/Tot_sample,
-         Pct_hispanic = Tot_hispanic/Tot_sample) %>%
-  select(Pct_white, Pct_black, Pct_asian, Pct_hispanic) %>%
+  filter(multi == "yes") ->
+  county.demo.multi
+
+county.planned.enrollment %>%
+  filter(multi != "yes") ->
+  county.demo.single
+```
+
+There are 6 sites that recruit from more than one county or metropolitan statistical area. For reasons I can't quite determine, the following code fails to create the expected site-by-site summaries.
+
+``` r
+county.demo.multi %>%
+  group_by(Site.code) %>%
+  summarize(N_white_proj = mean(N_white),
+            N_black_proj = mean(N_black),
+            N_asian_proj = mean(N_asian),
+            N_hisp_proj  = mean(N_hispanic)) %>%
   knitr::kable()
 ```
 
-|  Pct\_white|  Pct\_black|  Pct\_asian|  Pct\_hispanic|
-|-----------:|-----------:|-----------:|--------------:|
-|   0.5477346|   0.1731392|   0.0881877|      0.1909385|
+So, I compute them individually. Take optimistic projections for the non-white sample.
+
+``` r
+sites <- unique(county.planned.enrollment$Site.code)
+
+# Compute average of all counties at a site
+Project.site.demo <- function(this.site, df) {
+  df %>%
+  filter(Site.code == this.site) %>%
+  summarize(N_black = ceiling(mean(N_black)),
+            N_asian = ceiling(mean(N_asian)),
+            N_hisp  = ceiling(mean(N_hispanic)),
+            N_white = 30 - N_black - N_asian - N_hisp,
+            Pct_white = 100*N_white/(N_white + N_black + N_asian + N_hisp),
+            Pct_black = 100*N_black/(N_white + N_black + N_asian + N_hisp),
+            Pct_asian = 100*N_asian/(N_white + N_black + N_asian + N_hisp),
+            Pct_hisp = 100*N_hisp/(N_white + N_black + N_asian + N_hisp)) ->
+    df2
+  #df2$US.Region = unique(df$US.Region)
+  df2$Site.code = this.site
+  #df2$State = unique(df$State)
+  df2
+}
+
+# Apply the function across the list of sites
+demo.proj.list <- lapply(sites, Project.site.demo,
+                         df=county.planned.enrollment)
+demo.proj <- Reduce(function(x,y) merge(x,y, all = TRUE), x = demo.proj.list)
+
+demo.proj %>%
+  select(Site.code, Pct_white, Pct_black, Pct_asian, Pct_hisp) %>%
+  knitr::kable()
+```
+
+| Site.code |  Pct\_white|  Pct\_black|  Pct\_asian|  Pct\_hisp|
+|:----------|-----------:|-----------:|-----------:|----------:|
+| UO        |    83.33333|    3.333333|    3.333333|  10.000000|
+| IU        |    86.66667|    3.333333|    6.666667|   3.333333|
+| PSU       |    86.66667|    3.333333|    6.666667|   3.333333|
+| UCSC      |    56.66667|    3.333333|    6.666667|  33.333333|
+| UCM       |    30.00000|    3.333333|   10.000000|  56.666667|
+| UCD       |    50.00000|    3.333333|   13.333333|  33.333333|
+| CSF       |    40.00000|    3.333333|   20.000000|  36.666667|
+| STAN      |    36.66667|    3.333333|   30.000000|  30.000000|
+| UCR       |    40.00000|    6.666667|    6.666667|  46.666667|
+| COR       |    76.66667|    6.666667|   10.000000|   6.666667|
+| PUR       |    73.33333|    6.666667|   10.000000|  10.000000|
+| MSU       |    76.66667|   10.000000|    6.666667|   6.666667|
+| UT        |    46.66667|   10.000000|    6.666667|  36.666667|
+| CUNYSI    |    60.00000|   10.000000|   10.000000|  20.000000|
+| CSL       |    23.33333|   10.000000|   16.666667|  50.000000|
+| PITT      |    80.00000|   13.333333|    3.333333|   3.333333|
+| WM        |    76.66667|   13.333333|    3.333333|   6.666667|
+| NYU       |    46.66667|   13.333333|   13.333333|  26.666667|
+| CHOP      |    66.66667|   16.666667|    6.666667|  10.000000|
+| UMIA      |    10.00000|   20.000000|    3.333333|  66.666667|
+| HOU       |    30.00000|   20.000000|    6.666667|  43.333333|
+| PRIN      |    53.33333|   20.000000|   10.000000|  16.666667|
+| BU        |    50.00000|   20.000000|   10.000000|  20.000000|
+| OSU       |    63.33333|   23.333333|    6.666667|   6.666667|
+| GTN       |    46.66667|   26.666667|   10.000000|  16.666667|
+| VBLT      |    56.66667|   30.000000|    3.333333|  10.000000|
+| VCU       |    46.66667|   36.666667|    6.666667|  10.000000|
+| RUTG      |    30.00000|   40.000000|    6.666667|  23.333333|
+| EMRY      |    36.66667|   46.666667|    6.666667|  10.000000|
+| TUL       |    30.00000|   60.000000|    3.333333|   6.666667|
+
+``` r
+demo.proj %>%
+  summarize(Tot_white = sum(N_white),
+            Tot_black = sum(N_black),
+            Tot_asian = sum(N_asian),
+            Tot_hisp  = sum(N_hisp),
+            Tot_all   = Tot_white + 
+              Tot_black + Tot_asian + Tot_hisp) ->
+  demo.proj.total
+
+demo.proj.total %>%
+  knitr::kable()
+```
+
+|  Tot\_white|  Tot\_black|  Tot\_asian|  Tot\_hisp|  Tot\_all|
+|-----------:|-----------:|-----------:|----------:|---------:|
+|         477|         146|          79|        198|       900|
+
+``` r
+demo.proj.total %>%
+  summarize(Pct_white = 100*Tot_white/Tot_all,
+            Pct_black = 100*Tot_black/Tot_all,
+            Pct_asian = 100*Tot_asian/Tot_all,
+            Pct_hisp  = 100*Tot_hisp/Tot_all) %>%
+  knitr::kable()
+```
+
+|  Pct\_white|  Pct\_black|  Pct\_asian|  Pct\_hisp|
+|-----------:|-----------:|-----------:|----------:|
+|          53|    16.22222|    8.777778|         22|
+
+| Race/Eth | Min Pct   | Max Pct    | Mean Pct   | Median Pct |
+|----------|-----------|------------|------------|------------|
+| White    | 10        | 86.6666667 | 53         | 50         |
+| Black    | 3.3333333 | 60         | 16.2222222 | 11.6666667 |
+| Asian    | 3.3333333 | 30         | 8.7777778  | 6.6666667  |
+| Hispanic | 3.3333333 | 66.6666667 | 22         | 16.6666667 |
 
 Resources
 ---------
@@ -237,4 +349,4 @@ sessionInfo()
     ## [58] RColorBrewer_1.1-2  tools_3.4.0         ggmap_2.6.1        
     ## [61] maps_3.1.1          jpeg_0.1-8          survival_2.41-3    
     ## [64] yaml_2.1.14         colorspace_1.3-2    cluster_2.0.6      
-    ## [67] maptools_0.9-2      knitr_1.15.1
+    ## [67] maptools_0.9-2      knitr_1.15.20

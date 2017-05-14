@@ -61,7 +61,7 @@ county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
 
 ## Tabular summary
 
-Select the $n$=30 from among the 35 prospects. Then produce a tablular summary.
+There are `r dim(county.demo)[1]` counties among the `r length(unique(county.demo$Site.code))` data collection sites. Here are their demographics.
 
 ```{r tabular-summary}
 # Select collecting sites only
@@ -85,7 +85,7 @@ county.demo %>%
   arrange(US.Region, Site.code, State, County) %>%
   select(US.Region, Site.code, State, County, total_population,
          percent_white, percent_black, percent_asian,
-         percent_hispanic) -> 
+         percent_hispanic, multi) -> 
   county.race.ethnicity
 
 county.race.ethnicity %>%
@@ -93,7 +93,7 @@ county.race.ethnicity %>%
          N_black = ceiling(percent_black*30/100),
          N_asian = ceiling(percent_asian*30/100),
          N_hispanic = ceiling(percent_hispanic*30/100)) %>%
-  select(Site.code, State, County, N_white, N_black, N_asian, N_hispanic) %>%
+  select(US.Region, Site.code, State, County, N_white, N_black, N_asian, N_hispanic, multi) %>%
   mutate(N_site = N_white + N_black + N_asian + N_hispanic) ->
   county.planned.enrollment
   
@@ -101,20 +101,89 @@ county.planned.enrollment %>%
   knitr::kable()
 ```
 
+Separate out sites that recruit from multiple counties.
+
 ```{r planned-enrollment-across-sample}
 county.planned.enrollment %>%
+  filter(multi == "yes") ->
+  county.demo.multi
+
+county.planned.enrollment %>%
+  filter(multi != "yes") ->
+  county.demo.single
+```
+
+There are `r length(unique(county.demo.multi$Site.code))` sites that recruit from more than one county or metropolitan statistical area. For reasons I can't quite determine, the following code fails to create the expected site-by-site summaries.
+
+```{r compute-multisite-projections, eval=FALSE}
+county.demo.multi %>%
+  group_by(Site.code) %>%
+  summarize(N_white_proj = mean(N_white),
+            N_black_proj = mean(N_black),
+            N_asian_proj = mean(N_asian),
+            N_hisp_proj  = mean(N_hispanic)) %>%
+  knitr::kable()
+```
+
+So, I compute them individually. Take optimistic projections for the non-white sample.
+
+```{r compute-multisite-by-site}
+sites <- unique(county.planned.enrollment$Site.code)
+
+# Compute average of all counties at a site
+Project.site.demo <- function(this.site, df) {
+  df %>%
+  filter(Site.code == this.site) %>%
+  summarize(N_black = ceiling(mean(N_black)),
+            N_asian = ceiling(mean(N_asian)),
+            N_hisp  = ceiling(mean(N_hispanic)),
+            N_white = 30 - N_black - N_asian - N_hisp,
+            Pct_white = 100*N_white/(N_white + N_black + N_asian + N_hisp),
+            Pct_black = 100*N_black/(N_white + N_black + N_asian + N_hisp),
+            Pct_asian = 100*N_asian/(N_white + N_black + N_asian + N_hisp),
+            Pct_hisp = 100*N_hisp/(N_white + N_black + N_asian + N_hisp)) ->
+    df2
+  #df2$US.Region = unique(df$US.Region)
+  df2$Site.code = this.site
+  #df2$State = unique(df$State)
+  df2
+}
+
+# Apply the function across the list of sites
+demo.proj.list <- lapply(sites, Project.site.demo,
+                         df=county.planned.enrollment)
+demo.proj <- Reduce(function(x,y) merge(x,y, all = TRUE), x = demo.proj.list)
+
+demo.proj %>%
+  select(Site.code, Pct_white, Pct_black, Pct_asian, Pct_hisp) %>%
+  knitr::kable()
+
+demo.proj %>%
   summarize(Tot_white = sum(N_white),
             Tot_black = sum(N_black),
             Tot_asian = sum(N_asian),
-            Tot_hispanic = sum(N_hispanic)) %>%
-  mutate(Tot_sample = Tot_white + Tot_black + Tot_asian + Tot_hispanic,
-         Pct_white = Tot_white/Tot_sample,
-         Pct_black = Tot_black/Tot_sample,
-         Pct_asian = Tot_asian/Tot_sample,
-         Pct_hispanic = Tot_hispanic/Tot_sample) %>%
-  select(Pct_white, Pct_black, Pct_asian, Pct_hispanic) %>%
+            Tot_hisp  = sum(N_hisp),
+            Tot_all   = Tot_white + 
+              Tot_black + Tot_asian + Tot_hisp) ->
+  demo.proj.total
+
+demo.proj.total %>%
+  knitr::kable()
+
+demo.proj.total %>%
+  summarize(Pct_white = 100*Tot_white/Tot_all,
+            Pct_black = 100*Tot_black/Tot_all,
+            Pct_asian = 100*Tot_asian/Tot_all,
+            Pct_hisp  = 100*Tot_hisp/Tot_all) %>%
   knitr::kable()
 ```
+
+| Race/Eth | Min Pct | Max Pct | Mean Pct | Median Pct |
+|----------|---------|---------|----------|------------|
+| White    | `r min(demo.proj$Pct_white)` |`r max(demo.proj$Pct_white)`| `r mean(demo.proj$Pct_white)`|`r median(demo.proj$Pct_white)`|
+| Black    | `r min(demo.proj$Pct_black)` |`r max(demo.proj$Pct_black)`| `r mean(demo.proj$Pct_black)`|`r median(demo.proj$Pct_black)`|
+| Asian    | `r min(demo.proj$Pct_asian)` |`r max(demo.proj$Pct_asian)`| `r mean(demo.proj$Pct_asian)`|`r median(demo.proj$Pct_asian)`|
+| Hispanic    | `r min(demo.proj$Pct_hisp)` |`r max(demo.proj$Pct_hisp)`| `r mean(demo.proj$Pct_hisp)`|`r median(demo.proj$Pct_hisp)`|
 
 ## Resources
 

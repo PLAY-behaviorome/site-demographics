@@ -45,9 +45,6 @@ Load county names, and add county FIPS from `choroplethr` package's `county.regi
 ```{r generate-data-files}
 counties <- read.csv(paste0(csv.dir, "city-state-county.csv"), stringsAsFactors = FALSE)
 
-# convert counties so can pull FIPS codes
-#counties$County <- tolower(counties$County)
-
 # Load county data from choroplethr
 # Could also use acs package to get updated info.
 data("county.regions")
@@ -71,8 +68,8 @@ county.demo %>%
   county.demo
 
 county.demo %>%
-  arrange(US.Region, State, City, County) %>%
-  select(US.Region, City, State, County, total_population, percent_white,
+  arrange(US.Region, Site.code, State, City, County) %>%
+  select(US.Region, Site.code, City, State, County, total_population, percent_white,
          percent_black, percent_asian, percent_hispanic) %>%
   knitr::kable()
 ```
@@ -169,8 +166,8 @@ county.demo %>%
 
 ```{r econ-tabular-summary}
 county.demo %>%
-  arrange(US.Region, State, City, County) %>%
-  select(US.Region, City, State, County, total_population,
+  arrange(US.Region, Site.code, State, City, County) %>%
+  select(US.Region, Site.code, City, State, County, total_population,
          per_capita_income, median_rent) %>%
   knitr::kable()
 ```
@@ -191,26 +188,68 @@ The `acs` package manual can be found here: <https://cran.r-project.org/web/pack
 
 ### Generate geography for sites
 
-This is a work in progress.
+As a first attempt, create vectors of numeric state FIPS and county FIPS codes.
 
-<!-- ```{r generate-geo} -->
+```{r generate-geo}
+state.fips <- as.numeric(county.demo$state.fips.character)
+county.fips <- as.numeric(substr(county.demo$county.fips.character,3,5))
+play.geo <- geo.make(state = state.fips, county = county.fips)
+```
 
-<!-- ``` -->
+This works, but after some further exploration, I think it may be better to generate site-specific geographies.
 
+```{r generate-site-geo}
+Make.county.geo <- function(i, df) {
+  geo.make(state = as.numeric(df$state.fips.character[i]),
+              county =
+             as.numeric(substr(county.demo$county.fips.character[i],4, 6)))
+}
 
-<!-- ```{r} -->
-<!-- ed <- acs.lookup(table.name="Education", endyear=2011) -->
+cty <- 1
+# Generate name for county-level geography
+geo.name <- paste0(county.demo$Site.code[cty], "_", county.demo$county.name[cty], "_", county.demo$State[cty])
 
-<!-- # Looks like 1:6 -->
-<!-- acs.fetch(geography = centre, endyear = 2011, variable = ed[1:6], -->
-<!--           col.names = c("Total", -->
-<!--                         "<HS", -->
-<!--                         "HS", -->
-<!--                         "Some Coll", -->
-<!--                         "BA", -->
-<!--                         "Grad/Prof") -->
-<!-- ) -->
-<!-- ``` -->
+# Create geography and assign to generated name
+assign(geo.name, Make.county.geo(cty, county.demo))
+```
+
+### Education data
+
+```{r ed-attain-all-counties}
+ed.attain <- acs.lookup(table.name="Educational Attainment for the Population 25 Years and Over", endyear=2015)
+
+# Variables 1:25 seem to contain the relevant info
+
+play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[1:25],
+                     col.names = c("Total",
+                                   "None",
+                                   "<K",
+                                   "K",
+                                   "1st",
+                                   "2nd",
+                                   "3rd",
+                                   "4th",
+                                   "5th",
+                                   "6th",
+                                   "7th",
+                                   "8th",
+                                   "9th",
+                                   "10th",
+                                   "11th",
+                                   "12th",
+                                   "HS",
+                                   "GED",
+                                   "Coll <1yr",
+                                   "Coll >1yr",
+                                   "AA",
+                                   "BA",
+                                   "MA",
+                                   "Prof",
+                                   "Ph.D"))
+# These numbers seem weird to me
+
+play.ed
+```
 
 ## Next steps
 

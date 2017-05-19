@@ -1,7 +1,7 @@
 PLAY Planned Enrollment
 ================
 Rick O. Gilmore
-2017-05-14 15:33:31
+2017-05-19 05:22:17
 
 Background/Rationale
 --------------------
@@ -38,7 +38,7 @@ county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
 Tabular summary
 ---------------
 
-There are 42 counties among the 30 data collection sites. Here are their demographics.
+There are 43 counties among the 30 data collection sites. Here are their demographics.
 
 ``` r
 # Select collecting sites only
@@ -86,6 +86,7 @@ county.demo %>%
 | South     | UMIA      | FL    | Miami-Dade           |            2549075|              16|              17|               2|                 65|
 | South     | UT        | TX    | Travis               |            1063248|              50|               8|               6|                 34|
 | South     | VBLT      | TN    | Davidson             |             638395|              57|              28|               3|                 10|
+| South     | VBLT      | TN    | Williamson           |             188935|              86|               4|               3|                  5|
 | South     | VCU       | VA    | Henrico              |             311314|              56|              29|               7|                  5|
 | South     | WM        | VA    | James City           |              68171|              77|              13|               3|                  5|
 | West      | CSF       | CA    | Orange               |            3051771|              43|               2|              18|                 34|
@@ -156,7 +157,8 @@ county.planned.enrollment %>%
 | South     | TUL       | LA    | Orleans              |         9|        18|         1|            2| no    |       30|
 | South     | UMIA      | FL    | Miami-Dade           |         4|         6|         1|           20| no    |       31|
 | South     | UT        | TX    | Travis               |        15|         3|         2|           11| no    |       31|
-| South     | VBLT      | TN    | Davidson             |        17|         9|         1|            3| no    |       30|
+| South     | VBLT      | TN    | Davidson             |        17|         9|         1|            3| yes   |       30|
+| South     | VBLT      | TN    | Williamson           |        25|         2|         1|            2| yes   |       30|
 | South     | VCU       | VA    | Henrico              |        16|         9|         3|            2| yes   |       30|
 | South     | WM        | VA    | James City           |        23|         4|         1|            2| yes   |       30|
 | West      | CSF       | CA    | Orange               |        12|         1|         6|           11| no    |       30|
@@ -181,7 +183,7 @@ county.planned.enrollment %>%
   county.demo.single
 ```
 
-There are 6 sites that recruit from more than one county or metropolitan statistical area. For reasons I can't quite determine, the following code fails to create the expected site-by-site summaries.
+There are 7 sites that recruit from more than one county or metropolitan statistical area. For reasons I can't quite determine, the following code fails to create the expected site-by-site summaries.
 
 ``` r
 county.demo.multi %>%
@@ -248,13 +250,13 @@ demo.proj %>%
 | WM        |    76.66667|   13.333333|    3.333333|   6.666667|
 | NYU       |    46.66667|   13.333333|   13.333333|  26.666667|
 | CHOP      |    66.66667|   16.666667|    6.666667|  10.000000|
+| VBLT      |    66.66667|   20.000000|    3.333333|  10.000000|
 | UMIA      |    10.00000|   20.000000|    3.333333|  66.666667|
 | HOU       |    30.00000|   20.000000|    6.666667|  43.333333|
 | PRIN      |    53.33333|   20.000000|   10.000000|  16.666667|
 | BU        |    50.00000|   20.000000|   10.000000|  20.000000|
 | OSU       |    63.33333|   23.333333|    6.666667|   6.666667|
 | GTN       |    46.66667|   26.666667|   10.000000|  16.666667|
-| VBLT      |    56.66667|   30.000000|    3.333333|  10.000000|
 | VCU       |    46.66667|   36.666667|    6.666667|  10.000000|
 | RUTG      |    30.00000|   40.000000|    6.666667|  23.333333|
 | EMRY      |    36.66667|   46.666667|    6.666667|  10.000000|
@@ -276,7 +278,7 @@ demo.proj.total %>%
 
 |  Tot\_white|  Tot\_black|  Tot\_asian|  Tot\_hisp|  Tot\_all|
 |-----------:|-----------:|-----------:|----------:|---------:|
-|         477|         146|          79|        198|       900|
+|         480|         143|          79|        198|       900|
 
 ``` r
 demo.proj.total %>%
@@ -289,12 +291,12 @@ demo.proj.total %>%
 
 |  Pct\_white|  Pct\_black|  Pct\_asian|  Pct\_hisp|
 |-----------:|-----------:|-----------:|----------:|
-|          53|    16.22222|    8.777778|         22|
+|    53.33333|    15.88889|    8.777778|         22|
 
 | Race/Eth | Min Pct   | Max Pct    | Mean Pct   | Median Pct |
 |----------|-----------|------------|------------|------------|
-| White    | 10        | 86.6666667 | 53         | 50         |
-| Black    | 3.3333333 | 60         | 16.2222222 | 11.6666667 |
+| White    | 10        | 86.6666667 | 53.3333333 | 50         |
+| Black    | 3.3333333 | 60         | 15.8888889 | 11.6666667 |
 | Asian    | 3.3333333 | 30         | 8.7777778  | 6.6666667  |
 | Hispanic | 3.3333333 | 66.6666667 | 22         | 16.6666667 |
 

@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-05-16 10:30:01
+2017-05-19 05:23:54
 
 Background
 ----------
@@ -78,6 +78,7 @@ county.demo %>%
 | South     | TUL       | New Orleans     | LA    | Orleans              |             357013|              31|              59|               3|                  5|
 | South     | UMIA      | Miami           | FL    | Miami-Dade           |            2549075|              16|              17|               2|                 65|
 | South     | UT        | Austin          | TX    | Travis               |            1063248|              50|               8|               6|                 34|
+| South     | VBLT      | Franklin        | TN    | Williamson           |             188935|              86|               4|               3|                  5|
 | South     | VBLT      | Nashville       | TN    | Davidson             |             638395|              57|              28|               3|                 10|
 | South     | VCU       | Richmond        | VA    | Henrico              |             311314|              56|              29|               7|                  5|
 | South     | WM        | Williamsburg    | VA    | James City           |              68171|              77|              13|               3|                  5|
@@ -241,6 +242,7 @@ county.demo %>%
 | South     | TUL       | New Orleans     | LA    | Orleans              |             357013|                26500|           765|
 | South     | UMIA      | Miami           | FL    | Miami-Dade           |            2549075|                23174|           949|
 | South     | UT        | Austin          | TX    | Travis               |            1063248|                33206|           832|
+| South     | VBLT      | Franklin        | TN    | Williamson           |             188935|                41292|           936|
 | South     | VBLT      | Nashville       | TN    | Davidson             |             638395|                28467|           691|
 | South     | VCU       | Richmond        | VA    | Henrico              |             311314|                33115|           858|
 | South     | WM        | Williamsburg    | VA    | James City           |              68171|                39133|          1048|
@@ -379,6 +381,7 @@ play.ed
     ## Lane County, Oregon                        241134 +/- 112  1765 +/- 488   
     ## Travis County, Texas                       742369 +/- 43   10343 +/- 918  
     ## Davidson County, Tennessee                 446174 +/- 72   6759 +/- 734   
+    ## Williamson County, Tennessee               128761 +/- 140  425 +/- 140    
     ## Henrico County, Virginia                   217423 +/- 89   2579 +/- 424   
     ## Chesterfield County, Virginia              216740 +/- 104  2171 +/- 342   
     ## Richmond city, Virginia                    143240 +/- 64   2610 +/- 411   
@@ -422,6 +425,7 @@ play.ed
     ## Lane County, Oregon                        22 +/- 27    61 +/- 68   
     ## Travis County, Texas                       220 +/- 170  146 +/- 82  
     ## Davidson County, Tennessee                 39 +/- 28    78 +/- 59   
+    ## Williamson County, Tennessee               0 +/- 28     35 +/- 55   
     ## Henrico County, Virginia                   9 +/- 14     18 +/- 30   
     ## Chesterfield County, Virginia              0 +/- 28     23 +/- 26   
     ## Richmond city, Virginia                    16 +/- 19    51 +/- 37   
@@ -465,6 +469,7 @@ play.ed
     ## Lane County, Oregon                        137 +/- 112   88 +/- 62     
     ## Travis County, Texas                       758 +/- 296   1514 +/- 325  
     ## Davidson County, Tennessee                 143 +/- 90    358 +/- 131   
+    ## Williamson County, Tennessee               0 +/- 28      48 +/- 56     
     ## Henrico County, Virginia                   5 +/- 6       115 +/- 91    
     ## Chesterfield County, Virginia              125 +/- 68    174 +/- 97    
     ## Richmond city, Virginia                    47 +/- 46     270 +/- 113   
@@ -508,6 +513,7 @@ play.ed
     ## Lane County, Oregon                        148 +/- 112    190 +/- 108   
     ## Travis County, Texas                       3384 +/- 536   2634 +/- 470  
     ## Davidson County, Tennessee                 1060 +/- 310   1065 +/- 250  
+    ## Williamson County, Tennessee               92 +/- 91      55 +/- 54     
     ## Henrico County, Virginia                   497 +/- 219    175 +/- 104   
     ## Chesterfield County, Virginia              173 +/- 96     369 +/- 120   
     ## Richmond city, Virginia                    292 +/- 142    367 +/- 150   
@@ -551,6 +557,7 @@ play.ed
     ## Lane County, Oregon                        451 +/- 165    1278 +/- 232   
     ## Travis County, Texas                       3543 +/- 527   16384 +/- 1080 
     ## Davidson County, Tennessee                 1053 +/- 242   3838 +/- 564   
+    ## Williamson County, Tennessee               100 +/- 61     304 +/- 156    
     ## Henrico County, Virginia                   475 +/- 198    1412 +/- 349   
     ## Chesterfield County, Virginia              351 +/- 170    1174 +/- 273   
     ## Richmond city, Virginia                    502 +/- 139    2064 +/- 516   
@@ -594,6 +601,7 @@ play.ed
     ## Lane County, Oregon                        549 +/- 190    2011 +/- 301  
     ## Travis County, Texas                       3361 +/- 548   6883 +/- 657  
     ## Davidson County, Tennessee                 2049 +/- 396   5420 +/- 551  
+    ## Williamson County, Tennessee               115 +/- 60     1045 +/- 248  
     ## Henrico County, Virginia                   874 +/- 202    1788 +/- 384  
     ## Chesterfield County, Virginia              834 +/- 237    1862 +/- 315  
     ## Richmond city, Virginia                    830 +/- 203    2081 +/- 301  
@@ -637,6 +645,7 @@ play.ed
     ## Lane County, Oregon                        2425 +/- 314    3635 +/- 545  
     ## Travis County, Texas                       13251 +/- 1058  8189 +/- 868  
     ## Davidson County, Tennessee                 7510 +/- 731    8381 +/- 747  
+    ## Williamson County, Tennessee               506 +/- 167     1239 +/- 340  
     ## Henrico County, Virginia                   2074 +/- 281    3166 +/- 495  
     ## Chesterfield County, Virginia              1917 +/- 300    3278 +/- 413  
     ## Richmond city, Virginia                    2349 +/- 342    4665 +/- 458  
@@ -680,6 +689,7 @@ play.ed
     ## Lane County, Oregon                        4895 +/- 512    3787 +/- 379   
     ## Travis County, Texas                       9470 +/- 877    10241 +/- 965  
     ## Davidson County, Tennessee                 10897 +/- 872   8089 +/- 761   
+    ## Williamson County, Tennessee               1037 +/- 249    995 +/- 254    
     ## Henrico County, Virginia                   4228 +/- 524    2896 +/- 409   
     ## Chesterfield County, Virginia              3848 +/- 448    3288 +/- 424   
     ## Richmond city, Virginia                    5037 +/- 654    2906 +/- 345   
@@ -723,6 +733,7 @@ play.ed
     ## Lane County, Oregon                        49042 +/- 1478  
     ## Travis County, Texas                       105688 +/- 2790 
     ## Davidson County, Tennessee                 90473 +/- 2087  
+    ## Williamson County, Tennessee               18224 +/- 1007  
     ## Henrico County, Virginia                   42311 +/- 1431  
     ## Chesterfield County, Virginia              44710 +/- 1602  
     ## Richmond city, Virginia                    26086 +/- 1113  
@@ -766,6 +777,7 @@ play.ed
     ## Lane County, Oregon                        11164 +/- 641   20788 +/- 873  
     ## Travis County, Texas                       21293 +/- 1176  34467 +/- 1645 
     ## Davidson County, Tennessee                 17023 +/- 899   22863 +/- 1103 
+    ## Williamson County, Tennessee               2856 +/- 461    5966 +/- 573   
     ## Henrico County, Virginia                   7351 +/- 539    12472 +/- 837  
     ## Chesterfield County, Virginia              7516 +/- 645    13300 +/- 683  
     ## Richmond city, Virginia                    6901 +/- 544    6042 +/- 454   
@@ -809,6 +821,7 @@ play.ed
     ## Lane County, Oregon                        49512 +/- 1204  20705 +/- 965  
     ## Travis County, Texas                       107708 +/- 2638 41719 +/- 1546 
     ## Davidson County, Tennessee                 65740 +/- 1813  26961 +/- 1289 
+    ## Williamson County, Tennessee               16372 +/- 1008  7582 +/- 639   
     ## Henrico County, Virginia                   32452 +/- 1146  14077 +/- 842  
     ## Chesterfield County, Virginia              34495 +/- 1485  17163 +/- 923  
     ## Richmond city, Virginia                    20834 +/- 1011  7652 +/- 575   
@@ -852,6 +865,7 @@ play.ed
     ## Lane County, Oregon                        41452 +/- 1061  
     ## Travis County, Texas                       217271 +/- 3137 
     ## Davidson County, Tennessee                 105080 +/- 2222 
+    ## Williamson County, Tennessee               46158 +/- 1520  
     ## Henrico County, Virginia                   54814 +/- 1384  
     ## Chesterfield County, Virginia              49730 +/- 1329  
     ## Richmond city, Virginia                    31303 +/- 1047  
@@ -895,6 +909,7 @@ play.ed
     ## Lane County, Oregon                        18240 +/- 767   4327 +/- 412   
     ## Travis County, Texas                       86065 +/- 1870  21356 +/- 882  
     ## Davidson County, Tennessee                 40405 +/- 1638  12050 +/- 733  
+    ## Williamson County, Tennessee               18139 +/- 966   4364 +/- 372   
     ## Henrico County, Virginia                   24030 +/- 1115  6285 +/- 607   
     ## Chesterfield County, Virginia              22214 +/- 890   4454 +/- 454   
     ## Richmond city, Virginia                    13782 +/- 748   4263 +/- 329   
@@ -938,6 +953,7 @@ play.ed
     ## Lane County, Oregon                        4462 +/- 439  
     ## Travis County, Texas                       16481 +/- 915 
     ## Davidson County, Tennessee                 8840 +/- 584  
+    ## Williamson County, Tennessee               3104 +/- 403  
     ## Henrico County, Virginia                   3320 +/- 374  
     ## Chesterfield County, Virginia              3571 +/- 398  
     ## Richmond city, Virginia                    2290 +/- 283  

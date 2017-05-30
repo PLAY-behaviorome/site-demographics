@@ -172,6 +172,23 @@ county.demo %>%
   knitr::kable()
 ```
 
+```{r econ-per-capita-income-table}
+county.demo %>%
+  arrange(US.Region, Site.code, State, City, County) %>%
+  select(US.Region, Site.code, City, State, County, total_population,
+         per_capita_income, median_rent) %>%
+  group_by(US.Region) %>%
+  summarize(med_per_cap_inc = median(per_capita_income),
+            min_per_cap_inc = min(per_capita_income),
+            max_per_cap_inc = max(per_capita_income),
+            med_med_rent = median(median_rent),
+            min_med_rent = min(median_rent),
+            max_med_rent = max(median_rent)) %>%
+  knitr::kable()
+
+```
+
+
 ```{r income-rent-region}
 county.demo %>%
   ggplot() +
@@ -246,10 +263,23 @@ play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[
                                    "MA",
                                    "Prof",
                                    "Ph.D"))
-# These numbers seem weird to me
 
-play.ed
+# Let's collapse for row/county = 1
+
+(lt.hs <- sum(play.ed[1,2:16]))
+(hs.grad <- sum(play.ed[1,17:18]))
+(some.coll <- sum(play.ed[1,19:21]))
+(BA <- sum(play.ed[1,22]))
+(MA.plus <- sum(play.ed[1,23:25]))
 ```
+
+```{r educational-attainment-redux}
+# Table B15003
+# ed.table.B15003 <- acs.fetch(geography = play.geo, endyear = 2015, table.number = "B15003")
+# 
+# ed.table.B15003
+```
+
 
 ## Next steps
 

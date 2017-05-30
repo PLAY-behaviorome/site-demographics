@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-05-30 07:35:51
+2017-05-30 07:39:49
 
 Background
 ----------
@@ -255,6 +255,10 @@ county.demo %>%
 | West      | UCR       | Riverside       | CA    | Riverside            |            2228528|                23591|          1015|
 | West      | UCSC      | Santa Cruz      | CA    | Santa Cruz           |             264808|                32295|          1282|
 | West      | UO        | Eugene          | OR    | Lane                 |             353382|                24224|           720|
+
+### Summary across counties
+
+This plots the median (min & max) of the per capita income and the median (min & max) of median rent.
 
 ``` r
 county.demo %>%

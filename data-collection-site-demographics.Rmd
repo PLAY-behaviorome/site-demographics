@@ -172,6 +172,10 @@ county.demo %>%
   knitr::kable()
 ```
 
+### Summary across counties
+
+This plots the median (min & max) of the per capita income and the median (min & max) of median rent.
+
 ```{r econ-per-capita-income-table}
 county.demo %>%
   arrange(US.Region, Site.code, State, City, County) %>%

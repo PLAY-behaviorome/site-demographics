@@ -1,7 +1,7 @@
 play-launch-group
 ================
 Rick O. Gilmore
-2017-05-30 09:00:12
+2017-05-30 09:03:14
 
 Background
 ----------
@@ -15,7 +15,18 @@ Open the project roster.
 
 ``` r
 launch_group <- read.csv(paste0(csv.dir, "play-roster.csv"), stringsAsFactors = FALSE)
+```
 
+Summarize characteristics of launch group members
+-------------------------------------------------
+
+To determine R15 status, I compared list of institutions that are *ineligible* according to this list from NIH:
+
+<https://grants.nih.gov/grants/funding/R15_eligibility_2016-2017.pdf>
+
+I edited the play-roster.csv file accordingly.
+
+``` r
 # New/Not_new
 launch_group %>% 
   group_by(New) %>% 
@@ -71,7 +82,6 @@ launch_group %>%
 
 ``` r
 # R-15 eligible
-# Institution Type
 launch_group %>% 
   group_by(R15_eligible) %>% 
   summarise(N = n()) %>%

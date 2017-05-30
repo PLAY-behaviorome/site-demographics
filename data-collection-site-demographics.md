@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-05-30 16:02:22
+2017-05-30 16:34:35
 
 Background
 ----------
@@ -704,6 +704,117 @@ hh.income.by.cty %>%
 |          0.2143089|          0.2079321|            0.283328|           0.2944309|
 
 ### Percentage of Spanish speakers
+
+It appears that table `B16007` contains info about `AGE BY LANGUAGE SPOKEN AT HOME FOR THE POPULATION 5 YEARS AND OVER`.
+
+ACSSF B16007 46 1 Total:
+ACSSF B16007 46 2 5 to 17 years:
+ACSSF B16007 46 3 Speak only English
+ACSSF B16007 46 4 Speak Spanish
+ACSSF B16007 46 5 Speak other Indo-European languages ACSSF B16007 46 6 Speak Asian and Pacific Island languages
+ACSSF B16007 46 7 Speak other languages
+ACSSF B16007 46 8 18 to 64 years: ACSSF B16007 46 9 Speak only English
+ACSSF B16007 46 10 Speak Spanish
+ACSSF B16007 46 11 Speak other Indo-European languages ACSSF B16007 46 12 Speak Asian and Pacific Island languages
+ACSSF B16007 46 13 Speak other languages
+ACSSF B16007 46 14 65 years and over:
+ACSSF B16007 46 15 Speak only English
+ACSSF B16007 46 16 Speak Spanish
+ACSSF B16007 46 17 Speak other Indo-European languages ACSSF B16007 46 18 Speak Asian and Pacific Island languages
+ACSSF B16007 46 19 Speak other languages
+
+For our purposes, I suggest we define "English speaking" as 9 + 15; "Spanish speaking" as 10+16, and "Other speaking" as sum(11:13)+sum(17:19).
+
+``` r
+# Table B16007
+lang.at.home <- acs.fetch(geography = play.geo, endyear = 2015, table.number = "B16007")
+
+english <- function(i) lang.at.home[i,9] + lang.at.home[i,15]
+spanish  <- function(i) lang.at.home[i,10] + lang.at.home[i,16]
+other <- function(i) sum(lang.at.home[i,11:13]) + sum(lang.at.home[i,17:19])
+tot <- function(i) lang.at.home[i,8] + lang.at.home[i,14]
+
+Make.lang.at.home <- function(i) {
+  this.cty <- slot(lang.at.home[i,1], "geography")$NAME
+  data.frame(county = this.cty,
+             tot = as.numeric(slot(tot(i), "estimate")),
+             english = as.numeric(slot(english(i), "estimate")),
+             spanish = as.numeric(slot(spanish(i), "estimate")),
+             other = as.numeric(slot(other(i), "estimate")))
+}
+
+lang.at.home.list <- lapply(1:dim(lang.at.home)[1], Make.lang.at.home)
+lang.at.home.df <- Reduce( function(x,y) full_join(x,y, all=TRUE), lang.at.home.list)
+
+lang.at.home.df %>%
+  mutate(p.english = english/tot,
+         p.spanish = spanish/tot,
+         p.other = other/tot) %>%
+  select(county, p.english, p.spanish, p.other) ->
+  lang.at.home.by.cty
+
+lang.at.home.by.cty %>%
+  knitr::kable()
+```
+
+| county                                     |  p.english|  p.spanish|    p.other|
+|:-------------------------------------------|----------:|----------:|----------:|
+| Suffolk County, Massachusetts              |  0.6220890|  0.1737364|  0.2041746|
+| Philadelphia County, Pennsylvania          |  0.7787684|  0.0971465|  0.1240851|
+| Delaware County, Pennsylvania              |  0.8809701|  0.0258173|  0.0932126|
+| Montgomery County, Pennsylvania            |  0.8649153|  0.0325944|  0.1024903|
+| Chester County, Pennsylvania               |  0.8840506|  0.0503467|  0.0656028|
+| Bucks County, Pennsylvania                 |  0.8858937|  0.0303328|  0.0837736|
+| Camden County, New Jersey                  |  0.7988834|  0.1152360|  0.0858807|
+| Gloucester County, New Jersey              |  0.9122925|  0.0377216|  0.0499859|
+| Tompkins County, New York                  |  0.8583154|  0.0229472|  0.1187374|
+| Orange County, California                  |  0.5452002|  0.2473834|  0.2074164|
+| Los Angeles County, California             |  0.4307724|  0.3788118|  0.1904158|
+| Richmond County, New York                  |  0.6852955|  0.1027182|  0.2119863|
+| Fulton County, Georgia                     |  0.8372743|  0.0623211|  0.1004046|
+| District of Columbia, District of Columbia |  0.8314164|  0.0795891|  0.0889945|
+| Arlington County, Virginia                 |  0.7135793|  0.1320907|  0.1543300|
+| Montgomery County, Maryland                |  0.5977085|  0.1535492|  0.2487423|
+| Harris County, Texas                       |  0.5754705|  0.3284024|  0.0961271|
+| Monroe County, Indiana                     |  0.8900974|  0.0218534|  0.0880493|
+| Ingham County, Michigan                    |  0.8791836|  0.0355736|  0.0852428|
+| Crawford County, Michigan                  |  0.9806006|  0.0063779|  0.0130215|
+| New York County, New York                  |  0.6043605|  0.2160970|  0.1795424|
+| Franklin County, Ohio                      |  0.8780535|  0.0335552|  0.0883914|
+| Allegheny County, Pennsylvania             |  0.9266391|  0.0135575|  0.0598034|
+| Mercer County, New Jersey                  |  0.7101846|  0.1316414|  0.1581740|
+| Centre County, Pennsylvania                |  0.8985879|  0.0170608|  0.0843514|
+| Tippecanoe County, Indiana                 |  0.8491829|  0.0546894|  0.0961277|
+| Essex County, New Jersey                   |  0.6483052|  0.1867735|  0.1649213|
+| Santa Clara County, California             |  0.4747717|  0.1761238|  0.3491046|
+| San Mateo County, California               |  0.5313899|  0.1882867|  0.2803234|
+| Orleans Parish, Louisiana                  |  0.9058712|  0.0447047|  0.0494240|
+| Yolo County, California                    |  0.6436704|  0.1969819|  0.1593477|
+| Merced County, California                  |  0.4729326|  0.4238769|  0.1031904|
+| Riverside County, California               |  0.6015960|  0.3200709|  0.0783331|
+| Santa Cruz County, California              |  0.7003775|  0.2350389|  0.0645836|
+| Miami-Dade County, Florida                 |  0.2628578|  0.6495962|  0.0875460|
+| Lane County, Oregon                        |  0.9181392|  0.0439754|  0.0378854|
+| Travis County, Texas                       |  0.6924457|  0.2289606|  0.0785937|
+| Davidson County, Tennessee                 |  0.8514803|  0.0754677|  0.0730520|
+| Williamson County, Tennessee               |  0.9207445|  0.0300279|  0.0492276|
+| Henrico County, Virginia                   |  0.8504706|  0.0422600|  0.1072694|
+| Chesterfield County, Virginia              |  0.8899595|  0.0566519|  0.0533886|
+| Richmond city, Virginia                    |  0.9033650|  0.0508509|  0.0457841|
+| James City County, Virginia                |  0.9247889|  0.0331971|  0.0420140|
+
+``` r
+# This uses mean p's so it may result in estimates != 900
+lang.at.home.by.cty %>%
+  summarize(study.proj.english = mean(p.english),
+            study.proj.spanish = mean(p.spanish),
+            study.proj.other= mean(p.other)) %>%
+  knitr::kable()
+```
+
+|  study.proj.english|  study.proj.spanish|  study.proj.other|
+|-------------------:|-------------------:|-----------------:|
+|           0.7561151|           0.1298604|         0.1140245|
 
 ### Better data about race/ethnicity
 

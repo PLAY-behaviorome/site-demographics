@@ -416,6 +416,69 @@ hh.income.by.cty %>%
 
 ### Percentage of Spanish speakers
 
+It appears that table `B16007` contains info about `AGE BY LANGUAGE SPOKEN AT HOME FOR THE POPULATION 5 YEARS AND OVER`.
+
+ACSSF	B16007	46	1	 		 	Total:	
+ACSSF	B16007	46	2	 		 	5 to 17 years:	
+ACSSF	B16007	46	3	 		 	Speak only English	
+ACSSF	B16007	46	4	 		 	Speak Spanish	
+ACSSF	B16007	46	5	 		 	Speak other Indo-European languages	
+ACSSF	B16007	46	6	 		 	Speak Asian and Pacific Island languages	
+ACSSF	B16007	46	7	 		 	Speak other languages	
+ACSSF	B16007	46	8	 		 	18 to 64 years:	
+ACSSF	B16007	46	9	 		 	Speak only English	
+ACSSF	B16007	46	10	 		 	Speak Spanish	
+ACSSF	B16007	46	11	 		 	Speak other Indo-European languages	
+ACSSF	B16007	46	12	 		 	Speak Asian and Pacific Island languages	
+ACSSF	B16007	46	13	 		 	Speak other languages	
+ACSSF	B16007	46	14	 		 	65 years and over:	
+ACSSF	B16007	46	15	 		 	Speak only English	
+ACSSF	B16007	46	16	 		 	Speak Spanish	
+ACSSF	B16007	46	17	 		 	Speak other Indo-European languages	
+ACSSF	B16007	46	18	 		 	Speak Asian and Pacific Island languages	
+ACSSF	B16007	46	19	 		 	Speak other languages	
+
+For our purposes, I suggest we define "English speaking" as 9 + 15; "Spanish speaking" as 10+16, and "Other speaking" as sum(11:13)+sum(17:19).
+
+```{r lang.at.home}
+# Table B16007
+lang.at.home <- acs.fetch(geography = play.geo, endyear = 2015, table.number = "B16007")
+
+english <- function(i) lang.at.home[i,9] + lang.at.home[i,15]
+spanish  <- function(i) lang.at.home[i,10] + lang.at.home[i,16]
+other <- function(i) sum(lang.at.home[i,11:13]) + sum(lang.at.home[i,17:19])
+tot <- function(i) lang.at.home[i,8] + lang.at.home[i,14]
+
+Make.lang.at.home <- function(i) {
+  this.cty <- slot(lang.at.home[i,1], "geography")$NAME
+  data.frame(county = this.cty,
+             tot = as.numeric(slot(tot(i), "estimate")),
+             english = as.numeric(slot(english(i), "estimate")),
+             spanish = as.numeric(slot(spanish(i), "estimate")),
+             other = as.numeric(slot(other(i), "estimate")))
+}
+
+lang.at.home.list <- lapply(1:dim(lang.at.home)[1], Make.lang.at.home)
+lang.at.home.df <- Reduce( function(x,y) full_join(x,y, all=TRUE), lang.at.home.list)
+
+lang.at.home.df %>%
+  mutate(p.english = english/tot,
+         p.spanish = spanish/tot,
+         p.other = other/tot) %>%
+  select(county, p.english, p.spanish, p.other) ->
+  lang.at.home.by.cty
+
+lang.at.home.by.cty %>%
+  knitr::kable()
+
+# This uses mean p's so it may result in estimates != 900
+lang.at.home.by.cty %>%
+  summarize(study.proj.english = mean(p.english),
+            study.proj.spanish = mean(p.spanish),
+            study.proj.other= mean(p.other)) %>%
+  knitr::kable()
+```
+
 ### Better data about race/ethnicity
 
 ## Next steps

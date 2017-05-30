@@ -1,7 +1,7 @@
 PLAY Planned Enrollment
 ================
 Rick O. Gilmore
-2017-05-19 05:22:17
+2017-05-30 09:22:59
 
 Background/Rationale
 --------------------
@@ -72,8 +72,6 @@ county.demo %>%
 | East      | PRIN      | NJ    | Mercer               |             368094|              54|              19|               9|                 16|
 | East      | PSU       | PA    | Centre               |             154460|              88|               3|               5|                  3|
 | East      | RUTG      | NJ    | Essex                |             785853|              33|              39|               5|                 21|
-| East      | VCU       | VA    | Chesterfield         |             320430|              65|              22|               3|                  7|
-| East      | VCU       | VA    | Richmond             |             207878|              39|              49|               2|                  6|
 | Midwest   | IU        | IN    | Monroe               |             139634|              86|               3|               6|                  3|
 | Midwest   | MSU       | MI    | Clinton              |              14017|              96|               1|               1|                  1|
 | Midwest   | MSU       | MI    | Ingham               |             281531|              72|              11|               5|                  7|
@@ -87,7 +85,9 @@ county.demo %>%
 | South     | UT        | TX    | Travis               |            1063248|              50|               8|               6|                 34|
 | South     | VBLT      | TN    | Davidson             |             638395|              57|              28|               3|                 10|
 | South     | VBLT      | TN    | Williamson           |             188935|              86|               4|               3|                  5|
+| South     | VCU       | VA    | Chesterfield         |             320430|              65|              22|               3|                  7|
 | South     | VCU       | VA    | Henrico              |             311314|              56|              29|               7|                  5|
+| South     | VCU       | VA    | Richmond             |             207878|              39|              49|               2|                  6|
 | South     | WM        | VA    | James City           |              68171|              77|              13|               3|                  5|
 | West      | CSF       | CA    | Orange               |            3051771|              43|               2|              18|                 34|
 | West      | CSL       | CA    | Los Angeles          |            9893481|              28|               8|              14|                 48|
@@ -144,8 +144,6 @@ county.planned.enrollment %>%
 | East      | PRIN      | NJ    | Mercer               |        16|         6|         3|            5| no    |       30|
 | East      | PSU       | PA    | Centre               |        26|         1|         2|            1| no    |       30|
 | East      | RUTG      | NJ    | Essex                |         9|        12|         2|            7| no    |       30|
-| East      | VCU       | VA    | Chesterfield         |        19|         7|         1|            3| yes   |       30|
-| East      | VCU       | VA    | Richmond             |        11|        15|         1|            2| yes   |       29|
 | Midwest   | IU        | IN    | Monroe               |        25|         1|         2|            1| no    |       29|
 | Midwest   | MSU       | MI    | Clinton              |        28|         1|         1|            1| yes   |       31|
 | Midwest   | MSU       | MI    | Ingham               |        21|         4|         2|            3| yes   |       30|
@@ -159,7 +157,9 @@ county.planned.enrollment %>%
 | South     | UT        | TX    | Travis               |        15|         3|         2|           11| no    |       31|
 | South     | VBLT      | TN    | Davidson             |        17|         9|         1|            3| yes   |       30|
 | South     | VBLT      | TN    | Williamson           |        25|         2|         1|            2| yes   |       30|
+| South     | VCU       | VA    | Chesterfield         |        19|         7|         1|            3| yes   |       30|
 | South     | VCU       | VA    | Henrico              |        16|         9|         3|            2| yes   |       30|
+| South     | VCU       | VA    | Richmond             |        11|        15|         1|            2| yes   |       29|
 | South     | WM        | VA    | James City           |        23|         4|         1|            2| yes   |       30|
 | West      | CSF       | CA    | Orange               |        12|         1|         6|           11| no    |       30|
 | West      | CSL       | CA    | Los Angeles          |         8|         3|         5|           15| no    |       31|

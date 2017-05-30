@@ -1,1 +1,44 @@
-City,State,County,US.Region,Site.code,Collecting,region,multiBoston,MA,suffolk,East,BU,Collecting,25025,noPhiladelphia,PA,philadelphia,East,CHOP,Collecting,42101,yesMedia,PA,delaware,East,CHOP,Collecting,42045,yesNorristown,PA,montgomery,East,CHOP,Collecting,42091,yesWest Chester,PA,chester,East,CHOP,Collecting,42029,yesDoylestown,PA,bucks,East,CHOP,Collecting,42017,yesCamden,NJ,camden,East,CHOP,Collecting,34007,yesWoodbury,NJ,gloucester,East,CHOP,Collecting,34015,yesIthaca,NY,tompkins,East,COR,Collecting,36109,noFullerton,CA,orange,West,CSF,Collecting,6059,noLong Beach,CA,los angeles,West,CSL,Collecting,6037,noStaten Island,NY,richmond,East,CUNYSI,Collecting,36085,noAtlanta,GA,fulton,South,EMRY,Collecting,13121,noWashington,DC,district of columbia,East,GTN,Collecting,11001,yesArlington,VA,arlington,East,GTN,Collecting,51013,yesBethesda,MD,montgomery,East,GTN,Collecting,24031,yesHouston,TX,harris,South,HOU,Collecting,48201,noBloomington,IN,monroe,Midwest,IU,Collecting,18105,noEast Lansing,MI,ingham,Midwest,MSU,Collecting,26065,yesEast Lansing,MI,clinton,Midwest,MSU,Collecting,26039,yesNew York,NY,new york,East,NYU,Collecting,36061,noColumbus,OH,franklin,Midwest,OSU,Collecting,39049,noPittsburgh,PA,allegheny,Midwest,PITT,Collecting,42003,noPrinceton,NJ,mercer,East,PRIN,Collecting,34021,noUniversity Park,PA,centre,East,PSU,Collecting,42027,noW. Lafayette,IN,tippecanoe,Midwest,PUR,Collecting,18157,noNewark,NJ,essex,East,RUTG,Collecting,34013,noPalo Alto,CA,santa clara,West,STAN,Collecting,6085,yesPalo Alto,CA,san mateo,West,STAN,Collecting,6081,yesNew Orleans,LA,orleans,South,TUL,Collecting,22071,noDavis,CA,yolo,West,UCD,Collecting,6113,noMerced,CA,merced,West,UCM,Collecting,6047,noRiverside,CA,riverside,West,UCR,Collecting,6065,noSanta Cruz,CA,santa cruz,West,UCSC,Collecting,6087,noMiami,FL,miami-dade,South,UMIA,Collecting,12086,noEugene,OR,lane,West,UO,Collecting,41039,noAustin,TX,travis,South,UT,Collecting,48453,noNashville,TN,davidson,South,VBLT,Collecting,47037,yesFranklin,TN,williamson,South,VBLT,Collecting,47187,yesRichmond,VA,henrico,South,VCU,Collecting,51087,yesChesterfield,VA,chesterfield,East,VCU,Collecting,51041,yesRichmond,VA,richmond,East,VCU,Collecting,51760,yesWilliamsburg,VA,james city,South,WM,Collecting,51095,yes
+City,State,County,US.Region,Site.code,Collecting,region,multi
+Boston,MA,suffolk,East,BU,Collecting,25025,no
+Philadelphia,PA,philadelphia,East,CHOP,Collecting,42101,yes
+Media,PA,delaware,East,CHOP,Collecting,42045,yes
+Norristown,PA,montgomery,East,CHOP,Collecting,42091,yes
+West Chester,PA,chester,East,CHOP,Collecting,42029,yes
+Doylestown,PA,bucks,East,CHOP,Collecting,42017,yes
+Camden,NJ,camden,East,CHOP,Collecting,34007,yes
+Woodbury,NJ,gloucester,East,CHOP,Collecting,34015,yes
+Ithaca,NY,tompkins,East,COR,Collecting,36109,no
+Fullerton,CA,orange,West,CSF,Collecting,6059,no
+Long Beach,CA,los angeles,West,CSL,Collecting,6037,no
+Staten Island,NY,richmond,East,CUNYSI,Collecting,36085,no
+Atlanta,GA,fulton,South,EMRY,Collecting,13121,no
+Washington,DC,district of columbia,East,GTN,Collecting,11001,yes
+Arlington,VA,arlington,East,GTN,Collecting,51013,yes
+Bethesda,MD,montgomery,East,GTN,Collecting,24031,yes
+Houston,TX,harris,South,HOU,Collecting,48201,no
+Bloomington,IN,monroe,Midwest,IU,Collecting,18105,no
+East Lansing,MI,ingham,Midwest,MSU,Collecting,26065,yes
+East Lansing,MI,clinton,Midwest,MSU,Collecting,26039,yes
+New York,NY,new york,East,NYU,Collecting,36061,no
+Columbus,OH,franklin,Midwest,OSU,Collecting,39049,no
+Pittsburgh,PA,allegheny,Midwest,PITT,Collecting,42003,no
+Princeton,NJ,mercer,East,PRIN,Collecting,34021,no
+University Park,PA,centre,East,PSU,Collecting,42027,no
+W. Lafayette,IN,tippecanoe,Midwest,PUR,Collecting,18157,no
+Newark,NJ,essex,East,RUTG,Collecting,34013,no
+Palo Alto,CA,santa clara,West,STAN,Collecting,6085,yes
+Palo Alto,CA,san mateo,West,STAN,Collecting,6081,yes
+New Orleans,LA,orleans,South,TUL,Collecting,22071,no
+Davis,CA,yolo,West,UCD,Collecting,6113,no
+Merced,CA,merced,West,UCM,Collecting,6047,no
+Riverside,CA,riverside,West,UCR,Collecting,6065,no
+Santa Cruz,CA,santa cruz,West,UCSC,Collecting,6087,no
+Miami,FL,miami-dade,South,UMIA,Collecting,12086,no
+Eugene,OR,lane,West,UO,Collecting,41039,no
+Austin,TX,travis,South,UT,Collecting,48453,no
+Nashville,TN,davidson,South,VBLT,Collecting,47037,yes
+Franklin,TN,williamson,South,VBLT,Collecting,47187,yes
+Richmond,VA,henrico,South,VCU,Collecting,51087,yes
+Chesterfield,VA,chesterfield,South,VCU,Collecting,51041,yes
+Richmond,VA,richmond,South,VCU,Collecting,51760,yes
+Williamsburg,VA,james city,South,WM,Collecting,51095,yes

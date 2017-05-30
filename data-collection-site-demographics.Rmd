@@ -74,6 +74,23 @@ county.demo %>%
   knitr::kable()
 ```
 
+### Summaries across sites
+
+```{r race-ethnicity-across-sites}
+county.demo %>%
+  arrange(US.Region, Site.code, State, City, County) %>%
+  select(US.Region, Site.code, City, State, County, total_population, percent_white,
+         percent_black, percent_asian, percent_hispanic) %>%
+  group_by(US.Region) %>%
+  summarise(med_black = median(percent_black),
+            min_black = min(percent_black),
+            max_black = max(percent_black),
+            med_hisp = median(percent_hispanic),
+            min_hisp = min(percent_hispanic),
+            max_hisp = max(percent_hispanic))%>%
+  knitr::kable()
+```
+
 ## Population by region
 
 ```{r pop-by-region-boxplot}
@@ -240,7 +257,6 @@ assign(geo.name, Make.county.geo(cty, county.demo))
 ed.attain <- acs.lookup(table.name="Educational Attainment for the Population 25 Years and Over", endyear=2015)
 
 # Variables 1:25 seem to contain the relevant info
-
 play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[1:25],
                      col.names = c("Total",
                                    "None",
@@ -284,6 +300,10 @@ play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[
 # ed.table.B15003
 ```
 
+```{r ed-less-than-hs}
+# Columns 2:16 are grades < HS diploma
+lapply(1:dim(play.ed)[1], function(i) c(play.ed[i,1], sum(play.ed[i,2:16])))
+```
 
 ## Next steps
 

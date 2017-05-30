@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-05-30 07:39:49
+2017-05-30 08:23:20
 
 Background
 ----------
@@ -91,6 +91,27 @@ county.demo %>%
 | West      | UCR       | Riverside       | CA    | Riverside            |            2228528|              39|               6|               6|                 46|
 | West      | UCSC      | Santa Cruz      | CA    | Santa Cruz           |             264808|              59|               1|               4|                 32|
 | West      | UO        | Eugene          | OR    | Lane                 |             353382|              84|               1|               2|                  8|
+
+### Summaries across sites
+
+``` r
+county.demo %>%
+  arrange(US.Region, Site.code, State, City, County) %>%
+  select(US.Region, Site.code, City, State, County, total_population, percent_white,
+         percent_black, percent_asian, percent_hispanic) %>%
+  group_by(US.Region) %>%
+  summarise(med_black = median(percent_black),
+            min_black = min(percent_black),
+            max_black = max(percent_black),
+            med_hisp = median(percent_hispanic),
+            min_hisp = min(percent_hispanic),
+            max_hisp = max(percent_hispanic))%>%
+  knitr::kable()
+```
+
+|  med\_black|  min\_black|  max\_black|  med\_hisp|  min\_hisp|  max\_hisp|
+|-----------:|-----------:|-----------:|----------:|----------:|----------:|
+|          10|           1|          59|         10|          1|         65|
 
 Population by region
 --------------------
@@ -329,7 +350,6 @@ assign(geo.name, Make.county.geo(cty, county.demo))
 ed.attain <- acs.lookup(table.name="Educational Attainment for the Population 25 Years and Over", endyear=2015)
 
 # Variables 1:25 seem to contain the relevant info
-
 play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[1:25],
                      col.names = c("Total",
                                    "None",
@@ -419,6 +439,784 @@ play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[
 # 
 # ed.table.B15003
 ```
+
+``` r
+# Columns 2:16 are grades < HS diploma
+lapply(1:dim(play.ed)[1], function(i) c(play.ed[i,1], sum(play.ed[i,2:16])))
+```
+
+    ## [[1]]
+    ## [[1]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               Total         
+    ## Suffolk County, Massachusetts 511404 +/- 109
+    ## 
+    ## [[1]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               aggregate                 
+    ## Suffolk County, Massachusetts 80333 +/- 2261.53156069067
+    ## 
+    ## 
+    ## [[2]]
+    ## [[2]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                   Total         
+    ## Philadelphia County, Pennsylvania 1024009 +/- 91
+    ## 
+    ## [[2]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                   aggregate                  
+    ## Philadelphia County, Pennsylvania 184130 +/- 3456.01895249433
+    ## 
+    ## 
+    ## [[3]]
+    ## [[3]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               Total        
+    ## Delaware County, Pennsylvania 376325 +/- 51
+    ## 
+    ## [[3]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               aggregate                 
+    ## Delaware County, Pennsylvania 29328 +/- 1231.89812890515
+    ## 
+    ## 
+    ## [[4]]
+    ## [[4]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                 Total        
+    ## Montgomery County, Pennsylvania 568085 +/- 62
+    ## 
+    ## [[4]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                 aggregate                 
+    ## Montgomery County, Pennsylvania 35497 +/- 1238.02382852674
+    ## 
+    ## 
+    ## [[5]]
+    ## [[5]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                              Total        
+    ## Chester County, Pennsylvania 342356 +/- 85
+    ## 
+    ## [[5]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                              aggregate                 
+    ## Chester County, Pennsylvania 24911 +/- 1171.04525958649
+    ## 
+    ## 
+    ## [[6]]
+    ## [[6]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            Total        
+    ## Bucks County, Pennsylvania 440969 +/- 50
+    ## 
+    ## [[6]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            aggregate                 
+    ## Bucks County, Pennsylvania 28849 +/- 1164.76049040135
+    ## 
+    ## 
+    ## [[7]]
+    ## [[7]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           Total        
+    ## Camden County, New Jersey 346315 +/- 83
+    ## 
+    ## [[7]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           aggregate                
+    ## Camden County, New Jersey 41815 +/- 1448.3494053577
+    ## 
+    ## 
+    ## [[8]]
+    ## [[8]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               Total        
+    ## Gloucester County, New Jersey 196038 +/- 60
+    ## 
+    ## [[8]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               aggregate                 
+    ## Gloucester County, New Jersey 16340 +/- 863.357399921956
+    ## 
+    ## 
+    ## [[9]]
+    ## [[9]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           Total       
+    ## Tompkins County, New York 59323 +/- 87
+    ## 
+    ## [[9]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           aggregate                
+    ## Tompkins County, New York 3419 +/- 440.226078282512
+    ## 
+    ## 
+    ## [[10]]
+    ## [[10]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           Total        
+    ## Orange County, California 2077783 +/- 0
+    ## 
+    ## [[10]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           aggregate                  
+    ## Orange County, California 326861 +/- 4698.71918718282
+    ## 
+    ## 
+    ## [[11]]
+    ## [[11]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                Total        
+    ## Los Angeles County, California 6653174 +/- 0
+    ## 
+    ## [[11]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                aggregate                   
+    ## Los Angeles County, California 1511510 +/- 8942.17635701735
+    ## 
+    ## 
+    ## [[12]]
+    ## [[12]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           Total        
+    ## Richmond County, New York 322287 +/- 68
+    ## 
+    ## [[12]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           aggregate                 
+    ## Richmond County, New York 36421 +/- 1454.50060158118
+    ## 
+    ## 
+    ## [[13]]
+    ## [[13]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                        Total         
+    ## Fulton County, Georgia 650445 +/- 138
+    ## 
+    ## [[13]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                        aggregate                
+    ## Fulton County, Georgia 58903 +/- 2294.1126824984
+    ## 
+    ## 
+    ## [[14]]
+    ## [[14]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                            Total        
+    ## District of Columbia, District of Columbia 453952 +/- 79
+    ## 
+    ## [[14]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                            aggregate               
+    ## District of Columbia, District of Columbia 48430 +/- 1609.396781406
+    ## 
+    ## 
+    ## [[15]]
+    ## [[15]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            Total         
+    ## Arlington County, Virginia 168459 +/- 177
+    ## 
+    ## [[15]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            aggregate                
+    ## Arlington County, Virginia 10987 +/- 1125.8685536065
+    ## 
+    ## 
+    ## [[16]]
+    ## [[16]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                             Total         
+    ## Montgomery County, Maryland 698595 +/- 127
+    ## 
+    ## [[16]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                             aggregate                 
+    ## Montgomery County, Maryland 61632 +/- 2042.70433494424
+    ## 
+    ## 
+    ## [[17]]
+    ## [[17]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                      Total          
+    ## Harris County, Texas 2734398 +/- 197
+    ## 
+    ## [[17]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                      aggregate                  
+    ## Harris County, Texas 558167 +/- 6887.09510606613
+    ## 
+    ## 
+    ## [[18]]
+    ## [[18]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                        Total        
+    ## Monroe County, Indiana 79416 +/- 101
+    ## 
+    ## [[18]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                        aggregate                
+    ## Monroe County, Indiana 6071 +/- 555.819215213004
+    ## 
+    ## 
+    ## [[19]]
+    ## [[19]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                         Total        
+    ## Ingham County, Michigan 169257 +/- 92
+    ## 
+    ## [[19]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                         aggregate                 
+    ## Ingham County, Michigan 13883 +/- 796.596510160571
+    ## 
+    ## 
+    ## [[20]]
+    ## [[20]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           Total       
+    ## Crawford County, Michigan 10349 +/- 41
+    ## 
+    ## [[20]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           aggregate                
+    ## Crawford County, Michigan 1296 +/- 152.348285188905
+    ## 
+    ## 
+    ## [[21]]
+    ## [[21]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           Total          
+    ## New York County, New York 1229036 +/- 183
+    ## 
+    ## [[21]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           aggregate                  
+    ## New York County, New York 164399 +/- 3783.59286921836
+    ## 
+    ## 
+    ## [[22]]
+    ## [[22]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                       Total         
+    ## Franklin County, Ohio 797167 +/- 172
+    ## 
+    ## [[22]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                       aggregate                 
+    ## Franklin County, Ohio 79751 +/- 2152.93659915939
+    ## 
+    ## 
+    ## [[23]]
+    ## [[23]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                Total        
+    ## Allegheny County, Pennsylvania 877398 +/- 60
+    ## 
+    ## [[23]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                aggregate                
+    ## Allegheny County, Pennsylvania 56666 +/- 1427.9789914421
+    ## 
+    ## 
+    ## [[24]]
+    ## [[24]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           Total        
+    ## Mercer County, New Jersey 247262 +/- 54
+    ## 
+    ## [[24]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           aggregate                 
+    ## Mercer County, New Jersey 31060 +/- 1331.89076128638
+    ## 
+    ## 
+    ## [[25]]
+    ## [[25]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                             Total        
+    ## Centre County, Pennsylvania 91495 +/- 141
+    ## 
+    ## [[25]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                             aggregate                
+    ## Centre County, Pennsylvania 6242 +/- 535.508169872319
+    ## 
+    ## 
+    ## [[26]]
+    ## [[26]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            Total       
+    ## Tippecanoe County, Indiana 99327 +/- 47
+    ## 
+    ## [[26]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            aggregate                
+    ## Tippecanoe County, Indiana 9654 +/- 765.762365228274
+    ## 
+    ## 
+    ## [[27]]
+    ## [[27]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                          Total         
+    ## Essex County, New Jersey 524610 +/- 123
+    ## 
+    ## [[27]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                          aggregate                 
+    ## Essex County, New Jersey 82920 +/- 2120.25187183033
+    ## 
+    ## 
+    ## [[28]]
+    ## [[28]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                Total        
+    ## Santa Clara County, California 1268629 +/- 0
+    ## 
+    ## [[28]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                                aggregate                  
+    ## Santa Clara County, California 165229 +/- 3063.53211179514
+    ## 
+    ## 
+    ## [[29]]
+    ## [[29]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                              Total        
+    ## San Mateo County, California 530221 +/- 71
+    ## 
+    ## [[29]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                              aggregate                 
+    ## San Mateo County, California 61888 +/- 2142.73680138276
+    ## 
+    ## 
+    ## [[30]]
+    ## [[30]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           Total        
+    ## Orleans Parish, Louisiana 258654 +/- 73
+    ## 
+    ## [[30]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           aggregate                 
+    ## Orleans Parish, Louisiana 38392 +/- 1227.80576639793
+    ## 
+    ## 
+    ## [[31]]
+    ## [[31]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                         Total         
+    ## Yolo County, California 120693 +/- 152
+    ## 
+    ## [[31]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                         aggregate                 
+    ## Yolo County, California 17508 +/- 1085.82641338291
+    ## 
+    ## 
+    ## [[32]]
+    ## [[32]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           Total         
+    ## Merced County, California 152405 +/- 148
+    ## 
+    ## [[32]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                           aggregate                 
+    ## Merced County, California 48959 +/- 1805.96345477975
+    ## 
+    ## 
+    ## [[33]]
+    ## [[33]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                              Total        
+    ## Riverside County, California 1441999 +/- 0
+    ## 
+    ## [[33]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                              aggregate                  
+    ## Riverside County, California 287146 +/- 4548.82776108307
+    ## 
+    ## 
+    ## [[34]]
+    ## [[34]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               Total         
+    ## Santa Cruz County, California 173902 +/- 188
+    ## 
+    ## [[34]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               aggregate                 
+    ## Santa Cruz County, California 25036 +/- 1436.63913353354
+    ## 
+    ## 
+    ## [[35]]
+    ## [[35]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            Total          
+    ## Miami-Dade County, Florida 1838746 +/- 138
+    ## 
+    ## [[35]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            aggregate                  
+    ## Miami-Dade County, Florida 366110 +/- 5441.92080059973
+    ## 
+    ## 
+    ## [[36]]
+    ## [[36]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                     Total         
+    ## Lane County, Oregon 241134 +/- 112
+    ## 
+    ## [[36]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                     aggregate                 
+    ## Lane County, Oregon 21442 +/- 1137.21106220437
+    ## 
+    ## 
+    ## [[37]]
+    ## [[37]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                      Total        
+    ## Travis County, Texas 742369 +/- 43
+    ## 
+    ## [[37]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                      aggregate                 
+    ## Travis County, Texas 90321 +/- 2707.21425084902
+    ## 
+    ## 
+    ## [[38]]
+    ## [[38]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            Total        
+    ## Davidson County, Tennessee 446174 +/- 72
+    ## 
+    ## [[38]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                            aggregate                 
+    ## Davidson County, Tennessee 56739 +/- 1998.95822867813
+    ## 
+    ## 
+    ## [[39]]
+    ## [[39]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                              Total         
+    ## Williamson County, Tennessee 128761 +/- 140
+    ## 
+    ## [[39]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                              aggregate                
+    ## Williamson County, Tennessee 5996 +/- 633.792552812038
+    ## 
+    ## 
+    ## [[40]]
+    ## [[40]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                          Total        
+    ## Henrico County, Virginia 217423 +/- 89
+    ## 
+    ## [[40]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                          aggregate                 
+    ## Henrico County, Virginia 20311 +/- 1167.50760168831
+    ## 
+    ## 
+    ## [[41]]
+    ## [[41]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               Total         
+    ## Chesterfield County, Virginia 216740 +/- 104
+    ## 
+    ## [[41]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                               aggregate                 
+    ## Chesterfield County, Virginia 19587 +/- 1027.59184504355
+    ## 
+    ## 
+    ## [[42]]
+    ## [[42]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                         Total        
+    ## Richmond city, Virginia 143240 +/- 64
+    ## 
+    ## [[42]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                         aggregate                 
+    ## Richmond city, Virginia 24087 +/- 1232.49989858012
+    ## 
+    ## 
+    ## [[43]]
+    ## [[43]][[1]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                             Total        
+    ## James City County, Virginia 50954 +/- 233
+    ## 
+    ## [[43]][[2]]
+    ## ACS DATA: 
+    ##  2011 -- 2015 ;
+    ##   Estimates w/90% confidence intervals;
+    ##   for different intervals, see confint()
+    ##                             aggregate                
+    ## James City County, Virginia 3163 +/- 509.220973645038
 
 Next steps
 ----------

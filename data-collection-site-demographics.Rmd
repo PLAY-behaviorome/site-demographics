@@ -300,16 +300,129 @@ play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[
 # ed.table.B15003
 ```
 
-```{r ed-less-than-hs}
+```{r ed-attain-tables}
 # Columns 2:16 are grades < HS diploma
-lapply(1:dim(play.ed)[1], function(i) c(play.ed[i,1], sum(play.ed[i,2:16])))
+
+lt.hs <- function(i) sum(play.ed[i,2:16])
+hs.grad <- function(i) sum(play.ed[i,17:18])
+some.coll <- function(i) sum(play.ed[i,19:21])
+ba.plus <- function(i) sum(play.ed[i,22:25])
+
+Make.ed.attain.table <- function(i) {
+  this.cty <- slot(play.ed[i,1], "geography")$NAME
+  data.frame(county = this.cty,
+             tot = as.numeric(slot(play.ed[i,1], "estimate")),
+             lt.hs = as.numeric(slot(lt.hs(i), "estimate")),
+             hs.grad = as.numeric(slot(hs.grad(i), "estimate")),
+             some.coll = as.numeric(slot(some.coll(i), "estimate")),
+             ba.plus = as.numeric(slot(ba.plus(i), "estimate")))
+}
+
+ed.attain.list <- lapply(1:dim(play.ed)[1], Make.ed.attain.table)
+ed.attain.df <- Reduce( function(x,y) full_join(x,y, all=TRUE), ed.attain.list)
 ```
+
+```{r ed-attain-summary-tables-by-county}
+ed.attain.df %>%
+  mutate(p.lt.hs = 100*lt.hs/tot,
+         p.hs.grad = 100*hs.grad/tot,
+         p.some.coll = 100*some.coll/tot,
+         p.ba.plus = 100*ba.plus/tot) %>%
+  select(county, p.lt.hs, p.hs.grad, p.some.coll, p.ba.plus) %>%
+  knitr::kable()
+```
+
+Now, calculate mean proportions of attainment across counties and use to calculate numbers out of *n*=900.
+
+```{r proj-enroll-ed-attain}
+
+ed.attain.df %>%
+  mutate(p.lt.hs = lt.hs/tot,
+         p.hs.grad = hs.grad/tot,
+         p.some.coll = some.coll/tot,
+         p.ba.plus = ba.plus/tot) %>%
+  select(county, p.lt.hs, p.hs.grad, p.some.coll, p.ba.plus) ->
+  ed.attain.by.cty
+
+# This doesn't work because I'm still aggregating at county level
+# If I were aggregating at site level it would work.
+# Calculate projected enrollment by ed attain category
+# ed.attain.by.cty %>%
+#   mutate(proj.lt.hs = p.lt.hs*30,
+#            proj.hs.grad = p.hs.grad*30,
+#            proj.some.coll = p.some.coll*30,
+#            proj.ba.plus = p.ba.plus*30)  %>%
+#   select(county, proj.lt.hs, proj.hs.grad, proj.some.coll, proj.ba.plus) ->
+#   ed.attain.by.cty
+
+ed.attain.by.cty %>%
+  knitr::kable()
+
+# This uses mean p's so it may result in estimates > 900
+ed.attain.by.cty %>%
+  summarize(study.proj.lt.hs = mean(p.lt.hs),
+            study.proj.hs.grad = mean(p.hs.grad),
+            study.proj.some.coll = mean(p.some.coll),
+            study.proj.ba.plus = mean(p.ba.plus)) %>%
+  knitr::kable()
+```
+
+### Household income
+
+It looks like table `B19001` contains "HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2013 INFLATION-ADJUSTED DOLLARS)", and there are 17 fields.
+
+```{r household-income}
+# Table B19001
+hh.income <- acs.fetch(geography = play.geo, endyear = 2015, table.number = "B19001")
+
+# If we take $25K for family of 3-4 as poverty rate
+lt.25k <- function(i) sum(hh.income[i,2:5])
+lt.50k  <- function(i) sum(hh.income[i,6:10])
+lt.100k    <- function(i) sum(hh.income[i,11:13])
+gt.100k    <- function(i) sum(hh.income[i,14:17])
+
+Make.hh.income.table <- function(i) {
+  this.cty <- slot(play.ed[i,1], "geography")$NAME
+  data.frame(county = this.cty,
+             tot = as.numeric(slot(hh.income[i,1], "estimate")),
+             lt.25k = as.numeric(slot(lt.25k(i), "estimate")),
+             lt.50k = as.numeric(slot(lt.50k(i), "estimate")),
+             lt.100k = as.numeric(slot(lt.100k(i), "estimate")),
+             gt.100k = as.numeric(slot(gt.100k(i), "estimate")))
+}
+
+hh.income.list <- lapply(1:dim(hh.income)[1], Make.hh.income.table)
+hh.income.df <- Reduce( function(x,y) full_join(x,y, all=TRUE), hh.income.list)
+
+hh.income.df %>%
+  mutate(p.lt.25k = lt.25k/tot,
+         p.lt.50k = lt.50k/tot,
+         p.lt.100k = lt.100k/tot,
+         p.gt.100k = gt.100k/tot) %>%
+  select(county, p.lt.25k, p.lt.50k, p.lt.100k, p.gt.100k) ->
+  hh.income.by.cty
+
+hh.income.by.cty %>%
+  knitr::kable()
+
+# This uses mean p's so it may result in estimates > 900
+hh.income.by.cty %>%
+  summarize(study.proj.lt.25k = mean(p.lt.25k),
+            study.proj.lt.50k = mean(p.lt.50k),
+            study.proj.lt.100k = mean(p.lt.100k),
+            study.proj.gt.100k = mean(p.gt.100k)) %>%
+  knitr::kable()
+```
+
+### Percentage of Spanish speakers
+
+### Better data about race/ethnicity
 
 ## Next steps
 
 1. ~~We should confirm that our target sites collect data from the counties listed, and that the county-wide demographics are plausible~~.
 2. ~~We should also see if there are *other* counties target sites collect from and consider asking them to estimate the proportion of their recruiting that comes from county A vs. county B~~. It would be fun to have a Shiny app to collect this.
-3. We should explore the `acs` package to grab additional demographic data, especially the indicators used in the draft grant proposal. The `choroplethr` package used in the above had demographic variables similar, but not identical to the ones we have used in the proposal.
+3. ~~We should explore the `acs` package to grab additional demographic data, especially the indicators used in the draft grant proposal. The `choroplethr` package used in the above had demographic variables similar, but not identical to the ones we have used in the proposal~~.
 
 ## Resources
 

@@ -1,0 +1,80 @@
+---
+title: "play-launch-group"
+author: "Rick O. Gilmore"
+date: "`r Sys.time()`"
+output:
+  github_document:
+  html_document:
+    toc: true
+    toc_levels: 2
+    toc_floating: true
+    code_folding: hide
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      error = FALSE,
+                      message = FALSE,
+                      fig.path = "img/")
+
+# Install packman for subsequent package management
+if (!("pacman" %in% installed.packages()[,])) {
+    install.packages("pacman")
+}
+
+# Load packages
+pacman::p_load(ggplot2, dplyr, stringr)
+
+# Paths
+csv.dir <- "analysis/csv/"
+
+# Helper functions
+source("analysis/R/Cap.all.R")
+```
+
+## Background
+
+This report describes the characteristics of the data collection and coding sites and the launch group members.
+
+## Generate data file
+
+Open the project roster.
+
+```{r open-roster-file}
+launch_group <- read.csv(paste0(csv.dir, "play-roster.csv"), stringsAsFactors = FALSE)
+
+# New/Not_new
+launch_group %>% 
+  group_by(New) %>% 
+  summarise(N = n()) %>%
+  knitr::kable()
+
+# Gender
+launch_group %>% 
+  group_by(Gender) %>% 
+  summarise(N = n()) %>%
+  knitr::kable()
+
+# White/non
+launch_group %>% 
+  group_by(Race_eth) %>% 
+  summarise(N = n()) %>%
+  knitr::kable()
+
+# Institution Type
+launch_group %>% 
+  group_by(Institution_Type) %>% 
+  summarise(N = n()) %>%
+  knitr::kable()
+
+# R-15 eligible
+# Institution Type
+launch_group %>% 
+  group_by(R15_eligible) %>% 
+  summarise(N = n()) %>%
+  knitr::kable()
+
+```
+

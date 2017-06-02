@@ -59,7 +59,9 @@ county.demo <- left_join(counties, demo)
 county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
 ```
 
-## Tabular summary
+## Race/ethnicity
+
+Summaries of county-by-county race/ethnicity data.
 
 ```{r tabular-summary}
 # Select collecting sites only
@@ -74,7 +76,7 @@ county.demo %>%
   knitr::kable()
 ```
 
-### Summaries across sites
+### Summary across counties
 
 ```{r race-ethnicity-across-sites}
 county.demo %>%
@@ -91,7 +93,9 @@ county.demo %>%
   knitr::kable()
 ```
 
-## Population by region
+## Plots of population, race/ethnicity, & age by region
+
+County-level data.
 
 ```{r pop-by-region-boxplot}
 county.demo %>%
@@ -101,8 +105,6 @@ county.demo %>%
   geom_point() +
   ggtitle("Population by region")
 ```
-
-## Race, ethnicity, & age
 
 ```{r black}
 county.demo %>%
@@ -181,6 +183,10 @@ county.demo %>%
 
 ## Economic indicators
 
+The `county.regions` data set from the `choroplethr` package contains data about per capita income and median rent.
+
+We present a tabular summary first of the county-by-county data.
+
 ```{r econ-tabular-summary}
 county.demo %>%
   arrange(US.Region, Site.code, State, City, County) %>%
@@ -234,9 +240,9 @@ county.fips <- as.numeric(substr(county.demo$county.fips.character,3,5))
 play.geo <- geo.make(state = state.fips, county = county.fips)
 ```
 
-This works, but after some further exploration, I think it may be better to generate site-specific geographies.
+This works, and I use it blow. I also provide the following code to generate site-specific geographies for future use cases.
 
-```{r generate-site-geo}
+```{r generate-site-geo, eval=FALSE}
 Make.county.geo <- function(i, df) {
   geo.make(state = as.numeric(df$state.fips.character[i]),
               county =
@@ -251,7 +257,7 @@ geo.name <- paste0(county.demo$Site.code[cty], "_", county.demo$county.name[cty]
 assign(geo.name, Make.county.geo(cty, county.demo))
 ```
 
-### Education data
+## Education data from ACS
 
 ```{r ed-attain-all-counties}
 ed.attain <- acs.lookup(table.name="Educational Attainment for the Population 25 Years and Over", endyear=2015)
@@ -284,30 +290,17 @@ play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[
                                    "Prof",
                                    "Ph.D"))
 
-# Let's collapse for row/county = 1
 
-(lt.hs <- sum(play.ed[1,2:16]))
-(hs.grad <- sum(play.ed[1,17:18]))
-(some.coll <- sum(play.ed[1,19:21]))
-(BA <- sum(play.ed[1,22]))
-(MA.plus <- sum(play.ed[1,23:25]))
-```
-
-```{r educational-attainment-redux}
-# Table B15003
-# ed.table.B15003 <- acs.fetch(geography = play.geo, endyear = 2015, table.number = "B15003")
-# 
-# ed.table.B15003
 ```
 
 ```{r ed-attain-tables}
 # Columns 2:16 are grades < HS diploma
-
 lt.hs <- function(i) sum(play.ed[i,2:16])
 hs.grad <- function(i) sum(play.ed[i,17:18])
 some.coll <- function(i) sum(play.ed[i,19:21])
 ba.plus <- function(i) sum(play.ed[i,22:25])
 
+# Use functions to create data table for easier manipulation
 Make.ed.attain.table <- function(i) {
   this.cty <- slot(play.ed[i,1], "geography")$NAME
   data.frame(county = this.cty,
@@ -335,7 +328,6 @@ ed.attain.df %>%
 Now, calculate mean proportions of attainment across counties and use to calculate numbers out of *n*=900.
 
 ```{r proj-enroll-ed-attain}
-
 ed.attain.df %>%
   mutate(p.lt.hs = lt.hs/tot,
          p.hs.grad = hs.grad/tot,
@@ -344,21 +336,10 @@ ed.attain.df %>%
   select(county, p.lt.hs, p.hs.grad, p.some.coll, p.ba.plus) ->
   ed.attain.by.cty
 
-# This doesn't work because I'm still aggregating at county level
-# If I were aggregating at site level it would work.
-# Calculate projected enrollment by ed attain category
-# ed.attain.by.cty %>%
-#   mutate(proj.lt.hs = p.lt.hs*30,
-#            proj.hs.grad = p.hs.grad*30,
-#            proj.some.coll = p.some.coll*30,
-#            proj.ba.plus = p.ba.plus*30)  %>%
-#   select(county, proj.lt.hs, proj.hs.grad, proj.some.coll, proj.ba.plus) ->
-#   ed.attain.by.cty
-
 ed.attain.by.cty %>%
   knitr::kable()
 
-# This uses mean p's so it may result in estimates > 900
+# This uses mean p's so it may result in estimates != 900
 ed.attain.by.cty %>%
   summarize(study.proj.lt.hs = mean(p.lt.hs),
             study.proj.hs.grad = mean(p.hs.grad),
@@ -367,7 +348,7 @@ ed.attain.by.cty %>%
   knitr::kable()
 ```
 
-### Household income
+### Household income data from ACS
 
 It looks like table `B19001` contains "HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2013 INFLATION-ADJUSTED DOLLARS)", and there are 17 fields.
 
@@ -382,7 +363,7 @@ lt.100k    <- function(i) sum(hh.income[i,11:13])
 gt.100k    <- function(i) sum(hh.income[i,14:17])
 
 Make.hh.income.table <- function(i) {
-  this.cty <- slot(play.ed[i,1], "geography")$NAME
+  this.cty <- slot(hh.income[i,1], "geography")$NAME
   data.frame(county = this.cty,
              tot = as.numeric(slot(hh.income[i,1], "estimate")),
              lt.25k = as.numeric(slot(lt.25k(i), "estimate")),
@@ -405,7 +386,7 @@ hh.income.df %>%
 hh.income.by.cty %>%
   knitr::kable()
 
-# This uses mean p's so it may result in estimates > 900
+# This uses mean p's so it may result in estimates != 900
 hh.income.by.cty %>%
   summarize(study.proj.lt.25k = mean(p.lt.25k),
             study.proj.lt.50k = mean(p.lt.50k),
@@ -481,17 +462,27 @@ lang.at.home.by.cty %>%
 
 ### Better data about race/ethnicity
 
-## Next steps
+These data presume all Hispanics do not also report a race. NIH enrollment tables have a more flexible and richer categorization.
 
-1. ~~We should confirm that our target sites collect data from the counties listed, and that the county-wide demographics are plausible~~.
-2. ~~We should also see if there are *other* counties target sites collect from and consider asking them to estimate the proportion of their recruiting that comes from county A vs. county B~~. It would be fun to have a Shiny app to collect this.
-3. ~~We should explore the `acs` package to grab additional demographic data, especially the indicators used in the draft grant proposal. The `choroplethr` package used in the above had demographic variables similar, but not identical to the ones we have used in the proposal~~.
+## Work in progress
+
+The state and county FIPS values are embedded in the S4 data structure returned by the `acs.fetch` function. There is a `geography` slot with `state` and `county` fields. `state` is numeric and `county` is char.
+
+```{r}
+str(play.ed)
+slot(play.ed[1,1], "geography")
+state.numeric <- slot(play.ed[1,1], "geography")$state
+county.char <- slot(play.ed[1,1], "geography")$county
+```
+
+1. I could use these to add data collection site tags to the county-wide data.
+2. The `Make.*.table` functions could be made more generic.
 
 ## Resources
 
 ### R Session
 
-This document was prepared in RStudio 1.0.136. Session information follows.
+This document was prepared in RStudio 1.0.143. Session information follows.
 
 ```{r session-info}
 sessionInfo()

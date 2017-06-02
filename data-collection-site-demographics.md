@@ -1,7 +1,7 @@
 Data collection site demographics
 ================
 Rick O. Gilmore
-2017-06-01 11:43:51
+2017-06-02 10:41:12
 
 Background
 ----------
@@ -30,8 +30,10 @@ county.demo <- left_join(counties, demo)
 county.demo$County <- unlist(lapply(county.demo$County, Cap.all))
 ```
 
-Tabular summary
----------------
+Race/ethnicity
+--------------
+
+Summaries of county-by-county race/ethnicity data.
 
 ``` r
 # Select collecting sites only
@@ -92,7 +94,7 @@ county.demo %>%
 | West      | UCSC      | Santa Cruz      | CA    | Santa Cruz           |             264808|              59|               1|               4|                 32|
 | West      | UO        | Eugene          | OR    | Lane                 |             353382|              84|               1|               2|                  8|
 
-### Summaries across sites
+### Summary across counties
 
 ``` r
 county.demo %>%
@@ -113,8 +115,10 @@ county.demo %>%
 |-----------:|-----------:|-----------:|----------:|----------:|----------:|
 |          10|           1|          59|         10|          1|         65|
 
-Population by region
---------------------
+Plots of population, race/ethnicity, & age by region
+----------------------------------------------------
+
+County-level data.
 
 ``` r
 county.demo %>%
@@ -126,9 +130,6 @@ county.demo %>%
 ```
 
 ![](img/pop-by-region-boxplot-1.png)
-
-Race, ethnicity, & age
-----------------------
 
 ``` r
 county.demo %>%
@@ -222,6 +223,10 @@ county.demo %>%
 
 Economic indicators
 -------------------
+
+The `county.regions` data set from the `choroplethr` package contains data about per capita income and median rent.
+
+We present a tabular summary first of the county-by-county data.
 
 ``` r
 county.demo %>%
@@ -327,7 +332,7 @@ county.fips <- as.numeric(substr(county.demo$county.fips.character,3,5))
 play.geo <- geo.make(state = state.fips, county = county.fips)
 ```
 
-This works, but after some further exploration, I think it may be better to generate site-specific geographies.
+This works, and I use it blow. I also provide the following code to generate site-specific geographies for future use cases.
 
 ``` r
 Make.county.geo <- function(i, df) {
@@ -344,7 +349,8 @@ geo.name <- paste0(county.demo$Site.code[cty], "_", county.demo$county.name[cty]
 assign(geo.name, Make.county.geo(cty, county.demo))
 ```
 
-### Education data
+Education data from ACS
+-----------------------
 
 ``` r
 ed.attain <- acs.lookup(table.name="Educational Attainment for the Population 25 Years and Over", endyear=2015)
@@ -376,78 +382,16 @@ play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[
                                    "MA",
                                    "Prof",
                                    "Ph.D"))
-
-# Let's collapse for row/county = 1
-
-(lt.hs <- sum(play.ed[1,2:16]))
-```
-
-    ## ACS DATA: 
-    ##  2011 -- 2015 ;
-    ##   Estimates w/90% confidence intervals;
-    ##   for different intervals, see confint()
-    ##                               aggregate                 
-    ## Suffolk County, Massachusetts 80333 +/- 2261.53156069067
-
-``` r
-(hs.grad <- sum(play.ed[1,17:18]))
-```
-
-    ## ACS DATA: 
-    ##  2011 -- 2015 ;
-    ##   Estimates w/90% confidence intervals;
-    ##   for different intervals, see confint()
-    ##                               aggregate                  
-    ## Suffolk County, Massachusetts 120730 +/- 2379.20406859101
-
-``` r
-(some.coll <- sum(play.ed[1,19:21]))
-```
-
-    ## ACS DATA: 
-    ##  2011 -- 2015 ;
-    ##   Estimates w/90% confidence intervals;
-    ##   for different intervals, see confint()
-    ##                               aggregate                 
-    ## Suffolk County, Massachusetts 97189 +/- 2252.18138701127
-
-``` r
-(BA <- sum(play.ed[1,22]))
-```
-
-    ## ACS DATA: 
-    ##  2011 -- 2015 ;
-    ##   Estimates w/90% confidence intervals;
-    ##   for different intervals, see confint()
-    ##                               BA             
-    ## Suffolk County, Massachusetts 118717 +/- 2039
-
-``` r
-(MA.plus <- sum(play.ed[1,23:25]))
-```
-
-    ## ACS DATA: 
-    ##  2011 -- 2015 ;
-    ##   Estimates w/90% confidence intervals;
-    ##   for different intervals, see confint()
-    ##                               aggregate                 
-    ## Suffolk County, Massachusetts 94435 +/- 1963.42201271148
-
-``` r
-# Table B15003
-# ed.table.B15003 <- acs.fetch(geography = play.geo, endyear = 2015, table.number = "B15003")
-# 
-# ed.table.B15003
 ```
 
 ``` r
 # Columns 2:16 are grades < HS diploma
-
 lt.hs <- function(i) sum(play.ed[i,2:16])
 hs.grad <- function(i) sum(play.ed[i,17:18])
 some.coll <- function(i) sum(play.ed[i,19:21])
 ba.plus <- function(i) sum(play.ed[i,22:25])
 
+# Use functions to create data table for easier manipulation
 Make.ed.attain.table <- function(i) {
   this.cty <- slot(play.ed[i,1], "geography")$NAME
   data.frame(county = this.cty,
@@ -529,17 +473,6 @@ ed.attain.df %>%
   select(county, p.lt.hs, p.hs.grad, p.some.coll, p.ba.plus) ->
   ed.attain.by.cty
 
-# This doesn't work because I'm still aggregating at county level
-# If I were aggregating at site level it would work.
-# Calculate projected enrollment by ed attain category
-# ed.attain.by.cty %>%
-#   mutate(proj.lt.hs = p.lt.hs*30,
-#            proj.hs.grad = p.hs.grad*30,
-#            proj.some.coll = p.some.coll*30,
-#            proj.ba.plus = p.ba.plus*30)  %>%
-#   select(county, proj.lt.hs, proj.hs.grad, proj.some.coll, proj.ba.plus) ->
-#   ed.attain.by.cty
-
 ed.attain.by.cty %>%
   knitr::kable()
 ```
@@ -591,7 +524,7 @@ ed.attain.by.cty %>%
 | James City County, Virginia                |  0.0620756|  0.2107980|    0.2568395|  0.4702869|
 
 ``` r
-# This uses mean p's so it may result in estimates > 900
+# This uses mean p's so it may result in estimates != 900
 ed.attain.by.cty %>%
   summarize(study.proj.lt.hs = mean(p.lt.hs),
             study.proj.hs.grad = mean(p.hs.grad),
@@ -604,7 +537,7 @@ ed.attain.by.cty %>%
 |-----------------:|-------------------:|---------------------:|-------------------:|
 |         0.1200692|           0.2343056|             0.2529923|           0.3926329|
 
-### Household income
+### Household income data from ACS
 
 It looks like table `B19001` contains "HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2013 INFLATION-ADJUSTED DOLLARS)", and there are 17 fields.
 
@@ -619,7 +552,7 @@ lt.100k    <- function(i) sum(hh.income[i,11:13])
 gt.100k    <- function(i) sum(hh.income[i,14:17])
 
 Make.hh.income.table <- function(i) {
-  this.cty <- slot(play.ed[i,1], "geography")$NAME
+  this.cty <- slot(hh.income[i,1], "geography")$NAME
   data.frame(county = this.cty,
              tot = as.numeric(slot(hh.income[i,1], "estimate")),
              lt.25k = as.numeric(slot(lt.25k(i), "estimate")),
@@ -690,7 +623,7 @@ hh.income.by.cty %>%
 | James City County, Virginia                |  0.1296429|  0.1783214|  0.3281786|  0.3638571|
 
 ``` r
-# This uses mean p's so it may result in estimates > 900
+# This uses mean p's so it may result in estimates != 900
 hh.income.by.cty %>%
   summarize(study.proj.lt.25k = mean(p.lt.25k),
             study.proj.lt.50k = mean(p.lt.50k),
@@ -818,19 +751,58 @@ lang.at.home.by.cty %>%
 
 ### Better data about race/ethnicity
 
-Next steps
-----------
+These data presume all Hispanics do not also report a race. NIH enrollment tables have a more flexible and richer categorization.
 
-1.  ~~We should confirm that our target sites collect data from the counties listed, and that the county-wide demographics are plausible~~.
-2.  ~~We should also see if there are *other* counties target sites collect from and consider asking them to estimate the proportion of their recruiting that comes from county A vs. county B~~. It would be fun to have a Shiny app to collect this.
-3.  ~~We should explore the `acs` package to grab additional demographic data, especially the indicators used in the draft grant proposal. The `choroplethr` package used in the above had demographic variables similar, but not identical to the ones we have used in the proposal~~.
+Work in progress
+----------------
+
+The state and county FIPS values are embedded in the S4 data structure returned by the `acs.fetch` function. There is a `geography` slot with `state` and `county` fields. `state` is numeric and `county` is char.
+
+``` r
+str(play.ed)
+```
+
+    ## Formal class 'acs' [package "acs"] with 9 slots
+    ##   ..@ endyear       : int 2015
+    ##   ..@ span          : int 5
+    ##   ..@ geography     :'data.frame':   43 obs. of  3 variables:
+    ##   .. ..$ NAME  : chr [1:43] "Suffolk County, Massachusetts" "Philadelphia County, Pennsylvania" "Delaware County, Pennsylvania" "Montgomery County, Pennsylvania" ...
+    ##   .. ..$ state : int [1:43] 25 42 42 42 42 42 34 34 36 6 ...
+    ##   .. ..$ county: chr [1:43] "025" "101" "045" "091" ...
+    ##   ..@ acs.colnames  : chr [1:25] "Total" "None" "<K" "K" ...
+    ##   ..@ modified      : logi TRUE
+    ##   ..@ acs.units     : Factor w/ 5 levels "count","dollars",..: NA NA NA NA NA NA NA NA NA NA ...
+    ##   ..@ currency.year : int 2015
+    ##   ..@ estimate      : num [1:43, 1:25] 511404 1024009 376325 568085 342356 ...
+    ##   .. ..- attr(*, "dimnames")=List of 2
+    ##   .. .. ..$ : chr [1:43] "Suffolk County, Massachusetts" "Philadelphia County, Pennsylvania" "Delaware County, Pennsylvania" "Montgomery County, Pennsylvania" ...
+    ##   .. .. ..$ : chr [1:25] "Total" "None" "<K" "K" ...
+    ##   ..@ standard.error: num [1:43, 1:25] 66.3 55.3 31 37.7 51.7 ...
+    ##   .. ..- attr(*, "dimnames")=List of 2
+    ##   .. .. ..$ : chr [1:43] "Suffolk County, Massachusetts" "Philadelphia County, Pennsylvania" "Delaware County, Pennsylvania" "Montgomery County, Pennsylvania" ...
+    ##   .. .. ..$ : chr [1:25] "Total" "None" "<K" "K" ...
+
+``` r
+slot(play.ed[1,1], "geography")
+```
+
+    ##                            NAME state county
+    ## 1 Suffolk County, Massachusetts    25    025
+
+``` r
+state.numeric <- slot(play.ed[1,1], "geography")$state
+county.char <- slot(play.ed[1,1], "geography")$county
+```
+
+1.  I could use these to add data collection site tags to the county-wide data.
+2.  The `Make.*.table` functions could be made more generic.
 
 Resources
 ---------
 
 ### R Session
 
-This document was prepared in RStudio 1.0.136. Session information follows.
+This document was prepared in RStudio 1.0.143. Session information follows.
 
 ``` r
 sessionInfo()

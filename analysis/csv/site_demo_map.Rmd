@@ -7,5 +7,96 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(magrittr)
+library(gdata)
+library(ggrepel)
+library(dplyr)
 ```
+
+
+###Import dataset and add two new columns
+
+Add two new columns named Latitude and Longitude to later use for ggmap function.
+
+```{r import, echo=FALSE}
+
+site_data <- read.csv("city-state-county.csv")
+site_data$Collecting[site_data$City=="Atlanta"] <- "Non-Collecting"
+site_data[c("Latitude", "Longitude")] <- NA
+site_data
+```
+
+##Add Latitude and Longitude values of each city.
+
+```{r site_map, echo=FALSE}
+
+site_data$Latitude[1] <- 42.360100
+site_data$Longitude[1] <- -71.058900
+
+site_data$Latitude[2] <- 39.952600
+site_data$Longitude[2] <- -75.165200
+
+site_data$Latitude[3] <- 39.916800
+site_data$Longitude[3] <- -75.387700
+  
+site_data$Latitude[4] <- 40.121500
+site_data$Longitude[4] <- -75.339900
+  
+site_data$Latitude[5] <- 39.960700
+site_data$Longitude[5] <- -75.605500
+  
+site_data$Latitude[6] <-
+site_data$Longitude[6] <-
+  
+site_data$Latitude[7] <-
+site_data$Longitude[7] <-
+  
+site_data$Latitude[8] <-
+site_data$Longitude[8] <-
+  
+site_data$Latitude[9] <-
+site_data$Longitude[9] <-
+  
+site_data$Latitude[10] <-
+site_data$Longitude[10] <-
+  
+site_data$Latitude[11] <-
+site_data$Longitude[11] <-
+  
+site_data$Latitude[12] <-
+site_data$Longitude[12] <-
+  
+site_data$Latitude[13] <-
+site_data$Longitude[13] <-
+  
+site_data$Latitude[14] <-
+site_data$Longitude[14] <-
+  
+site_data$Latitude[15] <-
+site_data$Longitude[15] <-
+  
+site_data$Latitude[16] <-
+site_data$Longitude[16] <-
+
+site_data
+
+
+
+
+
+
+
+```
+
+
+#Create a ggmap for the site demographics
+
+
+
+
+
+
+
+
 

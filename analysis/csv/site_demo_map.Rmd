@@ -46,40 +46,140 @@ site_data$Longitude[4] <- -75.339900
 site_data$Latitude[5] <- 39.960700
 site_data$Longitude[5] <- -75.605500
   
-site_data$Latitude[6] <-
-site_data$Longitude[6] <-
+site_data$Latitude[6] <- 40.310100
+site_data$Longitude[6] <- -75.129900
   
-site_data$Latitude[7] <-
-site_data$Longitude[7] <-
+site_data$Latitude[7] <- 39.925900
+site_data$Longitude[7] <- -75.119600
   
-site_data$Latitude[8] <-
-site_data$Longitude[8] <-
+site_data$Latitude[8] <- 39.838200
+site_data$Longitude[8] <- -75.152700
   
-site_data$Latitude[9] <-
-site_data$Longitude[9] <-
+site_data$Latitude[9] <- 42.444000
+site_data$Longitude[9] <- -76.501900
   
-site_data$Latitude[10] <-
-site_data$Longitude[10] <-
+site_data$Latitude[10] <- 33.870400
+site_data$Longitude[10] <- -117.924200
   
-site_data$Latitude[11] <-
-site_data$Longitude[11] <-
+site_data$Latitude[11] <- 33.770100
+site_data$Longitude[11] <- -118.193700
   
-site_data$Latitude[12] <-
-site_data$Longitude[12] <-
+site_data$Latitude[12] <- 40.579500
+site_data$Longitude[12] <- -74.150194
   
-site_data$Latitude[13] <-
-site_data$Longitude[13] <-
+site_data$Latitude[13] <- 33.749000
+site_data$Longitude[13] <- -84.388000
   
-site_data$Latitude[14] <-
-site_data$Longitude[14] <-
+site_data$Latitude[14] <- 38.907200
+site_data$Longitude[14] <- -77.036900
   
-site_data$Latitude[15] <-
-site_data$Longitude[15] <-
+site_data$Latitude[15] <- 38.881600
+site_data$Longitude[15] <- -77.091000
+
+site_data$Latitude[16] <- 38.984700
+site_data$Longitude[16] <- -77.094700
+
+site_data$Latitude[17] <- 29.760400
+site_data$Longitude[17] <- -95.369800
+
+site_data$Latitude[18] <- 39.165300
+site_data$Longitude[18] <- -86.526400
   
-site_data$Latitude[16] <-
-site_data$Longitude[16] <-
+site_data$Latitude[19] <- 42.646900
+site_data$Longitude[19] <- -84.354200
+  
+site_data$Latitude[20] <- 42.057500
+site_data$Longitude[20] <- -83.953300
+  
+site_data$Latitude[21] <- 40.712800
+site_data$Longitude[21] <- -74.006000
+  
+site_data$Latitude[22] <- 39.558900
+site_data$Longitude[22] <- -84.304100
+  
+site_data$Latitude[23] <- 40.445100
+site_data$Longitude[23] <- -80.008800
+  
+site_data$Latitude[24] <- 40.302900
+site_data$Longitude[24] <- -74.733700
+  
+site_data$Latitude[25] <- 40.814800
+site_data$Longitude[25] <- -77.865300
+  
+site_data$Latitude[26] <- 40.347000
+site_data$Longitude[26] <- -86.822000
+  
+site_data$Latitude[27] <- 40.794700
+site_data$Longitude[27] <- -74.264900
+  
+site_data$Latitude[28] <- 37.354100
+site_data$Longitude[28] <- -121.955200
+  
+site_data$Latitude[29] <- 37.563000
+site_data$Longitude[29] <- -122.325500
+  
+site_data$Latitude[30] <- 29.951100
+site_data$Longitude[30] <- -90.071500
+  
+site_data$Latitude[31] <- 38.733000
+site_data$Longitude[31] <- -121.807300
+  
+site_data$Latitude[32] <- 37.302200
+site_data$Longitude[32] <- -120.483000
+  
+site_data$Latitude[33] <- 33.953300
+site_data$Longitude[33] <- -117.396200
+  
+site_data$Latitude[34] <- 36.974100
+site_data$Longitude[34] <- -122.030800
+  
+site_data$Latitude[35] <- 25.551600
+site_data$Longitude[35] <- -80.632700
+  
+site_data$Latitude[36] <- 44.052100
+site_data$Longitude[36] <- -123.086800
+  
+site_data$Latitude[37] <- 30.209700
+site_data$Longitude[37] <- -97.698200
+  
+site_data$Latitude[38] <- 36.162700
+site_data$Longitude[38] <- -86.781600
+  
+site_data$Latitude[39] <- 35.917900
+site_data$Longitude[39] <- -86.862200
+  
+site_data$Latitude[40] <- 36.592500
+site_data$Longitude[40] <- -78.616400
+  
+site_data$Latitude[41] <- 37.377100
+site_data$Longitude[41] <- -77.505000
+  
+site_data$Latitude[42] <- 37.540700
+site_data$Longitude[42] <- -77.436000
+
+site_data$Latitude[43] <- 37.300200
+site_data$Longitude[43] <- -76.802900
 
 site_data
+```
+
+
+#Create a ggmap for the site demographics
+
+```{r ggmap, echo=FALSE}
+
+location <- c(site_data$Longitude[1], site_data$Latitude[1])
+
+myMAP <- get_map(location=location, source="google", zoom=14, maptype="satellite")
+ggmap(myMAP)
+
+
+
+
+
+
+
+
 
 
 
@@ -90,7 +190,7 @@ site_data
 ```
 
 
-#Create a ggmap for the site demographics
+
 
 
 

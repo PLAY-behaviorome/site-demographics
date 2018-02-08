@@ -123,8 +123,193 @@ $(document).ready(function () {
 </div>
 
 
-<div id="import-dataset" class="section level3">
-<h3>Import dataset</h3>
+<div id="import-dataset-and-add-two-new-columns" class="section level3">
+<h3>Import dataset and add two new columns</h3>
+<p>Add two new columns named Latitude and Longitude to later use for ggmap function.</p>
+<pre><code>## Warning in `[&lt;-.factor`(`*tmp*`, site_data$City == &quot;Atlanta&quot;, value =
+## structure(c(1L, : invalid factor level, NA generated</code></pre>
+<pre><code>##               City State               County US.Region Site.code
+## 1           Boston    MA              suffolk      East        BU
+## 2     Philadelphia    PA         philadelphia      East      CHOP
+## 3            Media    PA             delaware      East      CHOP
+## 4       Norristown    PA           montgomery      East      CHOP
+## 5     West Chester    PA              chester      East      CHOP
+## 6       Doylestown    PA                bucks      East      CHOP
+## 7           Camden    NJ               camden      East      CHOP
+## 8         Woodbury    NJ           gloucester      East      CHOP
+## 9           Ithaca    NY             tompkins      East       COR
+## 10       Fullerton    CA               orange      West       CSF
+## 11      Long Beach    CA          los angeles      West       CSL
+## 12   Staten Island    NY             richmond      East    CUNYSI
+## 13         Atlanta    GA               fulton     South      EMRY
+## 14      Washington    DC district of columbia      East       GTN
+## 15       Arlington    VA            arlington      East       GTN
+## 16        Bethesda    MD           montgomery      East       GTN
+## 17         Houston    TX               harris     South       HOU
+## 18     Bloomington    IN               monroe   Midwest        IU
+## 19    East Lansing    MI               ingham   Midwest       MSU
+## 20    East Lansing    MI              clinton   Midwest       MSU
+## 21        New York    NY             new york      East       NYU
+## 22        Columbus    OH             franklin   Midwest       OSU
+## 23      Pittsburgh    PA            allegheny   Midwest      PITT
+## 24       Princeton    NJ               mercer      East      PRIN
+## 25 University Park    PA               centre      East       PSU
+## 26    W. Lafayette    IN           tippecanoe   Midwest       PUR
+## 27          Newark    NJ                essex      East      RUTG
+## 28       Palo Alto    CA          santa clara      West      STAN
+## 29       Palo Alto    CA            san mateo      West      STAN
+## 30     New Orleans    LA              orleans     South       TUL
+## 31           Davis    CA                 yolo      West       UCD
+## 32          Merced    CA               merced      West       UCM
+## 33       Riverside    CA            riverside      West       UCR
+## 34      Santa Cruz    CA           santa cruz      West      UCSC
+## 35           Miami    FL           miami-dade     South      UMIA
+## 36          Eugene    OR                 lane      West        UO
+## 37          Austin    TX               travis     South        UT
+## 38       Nashville    TN             davidson     South      VBLT
+## 39        Franklin    TN           williamson     South      VBLT
+## 40        Richmond    VA              henrico     South       VCU
+## 41    Chesterfield    VA         chesterfield     South       VCU
+## 42        Richmond    VA             richmond     South       VCU
+## 43    Williamsburg    VA           james city     South        WM
+##    Collecting region multi Latitude Longitude
+## 1  Collecting  25025    no       NA        NA
+## 2  Collecting  42101   yes       NA        NA
+## 3  Collecting  42045   yes       NA        NA
+## 4  Collecting  42091   yes       NA        NA
+## 5  Collecting  42029   yes       NA        NA
+## 6  Collecting  42017   yes       NA        NA
+## 7  Collecting  34007   yes       NA        NA
+## 8  Collecting  34015   yes       NA        NA
+## 9  Collecting  36109    no       NA        NA
+## 10 Collecting   6059    no       NA        NA
+## 11 Collecting   6037    no       NA        NA
+## 12 Collecting  36085    no       NA        NA
+## 13       &lt;NA&gt;  13121    no       NA        NA
+## 14 Collecting  11001   yes       NA        NA
+## 15 Collecting  51013   yes       NA        NA
+## 16 Collecting  24031   yes       NA        NA
+## 17 Collecting  48201    no       NA        NA
+## 18 Collecting  18105    no       NA        NA
+## 19 Collecting  26065   yes       NA        NA
+## 20 Collecting  26039   yes       NA        NA
+## 21 Collecting  36061    no       NA        NA
+## 22 Collecting  39049    no       NA        NA
+## 23 Collecting  42003    no       NA        NA
+## 24 Collecting  34021    no       NA        NA
+## 25 Collecting  42027    no       NA        NA
+## 26 Collecting  18157    no       NA        NA
+## 27 Collecting  34013    no       NA        NA
+## 28 Collecting   6085   yes       NA        NA
+## 29 Collecting   6081   yes       NA        NA
+## 30 Collecting  22071    no       NA        NA
+## 31 Collecting   6113    no       NA        NA
+## 32 Collecting   6047    no       NA        NA
+## 33 Collecting   6065    no       NA        NA
+## 34 Collecting   6087    no       NA        NA
+## 35 Collecting  12086    no       NA        NA
+## 36 Collecting  41039    no       NA        NA
+## 37 Collecting  48453    no       NA        NA
+## 38 Collecting  47037   yes       NA        NA
+## 39 Collecting  47187   yes       NA        NA
+## 40 Collecting  51087   yes       NA        NA
+## 41 Collecting  51041   yes       NA        NA
+## 42 Collecting  51760   yes       NA        NA
+## 43 Collecting  51095   yes       NA        NA</code></pre>
+</div>
+<div id="add-latitude-and-longitude-values-of-each-city." class="section level2">
+<h2>Add Latitude and Longitude values of each city.</h2>
+<pre><code>##               City State               County US.Region Site.code
+## 1           Boston    MA              suffolk      East        BU
+## 2     Philadelphia    PA         philadelphia      East      CHOP
+## 3            Media    PA             delaware      East      CHOP
+## 4       Norristown    PA           montgomery      East      CHOP
+## 5     West Chester    PA              chester      East      CHOP
+## 6       Doylestown    PA                bucks      East      CHOP
+## 7           Camden    NJ               camden      East      CHOP
+## 8         Woodbury    NJ           gloucester      East      CHOP
+## 9           Ithaca    NY             tompkins      East       COR
+## 10       Fullerton    CA               orange      West       CSF
+## 11      Long Beach    CA          los angeles      West       CSL
+## 12   Staten Island    NY             richmond      East    CUNYSI
+## 13         Atlanta    GA               fulton     South      EMRY
+## 14      Washington    DC district of columbia      East       GTN
+## 15       Arlington    VA            arlington      East       GTN
+## 16        Bethesda    MD           montgomery      East       GTN
+## 17         Houston    TX               harris     South       HOU
+## 18     Bloomington    IN               monroe   Midwest        IU
+## 19    East Lansing    MI               ingham   Midwest       MSU
+## 20    East Lansing    MI              clinton   Midwest       MSU
+## 21        New York    NY             new york      East       NYU
+## 22        Columbus    OH             franklin   Midwest       OSU
+## 23      Pittsburgh    PA            allegheny   Midwest      PITT
+## 24       Princeton    NJ               mercer      East      PRIN
+## 25 University Park    PA               centre      East       PSU
+## 26    W. Lafayette    IN           tippecanoe   Midwest       PUR
+## 27          Newark    NJ                essex      East      RUTG
+## 28       Palo Alto    CA          santa clara      West      STAN
+## 29       Palo Alto    CA            san mateo      West      STAN
+## 30     New Orleans    LA              orleans     South       TUL
+## 31           Davis    CA                 yolo      West       UCD
+## 32          Merced    CA               merced      West       UCM
+## 33       Riverside    CA            riverside      West       UCR
+## 34      Santa Cruz    CA           santa cruz      West      UCSC
+## 35           Miami    FL           miami-dade     South      UMIA
+## 36          Eugene    OR                 lane      West        UO
+## 37          Austin    TX               travis     South        UT
+## 38       Nashville    TN             davidson     South      VBLT
+## 39        Franklin    TN           williamson     South      VBLT
+## 40        Richmond    VA              henrico     South       VCU
+## 41    Chesterfield    VA         chesterfield     South       VCU
+## 42        Richmond    VA             richmond     South       VCU
+## 43    Williamsburg    VA           james city     South        WM
+##    Collecting region multi Latitude  Longitude
+## 1  Collecting  25025    no  42.3601  -71.05890
+## 2  Collecting  42101   yes  39.9526  -75.16520
+## 3  Collecting  42045   yes  39.9168  -75.38770
+## 4  Collecting  42091   yes  40.1215  -75.33990
+## 5  Collecting  42029   yes  39.9607  -75.60550
+## 6  Collecting  42017   yes  40.3101  -75.12990
+## 7  Collecting  34007   yes  39.9259  -75.11960
+## 8  Collecting  34015   yes  39.8382  -75.15270
+## 9  Collecting  36109    no  42.4440  -76.50190
+## 10 Collecting   6059    no  33.8704 -117.92420
+## 11 Collecting   6037    no  33.7701 -118.19370
+## 12 Collecting  36085    no  40.5795  -74.15019
+## 13       &lt;NA&gt;  13121    no  33.7490  -84.38800
+## 14 Collecting  11001   yes  38.9072  -77.03690
+## 15 Collecting  51013   yes  38.8816  -77.09100
+## 16 Collecting  24031   yes  38.9847  -77.09470
+## 17 Collecting  48201    no  29.7604  -95.36980
+## 18 Collecting  18105    no  39.1653  -86.52640
+## 19 Collecting  26065   yes  42.6469  -84.35420
+## 20 Collecting  26039   yes  42.0575  -83.95330
+## 21 Collecting  36061    no  40.7128  -74.00600
+## 22 Collecting  39049    no  39.5589  -84.30410
+## 23 Collecting  42003    no  40.4451  -80.00880
+## 24 Collecting  34021    no  40.3029  -74.73370
+## 25 Collecting  42027    no  40.8148  -77.86530
+## 26 Collecting  18157    no  40.3470  -86.82200
+## 27 Collecting  34013    no  40.7947  -74.26490
+## 28 Collecting   6085   yes  37.3541 -121.95520
+## 29 Collecting   6081   yes  37.5630 -122.32550
+## 30 Collecting  22071    no  29.9511  -90.07150
+## 31 Collecting   6113    no  38.7330 -121.80730
+## 32 Collecting   6047    no  37.3022 -120.48300
+## 33 Collecting   6065    no  33.9533 -117.39620
+## 34 Collecting   6087    no  36.9741 -122.03080
+## 35 Collecting  12086    no  25.5516  -80.63270
+## 36 Collecting  41039    no  44.0521 -123.08680
+## 37 Collecting  48453    no  30.2097  -97.69820
+## 38 Collecting  47037   yes  36.1627  -86.78160
+## 39 Collecting  47187   yes  35.9179  -86.86220
+## 40 Collecting  51087   yes  36.5925  -78.61640
+## 41 Collecting  51041   yes  37.3771  -77.50500
+## 42 Collecting  51760   yes  37.5407  -77.43600
+## 43 Collecting  51095   yes  37.3002  -76.80290</code></pre>
+</div>
+<div id="create-a-ggmap-for-the-site-demographics" class="section level1">
+<h1>Create a ggmap for the site demographics</h1>
 </div>
 
 

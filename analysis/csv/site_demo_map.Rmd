@@ -12,8 +12,8 @@ library(magrittr)
 library(gdata)
 library(ggrepel)
 library(dplyr)
-library(maps)
-library(mapdata)
+library(RgoogleMaps)
+library(ggmap)
 ```
 
 
@@ -171,12 +171,21 @@ site_data
 ```{r ggmap, echo=FALSE}
 
 # location <- c(site_data$Longitude[1], site_data$Latitude[1])
-# 
-# myMAP <- get_map(location=location, source="google", zoom=14, maptype="satellite")
-# ggmap(myMAP)
+library(RgoogleMaps)
+library(ggmap)
+myMAP <- get_map(location='united states', zoom=4, maptype='terrain', source='google', color='color')
+ggmap(myMAP)
+
+# site_data %>%
+#   ggmap(myMAP) +
+#   aes(x=site_data$Longitude, y=site_data$Latitude) +
+#   geom_point()
+
+ggmap(myMAP) + geom_point(aes(x=site_data$Longitude, y=site_data$Latitude), data = site_data, col = 'red')
+# + geom_text_repel(aes(site_data$Longitude, site_data$Latitude, label=site_data$City))
 
 
-map("worldHires","USA", xlim=c(-141,-53), ylim=c(40,85), col="gray", fill=TRUE)
+# map("worldHires","USA", xlim=c(-141,-53), ylim=c(40,85), col="gray", fill=TRUE)
 
 
 

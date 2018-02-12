@@ -12,6 +12,8 @@ library(magrittr)
 library(gdata)
 library(ggrepel)
 library(dplyr)
+library(maps)
+library(mapdata)
 ```
 
 
@@ -168,13 +170,13 @@ site_data
 
 ```{r ggmap, echo=FALSE}
 
-location <- c(site_data$Longitude[1], site_data$Latitude[1])
+# location <- c(site_data$Longitude[1], site_data$Latitude[1])
+# 
+# myMAP <- get_map(location=location, source="google", zoom=14, maptype="satellite")
+# ggmap(myMAP)
 
-myMAP <- get_map(location=location, source="google", zoom=14, maptype="satellite")
-ggmap(myMAP)
 
-
-
+map("worldHires","USA", xlim=c(-141,-53), ylim=c(40,85), col="gray", fill=TRUE)
 
 
 

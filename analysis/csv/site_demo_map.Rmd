@@ -14,6 +14,8 @@ library(ggrepel)
 library(dplyr)
 library("ggmap", lib.loc = "/storage/work/csm5410/sw/r_packages")
 library("ggplot2", lib.loc = "/storage/work/csm5410/sw/r_packages")
+library(ggvis)
+library(googleway)
 ```
 
 
@@ -25,7 +27,7 @@ Add two new columns named Latitude and Longitude to later use for ggmap function
 
 site_data <- read.csv("city-state-county.csv")
 site_data$Collecting[site_data$City=="Atlanta"] <- "Non-Collecting"
-site_data[c("Latitude", "Longitude")] <- NA
+site_data[c("Longitude", "Latitude")] <- NA
 site_data
 ```
 
@@ -33,6 +35,12 @@ site_data
 
 ```{r site_map, echo=FALSE}
 
+# geocodes1 <- geocode(as.character(site_data$County[1:3] , site_data$City[1:3], site_data$State[1:3]))
+# # mydat <- data.frame(site_data[,1:2],geocodes)
+# geocodes1
+```
+
+```{r , echo=FALSE}
 site_data$Latitude[1] <- 42.360100
 site_data$Longitude[1] <- -71.058900
 
@@ -163,6 +171,16 @@ site_data$Latitude[43] <- 37.300200
 site_data$Longitude[43] <- -76.802900
 
 site_data
+```
+
+
+```{r extra, echo=FALSE}
+
+gc1 <- geocode("West Chester, PA")
+gc2 <- geocode("Woodbury, NJ")
+gc1
+gc2
+
 ```
 
 

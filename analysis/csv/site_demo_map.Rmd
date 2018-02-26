@@ -12,8 +12,8 @@ library(magrittr)
 library(gdata)
 library(ggrepel)
 library(dplyr)
-library("ggmap", lib.loc = "/storage/work/csm5410/sw/r_packages")
-library("ggplot2", lib.loc = "/storage/work/csm5410/sw/r_packages")
+# library("ggmap", lib.loc = "/storage/work/csm5410/sw/r_packages")
+# library("ggplot2", lib.loc = "/storage/work/csm5410/sw/r_packages")
 library(ggvis)
 library(googleway)
 ```
@@ -35,6 +35,7 @@ site_data
 
 ```{r site_map, echo=FALSE}
 
+key <- 
 # geocodes1 <- geocode(as.character(site_data$County[1:3] , site_data$City[1:3], site_data$State[1:3]))
 # # mydat <- data.frame(site_data[,1:2],geocodes)
 # geocodes1

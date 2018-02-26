@@ -39,6 +39,8 @@ key <- "AIzaSyDB2QxBRTKcx_u5zVvNuHRv17e1NzmcKOU"
 # geocodes1 <- geocode(as.character(site_data$County[1:3] , site_data$City[1:3], site_data$State[1:3]))
 # # mydat <- data.frame(site_data[,1:2],geocodes)
 # geocodes1
+
+# https://www.shanelynn.ie/massive-geocoding-with-r-and-google-maps/
 ```
 
 ```{r , echo=FALSE}

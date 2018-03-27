@@ -1,0 +1,168 @@
+---
+title: "site_demographics"
+author: "Rick Gilmore"
+date: "`r Sys.time()`"
+output: 
+  pdf_document:
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.path = "img/",
+                      fig.align = "center")
+library(tidyverse)
+library(choroplethr)
+library(choroplethrMaps)
+
+csv.dir <- 'analysis/csv/'
+R.dir <- 'R/'
+
+source(paste0(R.dir, "Cap_all.R"))
+
+# ggplot
+play.palette <- scale_fill_manual(values=c("blue2", "firebrick2", "chartreuse2", "darkorchid2"))
+
+play.theme <-   
+  theme_classic() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = rel(1.2)),
+        axis.title = element_text(size = rel(1.5), face ="bold"),
+        axis.text.x = element_text(size = rel(1.2)),
+        axis.text.y = element_text(size = rel(.7)),
+        axis.line = element_blank(),
+        axis.title.y = element_blank(),
+        plot.margin=unit(c(0,.5,0,0),"cm"))
+```
+
+```{r download-demographic-data}
+counties <- read.csv(paste0(csv.dir, "city-state-county.csv"), stringsAsFactors = FALSE)
+
+data("county.regions")
+counties <- left_join(counties, county.regions)
+demog <- get_county_demographics(endyear=2013, span=5)
+county.demo <- left_join(counties, demog)
+
+# Recapitalize county
+county.demo$County <- unlist(lapply(county.demo$County, Cap_all))
+# Hack District Of columbia...TODO(ROG): Fix Cap_all()
+county.demo$County[county.demo$County == "District Of columbia"] = "District of Columbia"
+county.demo <- county.demo %>%
+  mutate(state.cty = paste0(County, ", ", State)) 
+```
+
+```{r planned-enrollment-by-race}
+# county.demo %>%
+#   filter(Collecting == "Collecting") %>%
+#   arrange(US.Region, Site.code, State, County) %>%
+#   select(US.Region, Site.code, State, County, total_population,
+#          percent_white, percent_black, percent_asian,
+#          percent_hispanic, multi) ->
+#   county.race.ethnicity
+```
+
+```{r process-county-demo}
+county.demo %>%
+  select(US.Region, Site.code, State, County, state.cty, percent_black, percent_hispanic, percent_asian, percent_white) %>%
+  gather(key = race, value = pop.percent, percent_black:percent_white) ->
+county.pop.percent
+
+county.pop.percent$race <- recode(county.pop.percent$race, 
+                                  percent_black = "Black", 
+                                  percent_hispanic = "Hispanic",
+                                  percent_asian = "Asian",
+                                  percent_white = "White")
+
+# county.pop.percent <- county.pop.percent %>%
+#   mutate(state.cty = paste0(County, ", ", State)) 
+```
+
+```{r race-plot, fig.cap="Racial characteristics of proposed PLAY collection sites"}
+# county.pop.percent %>%
+#   ggplot() +
+#   aes(y = pop.percent, x = race, fill = race, 
+#       color = race, group = County) +
+#   geom_line(color = "black", linetype = 1, alpha = 0.2) +
+#   geom_point(size = 3) +
+#   ylab("Proportion of population") +
+#   theme_classic() +
+#   theme(legend.position = "none",
+#         axis.title = element_text(size = rel(1.5), face ="bold"),
+#         axis.text = element_text(size = rel(1.2)))
+```
+
+```{r race-by-county-plot-prep}
+plot.demo.by.state.cty <- function(d, region = "East") {
+  d %>%
+    filter(US.Region == region) %>%
+    ggplot() +
+    aes(x = state.cty, y = pop.percent, fill = race) +
+    geom_col() +
+    coord_flip() +
+    theme_classic() +
+    theme(legend.position = "bottom",
+        axis.title = element_text(size = rel(1.5), face ="bold"),
+        axis.text = element_text(size = rel(1.2)),
+        axis.text.x = element_text(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank())  
+}
+```
+
+```{r race-by-county-east-plot}
+#plot.demo.by.state.cty(county.pop.percent, "East")
+```
+
+```{r race-by-county-west-plot}
+#plot.demo.by.state.cty(county.pop.percent, "West")
+```
+
+```{r race-by-county-south-plot}
+#plot.demo.by.state.cty(county.pop.percent, "South")
+```
+
+```{r race-by-county-midwest-plot}
+#plot.demo.by.state.cty(county.pop.percent, "Midwest")
+```
+
+```{r race-by-county-all-regions-plot}
+county.demo %>%
+  mutate(p.white = percent_white) %>%
+  select(State, County, p.white) ->
+  p.white.sortlist
+
+left_join(county.pop.percent, p.white.sortlist) %>%
+  arrange(p.white) %>%
+  mutate(state.cty = factor(state.cty, unique(state.cty))) %>%
+  ggplot() +
+  aes(x = state.cty, y = pop.percent, fill = race) +
+  geom_col() +
+  scale_fill_discrete(limits=c("Asian", "Black", "Hispanic", "White")) +
+  play.palette +
+  play.theme +
+  coord_flip() +
+  scale_y_continuous(expand=c(0,0)) +
+  ylab("Proportion of population")
+```
+
+```{r race-table}
+county.pop.percent %>%
+  group_by(Site.code, State, County) %>%
+  summarize(tot.p = sum(pop.percent))
+```
+
+```{r per-capita-income-plot}
+county.demo %>%
+  arrange(per_capita_income) %>%
+  mutate(state.cty = factor(state.cty, unique(state.cty))) %>%
+  ggplot() +
+  aes(x = state.cty, y = per_capita_income, fill = US.Region) +
+  geom_col() +
+  coord_flip() +
+  play.theme +
+  play.palette +
+  scale_y_continuous(expand=c(0,0)) +
+  ylab("Median per capita income by site")
+```
+

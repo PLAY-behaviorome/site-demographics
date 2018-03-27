@@ -1,0 +1,228 @@
+---
+title: "educational_attainment"
+author: "Rick Gilmore"
+date: "`r Sys.time()`"
+output: 
+  pdf_document:
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.path = "img/",
+                      fig.align = "center")
+library(tidyverse)
+library(choroplethr)
+library(choroplethrMaps)
+
+csv.dir <- 'analysis/csv/'
+R.dir <- 'R/'
+
+source(paste0(R.dir, "Cap_all.R"))
+
+# ggplot
+play.palette <- scale_fill_manual(values=c("blue2", "firebrick2", "chartreuse2", "darkorchid2", "yellow", "gray", "black"))
+
+play.theme <-   
+  theme_classic() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = rel(1.2)),
+        axis.title = element_text(size = rel(1.5), face ="bold"),
+        axis.text.x = element_text(size = rel(1.2)),
+        axis.text.y = element_text(size = rel(.7)),
+        axis.line = element_blank(),
+        axis.title.y = element_blank(),
+        plot.margin=unit(c(0,.5,0,0),"cm"))
+```
+
+## Educational Attainment
+
+```{r download-demographic-data}
+counties <- read.csv(paste0(csv.dir, "city-state-county.csv"), stringsAsFactors = FALSE)
+
+data("county.regions")
+counties <- left_join(counties, county.regions)
+demog <- get_county_demographics(endyear=2013, span=5)
+county.demo <- left_join(counties, demog)
+
+# Recapitalize county
+county.demo$County <- unlist(lapply(county.demo$County, Cap_all))
+# Hack District Of columbia...TODO(ROG): Fix Cap_all()
+county.demo$County[county.demo$County == "District Of columbia"] = "District of Columbia"
+```
+
+To gather educational attainment data, must create specific ACS 'geometry'.
+
+```{r generate-site-geography}
+state.fips <- as.numeric(county.demo$state.fips.character)
+county.fips <- as.numeric(substr(county.demo$county.fips.character,3,5))
+play.geo <- geo.make(state = state.fips, county = county.fips)
+
+Make.county.geo <- function(i, df) {
+  geo.make(state = as.numeric(df$state.fips.character[i]),
+              county =
+             as.numeric(substr(county.demo$county.fips.character[i],4, 6)))
+}
+
+cty <- 1
+# Generate name for county-level geography
+geo.name <- paste0(county.demo$Site.code[cty], "_", 
+                   county.demo$county.name[cty], "_", county.demo$State[cty])
+
+# Create geography and assign to generated name
+assign(geo.name, Make.county.geo(cty, county.demo))
+```
+
+```{r gather-ed-data}
+ed.attain <- acs.lookup(table.name="Educational Attainment for the Population 25 Years and Over", 
+                        endyear=2015)
+
+# Manual inspection shows variables 1:25 seem to contain the relevant info
+play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[1:25],
+                     col.names = c("Total", #1
+                                   "None",  #2
+                                   "<K",    #3
+                                   "K",     #4
+                                   "1st",   #5
+                                   "2nd",   #6
+                                   "3rd",   #7
+                                   "4th",   #8
+                                   "5th",   #9
+                                   "6th",   #10
+                                   "7th",   #11
+                                   "8th",   #12
+                                   "9th",   #13
+                                   "10th",  #14
+                                   "11th",  #15
+                                   "12th",  #16
+                                   "HS",    #17
+                                   "GED",   #18
+                                   "Coll <1yr", #19
+                                   "Coll >1yr", #20
+                                   "AA", #21
+                                   "BA", #22
+                                   "MA", #23
+                                   "Prof", #24
+                                   "Ph.D")) #25
+# Columns 2:16 are grades < HS diploma
+lt.7 <- function(i) sum(play.ed[i,2:10])
+mid.hs <- function(i) sum(play.ed[i,11:16])
+lt.hs <- function(i) sum(play.ed[i,2:16])
+hs.grad <- function(i) sum(play.ed[i,17:18])
+some.coll <- function(i) sum(play.ed[i,19:21])
+ba <- function(i) sum(play.ed[i,22])
+ba.plus <- function(i) sum(play.ed[i,22:25])
+gt.ba <- function(i) sum(play.ed[i,23:25])
+
+# Use functions to create data table for easier manipulation
+Make.ed.attain.table <- function(i) {
+  this.cty <- slot(play.ed[i,1], "geography")$NAME
+  data.frame(county = this.cty,
+             tot = as.numeric(slot(play.ed[i,1], "estimate")),
+             lt.7 = as.numeric(slot(lt.7(i), "estimate")),
+             mid.hs = as.numeric(slot(mid.hs(i), "estimate")),
+             lt.hs = as.numeric(slot(lt.hs(i), "estimate")),
+             hs.grad = as.numeric(slot(hs.grad(i), "estimate")),
+             some.coll = as.numeric(slot(some.coll(i), "estimate")),
+             ba = as.numeric(slot(ba(i), "estimate")),
+             gt.ba = as.numeric(slot(gt.ba(i), "estimate")),
+             ba.plus = as.numeric(slot(ba.plus(i), "estimate")))
+}
+
+ed.attain.list <- lapply(1:dim(play.ed)[1], Make.ed.attain.table)
+ed.attain.df <- Reduce(function(x,y) full_join(x,y, all=TRUE), ed.attain.list)
+ed.attain.df %>%
+  mutate(p.lt.hs = 100*lt.hs/tot,
+         p.hs.grad = 100*hs.grad/tot,
+         p.some.coll = 100*some.coll/tot,
+         p.ba.plus = 100*ba.plus/tot) %>%
+  select(county, p.lt.hs, p.hs.grad, p.some.coll, p.ba.plus) ->
+  ed.attain.by.county 
+```
+
+```{r ed-attain-table}
+names(ed.attain.by.county) <- c("County", "<HS", "HS", "HS+", "BA+") 
+ed.attain.by.county %>%
+  knitr::kable()
+```
+
+```{r ed-attain-plot, fig.cap="Educational attainment by site"}
+# ed.attain.by.county %>%
+#   gather(key = ed.level, value = proportion.pop, -County) %>%
+#   mutate(ed.level = ordered(ed.level, levels = c("<HS", "HS", "HS+", "BA+"))) %>%
+#   ggplot() +
+#   aes(x = ed.level, y = proportion.pop, fill = ed.level, 
+#       color = ed.level,
+#       group = County) +
+#   geom_line(color = "black", linetype = 3) +
+#   geom_point(size = 3) +
+#   xlab("Level of educational attainment") + 
+#   ylab("Proportion of population") +
+#   theme_classic() +
+#   theme(legend.position = "none",
+#         axis.title = element_text(size = rel(1.5), face ="bold"),
+#         axis.text = element_text(size = rel(1.2)))
+```
+
+```{r ed-attain-bars-plot}
+ed.attain.by.county %>%
+  gather(key = ed.level, value = proportion.pop, -County) %>%
+  mutate(ed.level = ordered(ed.level, levels = rev(c("<HS", "HS", "HS+", "BA+")))) ->
+  ed.attain.gathered
+
+ed.attain.by.county %>%
+  select(County, `BA+`) ->
+  p.ba.sortlist
+
+left_join(ed.attain.gathered, p.ba.sortlist) %>%
+  arrange(`BA+`) %>%
+  mutate(County = factor(County, unique(County))) %>%
+  ggplot() +
+  aes(x = County, y = proportion.pop, fill = ed.level) +
+  geom_col() +
+  coord_flip() +
+  play.theme +
+  play.palette +
+  scale_y_continuous(expand=c(0,0)) +
+  ylab("Percent of population")
+```
+
+```{r plot-for-da}
+ed.attain.list <- lapply(1:dim(play.ed)[1], Make.ed.attain.table)
+ed.attain.df <- Reduce(function(x,y) full_join(x,y, all=TRUE), ed.attain.list)
+ed.attain.df %>%
+  mutate(p.lt.7 = 100*lt.7/tot,
+         p.mid.hs = 100*mid.hs/tot,
+         p.hs.grad = 100*hs.grad/tot,
+         p.some.coll = 100*some.coll/tot,
+         p.ba = 100*ba/tot,
+         p.ma.plus = 100*gt.ba/tot) %>%
+  select(county, p.lt.7, p.mid.hs, p.hs.grad, p.some.coll, p.ba, p.ma.plus) ->
+  ed.attain.by.county
+
+names(ed.attain.by.county) <- c("County", "<7th", "<HS", "HS", "HS+", "BA", "MA+") 
+
+ed.attain.by.county %>%
+  gather(key = ed.level, value = proportion.pop, -County) %>%
+  mutate(ed.level = ordered(ed.level, levels = rev(c("<7th", "<HS", "HS", "HS+", "BA", "MA+")))) ->
+  ed.attain.gathered
+
+ed.attain.by.county %>%
+  mutate(ba.plus = `BA` + `MA+`) %>%
+  select(County, ba.plus) ->
+  p.ba.sortlist
+
+left_join(ed.attain.gathered, p.ba.sortlist) %>%
+  arrange(ba.plus) %>%
+  mutate(County = factor(County, unique(County))) %>%
+  ggplot() +
+  aes(x = County, y = proportion.pop, fill = ed.level) +
+  geom_col() +
+  coord_flip() +
+  play.theme +
+  play.palette +
+  scale_y_continuous(expand=c(0,0)) +
+  ylab("Percent of population")
+```
+

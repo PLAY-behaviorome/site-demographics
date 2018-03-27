@@ -1,0 +1,254 @@
+---
+title: "site_demo_map"
+author: "Charmi Mehta"
+date: "2/8/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(magrittr)
+library(gdata)
+library(ggrepel)
+library(dplyr)
+library("ggmap", lib.loc = "/storage/work/csm5410/sw/r_packages")
+library("ggplot2", lib.loc = "/storage/work/csm5410/sw/r_packages")
+library(ggvis)
+# library(googleway)
+```
+
+
+###Import dataset and add two new columns
+
+Add two new columns named Latitude and Longitude to later use for ggmap function.
+
+```{r import, echo=FALSE}
+
+site_data <- read.csv("city-state-county.csv")
+site_data$Collecting[site_data$City=="Atlanta"] <- "Non-Collecting"
+site_data[c("Longitude", "Latitude")] <- NA
+site_data
+```
+
+##Add Latitude and Longitude values of each city.
+
+```{r site_map, echo=FALSE}
+
+for (i in 1:43) {
+  ifelse ((is.na(geocode(as.character(site_data$County[i], site_data$City[i], site_data$State[i])))), Sys.sleep(5), geocode(as.character(site_data$County[i], site_data$City[i], site_data$State[i])))
+}
+
+# {
+#     Sys.sleep(5)
+#   }
+# print(geocode(as.character(site_data$County[i], site_data$City[i], site_data$State[i])))
+# }
+
+# Sys.sleep(10)
+# # key <- "AIzaSyDB2QxBRTKcx_u5zVvNuHRv17e1NzmcKOU"
+# geocodes1 <- geocode(as.character(site_data$County[1:5] , site_data$City[1:5], site_data$State[1:5]))
+# geocodes1
+# Sys.sleep(10)
+# geocodes2 <- geocode(as.character(site_data$County[6:10] , site_data$City[6:10], site_data$State[6:10]))
+# geocodes2
+# Sys.sleep(10)
+# geocodes3 <- geocode(as.character(site_data$County[11:15] , site_data$City[11:15], site_data$State[11:15]))
+# geocodes3
+# Sys.sleep(10)
+# geocodes4 <- geocode(as.character(site_data$County[16:20] , site_data$City[16:20], site_data$State[16:20]))
+# geocodes4
+# Sys.sleep(10)
+# geocodes5 <- geocode(as.character(site_data$County[21:25] , site_data$City[21:25], site_data$State[21:25]))
+# geocodes5
+# Sys.sleep(10)
+# geocodes6 <- geocode(as.character(site_data$County[26:30] , site_data$City[26:30], site_data$State[26:30]))
+# geocodes6
+# Sys.sleep(10)
+# geocodes7 <- geocode(as.character(site_data$County[31:35] , site_data$City[31:35], site_data$State[31:35]))
+# geocodes7
+# Sys.sleep(10)
+# geocodes8 <- geocode(as.character(site_data$County[36:40] , site_data$City[36:40], site_data$State[36:40]))
+# geocodes8
+# Sys.sleep(10)
+# geocodes9 <- geocode(as.character(site_data$County[41:43] , site_data$City[41:43], site_data$State[41:43]))
+# geocodes9
+
+# Sys.sleep(3)
+# geocodes2 <- geocode(as.character(site_data$County[3:4] , site_data$City[3:4], site_data$State[3:4]))
+# # mydat <- data.frame(site_data[,1:2],geocodes)
+# Sys.sleep(3)
+# geocodes3 <- geocode(as.character(site_data$County[5:6] , site_data$City[5:6], site_data$State[5:6]))
+# Sys.sleep(3)
+# geocodes2
+# geocodes3
+# https://www.shanelynn.ie/massive-geocoding-with-r-and-google-maps/
+```
+
+```{r , echo=FALSE}
+site_data$Latitude[1] <- 42.360100
+site_data$Longitude[1] <- -71.058900
+
+site_data$Latitude[2] <- 39.952600
+site_data$Longitude[2] <- -75.165200
+
+site_data$Latitude[3] <- 39.916800
+site_data$Longitude[3] <- -75.387700
+  
+site_data$Latitude[4] <- 40.121500
+site_data$Longitude[4] <- -75.339900
+  
+site_data$Latitude[5] <- 39.960700
+site_data$Longitude[5] <- -75.605500
+  
+site_data$Latitude[6] <- 40.310100
+site_data$Longitude[6] <- -75.129900
+  
+site_data$Latitude[7] <- 39.925900
+site_data$Longitude[7] <- -75.119600
+  
+site_data$Latitude[8] <- 39.838200
+site_data$Longitude[8] <- -75.152700
+  
+site_data$Latitude[9] <- 42.444000
+site_data$Longitude[9] <- -76.501900
+  
+site_data$Latitude[10] <- 33.870400
+site_data$Longitude[10] <- -117.924200
+  
+site_data$Latitude[11] <- 33.770100
+site_data$Longitude[11] <- -118.193700
+  
+site_data$Latitude[12] <- 40.579500
+site_data$Longitude[12] <- -74.150194
+  
+site_data$Latitude[13] <- 33.749000
+site_data$Longitude[13] <- -84.388000
+  
+site_data$Latitude[14] <- 38.907200
+site_data$Longitude[14] <- -77.036900
+  
+site_data$Latitude[15] <- 38.881600
+site_data$Longitude[15] <- -77.091000
+
+site_data$Latitude[16] <- 38.984700
+site_data$Longitude[16] <- -77.094700
+
+site_data$Latitude[17] <- 29.760400
+site_data$Longitude[17] <- -95.369800
+
+site_data$Latitude[18] <- 39.165300
+site_data$Longitude[18] <- -86.526400
+  
+site_data$Latitude[19] <- 42.646900
+site_data$Longitude[19] <- -84.354200
+  
+site_data$Latitude[20] <- 42.057500
+site_data$Longitude[20] <- -83.953300
+  
+site_data$Latitude[21] <- 40.712800
+site_data$Longitude[21] <- -74.006000
+  
+site_data$Latitude[22] <- 39.558900
+site_data$Longitude[22] <- -84.304100
+  
+site_data$Latitude[23] <- 40.445100
+site_data$Longitude[23] <- -80.008800
+  
+site_data$Latitude[24] <- 40.302900
+site_data$Longitude[24] <- -74.733700
+  
+site_data$Latitude[25] <- 40.814800
+site_data$Longitude[25] <- -77.865300
+  
+site_data$Latitude[26] <- 40.347000
+site_data$Longitude[26] <- -86.822000
+  
+site_data$Latitude[27] <- 40.794700
+site_data$Longitude[27] <- -74.264900
+  
+site_data$Latitude[28] <- 37.354100
+site_data$Longitude[28] <- -121.955200
+  
+site_data$Latitude[29] <- 37.563000
+site_data$Longitude[29] <- -122.325500
+  
+site_data$Latitude[30] <- 29.951100
+site_data$Longitude[30] <- -90.071500
+  
+site_data$Latitude[31] <- 38.733000
+site_data$Longitude[31] <- -121.807300
+  
+site_data$Latitude[32] <- 37.302200
+site_data$Longitude[32] <- -120.483000
+  
+site_data$Latitude[33] <- 33.953300
+site_data$Longitude[33] <- -117.396200
+  
+site_data$Latitude[34] <- 36.974100
+site_data$Longitude[34] <- -122.030800
+  
+site_data$Latitude[35] <- 25.551600
+site_data$Longitude[35] <- -80.632700
+  
+site_data$Latitude[36] <- 44.052100
+site_data$Longitude[36] <- -123.086800
+  
+site_data$Latitude[37] <- 30.209700
+site_data$Longitude[37] <- -97.698200
+  
+site_data$Latitude[38] <- 36.162700
+site_data$Longitude[38] <- -86.781600
+  
+site_data$Latitude[39] <- 35.917900
+site_data$Longitude[39] <- -86.862200
+  
+site_data$Latitude[40] <- 36.592500
+site_data$Longitude[40] <- -78.616400
+  
+site_data$Latitude[41] <- 37.377100
+site_data$Longitude[41] <- -77.505000
+  
+site_data$Latitude[42] <- 37.540700
+site_data$Longitude[42] <- -77.436000
+
+site_data$Latitude[43] <- 37.300200
+site_data$Longitude[43] <- -76.802900
+
+site_data
+```
+
+
+```{r extra, echo=FALSE}
+
+gc1 <- geocode("West Chester, PA")
+gc2 <- geocode("Woodbury, NJ")
+gc1
+gc2
+
+```
+
+
+#Create a ggmap for the site demographics
+
+```{r ggmap, echo=FALSE}
+
+
+myMAP <- get_map(location='united states', zoom=4, maptype='terrain', source='google', color='color')
+ggmap(myMAP)
+
+ggmap(myMAP) + geom_point(aes(x=site_data$Longitude, y=site_data$Latitude), data = site_data, col = 'red') + geom_text_repel(data = site_data, aes(x = site_data$Longitude, y = site_data$Latitude, label = site_data$City), size = 3, vjust = 0, hjust = -0.5, col = 'blue')
+
+```
+
+
+
+
+
+
+
+
+
+
+
+

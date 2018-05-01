@@ -188,7 +188,7 @@ left_join(ed.attain.gathered, p.ba.sortlist) %>%
   ylab("Percent of population")
 ```
 
-```{r plot-for-da}
+```{r ed-attain-detailed-plot}
 ed.attain.list <- lapply(1:dim(play.ed)[1], Make.ed.attain.table)
 ed.attain.df <- Reduce(function(x,y) full_join(x,y, all=TRUE), ed.attain.list)
 ed.attain.df %>%

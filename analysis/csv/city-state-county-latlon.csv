@@ -1,0 +1,46 @@
+City,State,County,US.Region,Site.code,Collecting,region,multi,lon,lat
+Long Beach,CA,los angeles,West,CSL,Collecting,6037,no,-122.87655,43.94155
+Merced,CA,merced,West,UCM,Collecting,6047,no,-122.32253,37.573485
+Fullerton,CA,orange,West,CSF,Collecting,6059,no,-122.111126,37.052748
+Riverside,CA,riverside,West,UCR,Collecting,6065,no,-122.01774,37.388556
+Palo Alto,CA,san mateo,West,STAN,Collecting,6081,yes,-121.80774,38.73185
+Palo Alto,CA,santa clara,West,STAN,Collecting,6085,yes,-120.42415,37.345785
+Santa Cruz,CA,santa cruz,West,UCSC,Collecting,6087,no,-118.248405,33.973951
+Davis,CA,yolo,West,UCD,Collecting,6113,no,-118.24368,34.05223
+Washington,DC,district of columbia,East,GTN,Collecting,11001,yes,-117.841688,33.642513
+Miami,FL,miami-dade,South,UMIA,Collecting,12086,no,-117.373184,33.99504
+Athens,GA,clarke,South,UGA,Collecting,13121,yes,-97.002768,31.135459
+Athens,GA,oconee,South,UGA,Collecting,13219,yes,-95.39234,29.85728
+Chicago,IL,cook,Midwest,CHI,Collecting,17031,no,-87.64616,41.8954
+Bloomington,IN,monroe,Midwest,IU,Collecting,18105,no,-86.8986,35.89378
+W. Lafayette,IN,tippecanoe,Midwest,PUR,Collecting,18157,no,-86.12282,41.215971
+New Orleans,LA,orleans,South,TUL,Collecting,22071,no,-85.10496,36.277567
+Boston,MA,suffolk,East,BU,Collecting,25025,no,-84.919164,40.709518
+Bethesda,MD,montgomery,East,GTN,Collecting,24031,yes,-84.37354,42.5971
+East Lansing,MI,clinton,Midwest,MSU,Collecting,26039,yes,-84.30411,39.55895
+East Lansing,MI,ingham,Midwest,MSU,Collecting,26065,yes,-83.36733,33.95117
+Camden,NJ,camden,East,CHOP,Collecting,34007,yes,-82.94987,32.85543
+Newark,NJ,essex,East,RUTG,Collecting,34013,no,-82.91672,42.551185
+Woodbury,NJ,gloucester,East,CHOP,Collecting,34015,yes,-80.49867,25.60897
+Princeton,NJ,mercer,East,PRIN,Collecting,34021,no,-79.98119,40.46883
+New York,NY,new york,East,NYU,Collecting,36061,no,-77.605362,37.392683
+Staten Island,NY,richmond,East,CUNYSI,Collecting,36085,no,-77.574165,37.586772
+Ithaca,NY,tompkins,East,COR,Collecting,36109,no,-77.391092,40.589702
+Columbus,OH,franklin,Midwest,OSU,Collecting,39049,no,-77.29646,37.45771
+Eugene,OR,lane,West,UO,Collecting,41039,no,-77.214787,39.150376
+Pittsburgh,PA,allegheny,Midwest,PITT,Collecting,42003,no,-77.099113,38.885484
+Doylestown,PA,bucks,East,CHOP,Collecting,42017,yes,-77.00025,38.91706
+University Park,PA,centre,East,PSU,Collecting,42027,no,-76.87691,41.17036
+West Chester,PA,chester,East,CHOP,Collecting,42029,yes,-76.77376,37.31332
+Media,PA,delaware,East,CHOP,Collecting,42045,yes,-75.3989,39.91681
+Norristown,PA,montgomery,East,CHOP,Collecting,42091,yes,-75.378098,39.848163
+Philadelphia,PA,philadelphia,East,CHOP,Collecting,42101,yes,-75.334955,39.764696
+Nashville,TN,davidson,South,VBLT,Collecting,47037,yes,-75.11787,40.001811
+Franklin,TN,williamson,South,VBLT,Collecting,47187,yes,-75.10687,40.33694
+Houston,TX,harris,South,HOU,Collecting,48201,no,-74.938259,39.80237
+Austin,TX,travis,South,UT,Collecting,48453,no,-74.70169,40.2834
+Arlington,VA,arlington,East,GTN,Collecting,51013,yes,-74.561289,42.621296
+Chesterfield,VA,chesterfield,South,VCU,Collecting,51041,yes,-74.24687,40.78707
+Richmond,VA,henrico,South,VCU,Collecting,51087,yes,-74.080258,40.635861
+Williamsburg,VA,james city,South,WM,Collecting,51095,yes,-74.005973,40.714269
+Richmond,VA,richmond,South,VCU,Collecting,51760,yes,-70.98564,42.34866

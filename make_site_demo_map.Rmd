@@ -1,0 +1,73 @@
+---
+title: "site_demo_map"
+author: "Charmi Mehta & Rick Gilmore"
+date: "`r Sys.time()`"
+output: 
+  pdf_document:
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      fig.path = 'img/',
+                      fig.align = "center")
+
+library(tidyverse)
+library(ggmap)
+
+csv.dir <- 'analysis/csv/'
+geo.fn <- 'city-state-county-latlon.csv'
+city.state.cty.fn <- 'city-state-county.csv'
+```
+
+```{r PLAY-site-map}
+# Faster to load site data from saved CSV
+if (file.exists(paste0(csv.dir, geo.fn))) {
+  site.data <- read.csv(paste0(csv.dir, geo.fn))
+  
+  if (!(is.null(site.data))) {
+    play.map <- ggmap::get_map(location='united states', 
+                               zoom=4, maptype='terrain', 
+                               source='google',
+                               color='color',
+                               force=FALSE)
+    if (!(is.null(play.map))) {
+      play.collection.map <- ggmap(play.map) +
+        ggplot2::geom_point(data = site.data, 
+                            aes(x = site.data$lon, 
+                                y = site.data$lat, color = "red")) +
+        ggplot2::theme(legend.position = "none")
+      play.collection.map
+    } else {
+      stop("Could not load map.") 
+    }
+  } else {
+    stop("Error in reading site data file.")
+  }
+} else {
+  n.counties <- dim(site_data)[1]
+  within.gmaps.quota <- (geocodeQueryCheck() > 0)
+  
+  # Datascience toolkit site source="dsk" more robust for multiple free queries
+  get_latlon <- function(i, sites) {
+    county.state <- paste0(sites$County[i], " ", sites$State[i])
+    latlon <- ggmap::geocode(county.state, output="latlon", 
+                             source="dsk", messaging = FALSE)
+    if (!is.null(latlon)) {
+      return(latlon)
+    } else {
+      cat(paste0("Lat/Lon not returned for ", city.county.state))
+      return(NULL)
+    }
+  } 
+  site_data <- read.csv(paste0(csv.dir, city.state.cty.fn))
+  
+  if (n.counties > 0) {
+    lat.lons <- lapply(1:n.counties, get_latlon, site_data)
+    lat.lons.df <- Reduce(function (x,y) merge(x,y, all=TRUE), lat.lons)
+  }
+  site_latlons <- cbind(site_data, lat.lons.df)
+  write.csv(site_latlons, paste0(csv.dir, geo.fn))
+  cat(paste0("Created new site file with lat/lon data."))
+}
+```

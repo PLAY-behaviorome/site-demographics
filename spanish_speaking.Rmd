@@ -91,7 +91,7 @@ ACSSF	B16007	46	8	 		 	18 to 64 years:
 ACSSF	B16007	46	9	 		 	Speak only English	
 ACSSF	B16007	46	10	 		 	Speak Spanish	
 ACSSF	B16007	46	11	 		 	Speak other Indo-European languages	
-ACSSF	B16007	46	12	 		 	Speak Asian and Pacific Island languages	
+ACSSF	B16007	46	12	 		 	Speak Asian and Pacific Island languages
 ACSSF	B16007	46	13	 		 	Speak other languages	
 ACSSF	B16007	46	14	 		 	65 years and over:	
 ACSSF	B16007	46	15	 		 	Speak only English	

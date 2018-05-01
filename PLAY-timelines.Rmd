@@ -1,0 +1,21 @@
+---
+title: "PLAY-timelines"
+author: "Rick Gilmore"
+date: "`r Sys.time()`"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+This is a very simple slide deck that shows the timelines we can generate from Datavyu files.
+
+## All 'gold standard' subs across the hour
+
+<img src="img/NYU013/time-line-plot-00-60.1.png" height=200px/>
+<img src="img/NYU018/time-line-plot-00-60.1.png" height=200px/>
+<img src="img/NYU019/time-line-plot-00-60.1.png" height=200px/>
+<img src="img/NYU020/time-line-plot-00-60.1.png" height=200px/>

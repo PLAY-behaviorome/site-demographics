@@ -27,10 +27,7 @@ if (file.exists(paste0(csv.dir, geo.fn))) {
   
   if (!(is.null(site.data))) {
     play.map <- ggmap::get_map(location='united states', 
-                               zoom=4, maptype='terrain', 
-                               source='google',
-                               color='color',
-                               force=FALSE)
+                               zoom=4)
     if (!(is.null(play.map))) {
       play.collection.map <- ggmap(play.map) +
         ggplot2::geom_point(data = site.data, 

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Rick Gilmore" />
+
+
+<title>PLAY collection site demographics</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<script src="libs/navigation-1.1/codefolding.js"></script>
+<link href="libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">PLAY collection site demographics</h1>
+<h4 class="author"><em>Rick Gilmore</em></h4>
+<h4 class="date"><em>2018-08-22 04:57:08</em></h4>
+
+</div>
+
+
+<pre class="r"><code>counties &lt;- read.csv(paste0(csv.dir, &quot;city-state-county.csv&quot;), stringsAsFactors = FALSE)
+
+if (file.exists(&quot;analysis/csv/county_regions.csv&quot;)) {
+  county.regions &lt;- read.csv(file = &quot;analysis/csv/county_regions.csv&quot;)  
+} else {
+  data(county.regions)  
+}
+
+counties &lt;- left_join(counties, county.regions)</code></pre>
+<pre><code>## Joining, by = &quot;region&quot;</code></pre>
+<pre class="r"><code># Load county demog data if stored local copy exists
+if (file.exists(paste0(csv.dir, &quot;county_demo_data_2015.csv&quot;))) {
+  demog &lt;- read.csv(file = paste0(csv.dir, &quot;county_demo_data_2015.csv&quot;))
+} else {
+  demog &lt;- choroplethr::get_county_demographics(endyear=2015, span=5)
+}
+
+county.demo &lt;- left_join(counties, demog)</code></pre>
+<pre><code>## Joining, by = &quot;region&quot;</code></pre>
+<pre class="r"><code># Recapitalize county
+county.demo$County &lt;- unlist(lapply(county.demo$County, Cap_all))
+# Hack District Of columbia...TODO(ROG): Fix Cap_all()
+county.demo$County[county.demo$County == &quot;District Of columbia&quot;] = &quot;District of Columbia&quot;
+county.demo &lt;- county.demo %&gt;%
+  mutate(state.cty = paste0(County, &quot;, &quot;, State)) </code></pre>
+<pre class="r"><code># county.demo %&gt;%
+#   filter(Collecting == &quot;Collecting&quot;) %&gt;%
+#   arrange(US.Region, Site.code, State, County) %&gt;%
+#   select(US.Region, Site.code, State, County, total_population,
+#          percent_white, percent_black, percent_asian,
+#          percent_hispanic, multi) -&gt;
+#   county.race.ethnicity</code></pre>
+<pre class="r"><code>county.demo %&gt;%
+  select(US.Region, Site.code, State, County, state.cty, percent_black, percent_hispanic, percent_asian, percent_white) %&gt;%
+  gather(key = race, value = pop.percent, percent_black:percent_white) -&gt;
+county.pop.percent
+
+county.pop.percent$race &lt;- recode(county.pop.percent$race, 
+                                  percent_black = &quot;Black&quot;, 
+                                  percent_hispanic = &quot;Hispanic&quot;,
+                                  percent_asian = &quot;Asian&quot;,
+                                  percent_white = &quot;White&quot;)
+
+# county.pop.percent &lt;- county.pop.percent %&gt;%
+#   mutate(state.cty = paste0(County, &quot;, &quot;, State)) </code></pre>
+<pre class="r"><code># county.pop.percent %&gt;%
+#   ggplot() +
+#   aes(y = pop.percent, x = race, fill = race, 
+#       color = race, group = County) +
+#   geom_line(color = &quot;black&quot;, linetype = 1, alpha = 0.2) +
+#   geom_point(size = 3) +
+#   ylab(&quot;Proportion of population&quot;) +
+#   theme_classic() +
+#   theme(legend.position = &quot;none&quot;,
+#         axis.title = element_text(size = rel(1.5), face =&quot;bold&quot;),
+#         axis.text = element_text(size = rel(1.2)))</code></pre>
+<pre class="r"><code>plot.demo.by.state.cty &lt;- function(d, region = &quot;East&quot;) {
+  d %&gt;%
+    filter(US.Region == region) %&gt;%
+    ggplot() +
+    aes(x = state.cty, y = pop.percent, fill = race) +
+    geom_col() +
+    coord_flip() +
+    theme_classic() +
+    theme(legend.position = &quot;bottom&quot;,
+        axis.title = element_text(size = rel(1.5), face =&quot;bold&quot;),
+        axis.text = element_text(size = rel(1.2)),
+        axis.text.x = element_text(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank())  
+}</code></pre>
+<pre class="r"><code>#plot.demo.by.state.cty(county.pop.percent, &quot;East&quot;)</code></pre>
+<pre class="r"><code>#plot.demo.by.state.cty(county.pop.percent, &quot;West&quot;)</code></pre>
+<pre class="r"><code>#plot.demo.by.state.cty(county.pop.percent, &quot;South&quot;)</code></pre>
+<pre class="r"><code>#plot.demo.by.state.cty(county.pop.percent, &quot;Midwest&quot;)</code></pre>
+<div id="county-level-barplots" class="section level2 tabset">
+<h2>County-level barplots</h2>
+<div id="race" class="section level3">
+<h3>Race</h3>
+<pre class="r"><code>county.demo %&gt;%
+  mutate(p.white = percent_white) %&gt;%
+  select(State, County, p.white) -&gt;
+  p.white.sortlist
+
+left_join(county.pop.percent, p.white.sortlist) %&gt;%
+  arrange(p.white) %&gt;%
+  mutate(state.cty = factor(state.cty, unique(state.cty))) %&gt;%
+  ggplot() +
+  aes(x = state.cty, y = pop.percent, fill = race) +
+  geom_col() +
+  scale_fill_discrete(limits=c(&quot;Asian&quot;, &quot;Black&quot;, &quot;Hispanic&quot;, &quot;White&quot;)) +
+  play.palette +
+  play.theme +
+  coord_flip() +
+  scale_y_continuous(expand=c(0,0)) +
+  ylab(&quot;Percent of population&quot;)</code></pre>
+<pre><code>## Joining, by = c(&quot;State&quot;, &quot;County&quot;)</code></pre>
+<pre><code>## Scale for &#39;fill&#39; is already present. Adding another scale for &#39;fill&#39;,
+## which will replace the existing scale.</code></pre>
+<p><img src="img/race-by-county-all-regions-plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>county.pop.percent %&gt;%
+  group_by(Site.code, State, County) %&gt;%
+  summarize(tot.p = sum(pop.percent))</code></pre>
+<pre><code>## # A tibble: 45 x 4
+## # Groups:   Site.code, State [?]
+##    Site.code State County       tot.p
+##    &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;        &lt;int&gt;
+##  1 BU        MA    Suffolk         96
+##  2 CHI       IL    Cook            99
+##  3 CHOP      NJ    Camden          98
+##  4 CHOP      NJ    Gloucester      98
+##  5 CHOP      PA    Bucks           99
+##  6 CHOP      PA    Chester         98
+##  7 CHOP      PA    Delaware        97
+##  8 CHOP      PA    Montgomery      98
+##  9 CHOP      PA    Philadelphia    97
+## 10 COR       NY    Tompkins        97
+## # ... with 35 more rows</code></pre>
+</div>
+<div id="median-per-capita-income" class="section level3 tabset">
+<h3>Median per capita income</h3>
+<pre class="r"><code>county.demo %&gt;%
+  arrange(per_capita_income) %&gt;%
+  mutate(state.cty = factor(state.cty, unique(state.cty))) %&gt;%
+  ggplot() +
+  aes(x = state.cty, y = per_capita_income, fill = US.Region) +
+  geom_col() +
+  coord_flip() +
+  play.theme +
+  play.palette +
+  scale_y_continuous(expand=c(0,0)) +
+  ylab(&quot;Median per capita income by site&quot;)</code></pre>
+<p><img src="img/per-capita-income-plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

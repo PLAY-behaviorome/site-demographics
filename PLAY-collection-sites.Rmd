@@ -1,0 +1,101 @@
+---
+title: "PLAY-collection-sites"
+author: "Rick O. Gilmore"
+date: "`r Sys.time()`"
+output: html_document
+---
+
+## Purpose
+
+Download roster data and plot map of data collection sites.
+
+## Set-up
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggmap)
+library(googlesheets)
+
+roster_url <- "https://docs.google.com/spreadsheets/d/1CTn0opvbfKHRX3WpoK384lYF0gj-5tLACrf3_CrjHXI/"
+```
+
+## Process roster
+
+```{r}
+roster <- googlesheets::gs_title("PLAY-roster")
+roster_df <- roster %>%
+  gs_read(ws = "roster")
+```
+
+Print table of data-collecting PIs
+
+```{r}
+roster_df %>%
+  filter(Collection_role == "Collecting") %>%
+  select(Last, First, Institution) %>%
+  arrange(Last) %>%
+  knitr::kable()
+```
+
+Get site latitude and longitude values. 
+
+```{r}
+get_latlon <- function(city_state) {
+  latlon <- ggmap::geocode(city_state, output="latlon", messaging = FALSE)
+  # Avoid too many API calls in a short time
+  Sys.sleep(0.5)
+  if (!is.null(latlon)) {
+    return(c(city_state, latlon))
+  } else {
+    cat(paste0("Lat/Lon not returned for ", city_state))
+    return(NULL)
+  }
+}
+
+cities_states_df <- roster_df %>%
+  filter(Collection_role == "Collecting") %>%
+  select(City, State_prov) %>%
+  mutate(Cities_States = paste0(City, " ", State_prov))
+
+lat_lons <- lapply(cities_states_df$Cities_States, get_latlon)
+lat_lon_df <- Reduce(function(x, y) merge(x,y, all=TRUE), lat_lons)
+
+cities_states_df_merged <- cities_states_df
+cities_states_df_merged$lat <- lat_lon_df$lat
+cities_states_df_merged$lon <- lat_lon_df$lon
+```
+
+## Make a map
+
+```{r}
+left_bottom_right_top_box <- c(-125, 25, -65, 50)
+play_map <- ggmap::get_map(location = left_bottom_right_top_box, zoom=4)
+if (!(is.null(play_map))) {
+  play_collection_map <- ggmap(play_map) +
+    ggplot2::geom_point(data = cities_states_df_merged, 
+                        aes(x = cities_states_df_merged$lon, 
+                            y = cities_states_df_merged$lat, color = "red")) +
+    ggplot2::theme(legend.position = "none") +
+    ggplot2::ggtitle("PLAY Collection Sites")
+  play_collection_map
+} else {
+  stop("Could not load map.") 
+}
+
+map_fn <- paste0("img/", Sys.Date(), "-PLAY-collection-sites.jpg")
+ggsave(map_fn, device="jpg")
+```
+
+## Export table
+
+```{r}
+roster_for_csv <- roster_df %>%
+  filter(Collection_role == "Collecting") %>%
+  select(Last, First, Institution, City, State_prov) %>%
+  arrange(Last)
+
+roster_fn <- paste0('analytics/csv/', Sys.Date(), "-PLAY-collection-sites.csv")
+#write_csv(roster_for_csv, roster_fn)
+```
+

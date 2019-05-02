@@ -10,7 +10,7 @@
 library(shiny)
 
 # Helper functions
-# source("R/Cap.all.R")
+source("../R/Cap.all.R")
 
 
 # Define UI for application that draws a histogram
@@ -51,7 +51,7 @@ server <- function(input, output) {
    
    output$whitePlot <- renderPlot({
      selected_county_fips <- county.regions %>%
-       filter(state.name == input$selectState) %>%
+       filter(state.name %in% input$selectState) %>%
        select(region)
      county_demo_data$value <- county_demo_data[,"percent_white"]
      county_choropleth(county_demo_data, 
@@ -62,7 +62,7 @@ server <- function(input, output) {
    })
    output$blackPlot <- renderPlot({
      selected_county_fips <- county.regions %>%
-       filter(state.name == input$selectState) %>%
+       filter(state.name %in% input$selectState) %>%
        select(region)
      county_demo_data$value <- county_demo_data[,"percent_black"]
      county_choropleth(county_demo_data, 
@@ -73,7 +73,7 @@ server <- function(input, output) {
    })
    output$hispPlot <- renderPlot({
      selected_county_fips <- county.regions %>%
-       filter(state.name == input$selectState) %>%
+       filter(state.name %in% input$selectState) %>%
        select(region)
      county_demo_data$value <- county_demo_data[,"percent_hispanic"]
      county_choropleth(county_demo_data, 
@@ -86,4 +86,3 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-

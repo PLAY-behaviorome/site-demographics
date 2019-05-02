@@ -1,11 +1,19 @@
 ---
-title: "site_demographics"
+title: "PLAY collection site demographics"
 author: "Rick Gilmore"
 date: "`r Sys.time()`"
-output: 
+output:
+  html_document:
+    self_contained: false
+    lib_dir: libs
+    toc: true
+    toc_float: true
+    code_folding: hide
   pdf_document:
     fig_caption: true
 ---
+
+## Set-up
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -36,12 +44,26 @@ play.theme <-
         plot.margin=unit(c(0,.5,0,0),"cm"))
 ```
 
+## Gather and clean data
+
 ```{r download-demographic-data}
 counties <- read.csv(paste0(csv.dir, "city-state-county.csv"), stringsAsFactors = FALSE)
 
-data("county.regions")
+if (file.exists("analysis/csv/county_regions.csv")) {
+  county.regions <- read.csv(file = "analysis/csv/county_regions.csv")  
+} else {
+  data(county.regions)  
+}
+
 counties <- left_join(counties, county.regions)
-demog <- get_county_demographics(endyear=2013, span=5)
+
+# Load county demog data if stored local copy exists
+if (file.exists(paste0(csv.dir, "county_demo_data_2015.csv"))) {
+  demog <- read.csv(file = paste0(csv.dir, "county_demo_data_2015.csv"))
+} else {
+  demog <- choroplethr::get_county_demographics(endyear=2015, span=5)
+}
+
 county.demo <- left_join(counties, demog)
 
 # Recapitalize county
@@ -92,6 +114,7 @@ county.pop.percent$race <- recode(county.pop.percent$race,
 #         axis.text = element_text(size = rel(1.2)))
 ```
 
+
 ```{r race-by-county-plot-prep}
 plot.demo.by.state.cty <- function(d, region = "East") {
   d %>%
@@ -126,6 +149,10 @@ plot.demo.by.state.cty <- function(d, region = "East") {
 #plot.demo.by.state.cty(county.pop.percent, "Midwest")
 ```
 
+## County-level barplots {.tabset}
+
+### Race
+
 ```{r race-by-county-all-regions-plot}
 county.demo %>%
   mutate(p.white = percent_white) %>%
@@ -143,7 +170,7 @@ left_join(county.pop.percent, p.white.sortlist) %>%
   play.theme +
   coord_flip() +
   scale_y_continuous(expand=c(0,0)) +
-  ylab("Proportion of population")
+  ylab("Percent of population")
 ```
 
 ```{r race-table}
@@ -151,6 +178,8 @@ county.pop.percent %>%
   group_by(Site.code, State, County) %>%
   summarize(tot.p = sum(pop.percent))
 ```
+
+### Median per capita income {.tabset}
 
 ```{r per-capita-income-plot}
 county.demo %>%

@@ -1,12 +1,12 @@
-api.key.install(key = 'eefec0eee1fbbd68575f1812f4cdd9b47a9fb3fb')
-
-load_pop_data <- function() {
-  require(choroplethrMaps)
-  require(choroplethr)
-  data(county.regions)
-  data(df_pop_county)
-  county_demo_data <- choroplethr::get_county_demographics(endyear=2010, span=5)
-}
+# api.key.install(key = 'eefec0eee1fbbd68575f1812f4cdd9b47a9fb3fb')
+# 
+# load_pop_data <- function() {
+#   require(choroplethrMaps)
+#   require(choroplethr)
+#   data(county.regions)
+#   data(df_pop_county)
+#   county_demo_data <- choroplethr::get_county_demographics(endyear=2010, span=5)
+# }
 
 # get_county_demo <- function(csv.dir = "analysis/csv/") {
 #   require(tidyverse)

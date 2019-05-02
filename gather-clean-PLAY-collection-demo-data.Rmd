@@ -1,0 +1,108 @@
+---
+title: "Gathering and cleaning collection site demo data"
+author: "Rick Gilmore"
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+    code_folding: show
+---
+
+## Purpose
+
+This document describes the steps undertaken to gather demographic data about the PLAY project data collection sites.
+It also describes how the gathered data are altered in order to facilitate visualization.
+
+## Set-up
+
+We depend on several R packages, including `tidyverse`, `googlesheets`, `choroplethr`, and `choroplethrMaps`. 
+The `acs` package is also used by `choroplethr`, and `ggmap` is used for some mapping functions.
+Since `choroplethr` loads `acs` we do not do so explicitly here, nor do we load `ggmap` since we are not doing mapping.
+Note that we have set `eval = FALSE` as a global chunk option.
+This is because most of the code chunks here are provided for reference and are run only occasionally.
+Single code chunks can be run, or the global setting can be changed to `eval = TRUE` if the user wishes to run all of the code chunks and regenerate the data files.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+library(tidyverse)
+library(googlesheets)
+library(choroplethr)
+library(choroplethrMaps)
+```
+
+### API keys
+
+For the `acs` package, the user must apply for an application program interface (API) key from the Census Bureau from this site: <https://api.census.gov/data/key_signup.html>.
+Once the key has been provided, the user should add it with the `acs::api.key.install()` command.
+
+Google Maps also requires an API key, so mapping functions that require this service will involve acquiring and installing the API key.
+
+The `googlesheets` package also requires (or generates) a `httr-oath` cookie file in the project's root directory.
+
+## Gather county-level demographic data
+
+We use the `choroplethr` and `choroplethrMaps` packages to gather county-level demographic data from the Census Bureau.
+Since this process can take many seconds, we run the following code once or only periodically to update the data files and save local copies in `analysis/csv/`.
+
+```{r download-save-county-demog}
+source("R/download_save_county_demo.R")
+download_save_county_demo(endyear = 2010)
+download_save_county_demo(endyear = 2015)
+```
+
+These files contain the following fields: "region","total_population","percent_white","percent_black","percent_asian","percent_hispanic","per_capita_income","median_rent","median_age".
+
+We also load and save local copies of the `county.regions` data set since this helps us map PLAY data collection sites to their FIPS region codes.
+This also needs to be done once or rarely, so we set `eval=FALSE` in the chunk options.
+
+```{r load-county-region}
+data(county.regions)
+write_csv(county.regions, path = "analysis/csv/county_regions.csv")
+```
+
+## Gather PLAY project roster information
+
+The PLAY project has a Google sheet which it uses to maintain information about the PIs and their roles.
+We use the `googlesheets` package to download those data, filter, and save a local copy.
+This again is not done regularly.
+
+```{r download-PLAY-roster}
+# Unless there is a valid cookie (.httr-oath) permitting access to Googlesheets in the root directory of the
+# project, this code will fail. The first command should be run at the console, and access granted to the user's Google account. Then the code will run as expected.
+play.pis.gs <- gs_title("PLAY-roster")
+pis <- gs_read(play.pis.gs, ws="roster")
+pis %>% 
+  select(Last, First, Gender, Rank, New, Race_eth, Institution_Type, R15_eligible,
+         Institution, City, State, Expertise, Collection_role) %>%
+  write_csv(., "analysis/csv/play-pis.csv")
+```
+
+## Gather geographic data about collection sites
+
+We need to know the counties where our collection sites are located.
+There may be more than one county.
+We also benefit from having latitude and longitude information for producing maps.
+
+The Census Bureau makes a file available at <https://www2.census.gov/geo/docs/reference/codes/files/national_county.txt>.
+This chunk of code downloads and saves it in `analysis/csv/`.
+
+```{r download-counties}
+state_county_df <- read_csv(file="https://www2.census.gov/geo/docs/reference/codes/files/national_county.txt", col_names = c("state","statefp","countyfp","countyname","fipsclass"))
+write_csv(state_county_df, path = "analysis/csv/state_county_fips.csv")
+```
+
+The Census also produces a file based on "places" at <https://www2.census.gov/geo/docs/reference/codes/files/national_places.txt>.
+The places data links governmental units like boroughs and townships to their FIPS code or codes.
+The place file is not in a comma-separated format, however, so it must be downloaded and parsed with the pipe '|' character.
+
+```{r download-places}
+places_df <- read_delim(file = "https://www2.census.gov/geo/docs/reference/codes/files/national_places.txt", delim = "|")
+write_csv(places_df, path = "analysis/csv/places.csv")
+```
+
+## Site latitude and longitude
+
+The `make_site_demo_map.Rmd` file contains code to generate a simple map of the sites.
+It includes an untested function for gathering latitude and longitude data using `ggmap`.

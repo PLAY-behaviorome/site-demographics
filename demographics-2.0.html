@@ -223,7 +223,7 @@ $(document).ready(function () {
 <li>Write code using the <code>tidycensus</code> or <code>acs</code> packages that provides these data programmatically.
 <ul>
 <li>Collect demographic data for each county <span class="math inline">\(k\)</span> reported with <span class="math inline">\(w_i &gt; 0\)</span>.</li>
-<li>Create a ‘site estimate’ for county <span class="math inline">\(k\)</span> based on the weighted sum of each demographic variable <span class="math inline">\(d_j\)</span> times the county weights, <span class="math inline">\(d_k = \sum_{i=1}^{n_k} w_i * d_{ij}\)</span></li>
+<li>Create a ‘site estimate’ for county <span class="math inline">\(k\)</span> based on the weighted sum of each demographic variable <span class="math inline">\(d_j\)</span> times the county weights, <span class="math inline">\(d_{jk} = \sum_{i=1}^{n_k} w_i * d_{ij}\)</span></li>
 <li>Consider whether to package the code in a Shiny app.</li>
 <li>Consider whether to visualize data graphically in map format.</li>
 </ul></li>

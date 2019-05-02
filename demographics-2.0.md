@@ -21,6 +21,6 @@ This document discusses design considerations for the next (2.0) version of the 
     - Have data collection site PIs give a set of weights ($w_i$, $\sum_{i=1}^{n} w_i = 1, n >= 1$) indicating what proportion of the total sample they expect to collect from each county.
 3. Write code using the `tidycensus` or `acs` packages that provides these data programmatically.
     - Collect demographic data for each county $k$ reported with $w_i > 0$.
-    - Create a 'site estimate' for county $k$ based on the weighted sum of each demographic variable $d_j$ times the county weights, $d_k = \sum_{i=1}^{n_k} w_i * d_{ij}$
+    - Create a 'site estimate' for county $k$ based on the weighted sum of each demographic variable $d_j$ times the county weights, $d_{jk} = \sum_{i=1}^{n_k} w_i * d_{ij}$
     - Consider whether to package the code in a Shiny app.
     - Consider whether to visualize data graphically in map format.

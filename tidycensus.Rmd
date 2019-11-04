@@ -1,0 +1,132 @@
+---
+title: "Demographics with `tidycensus`"
+author: "Rick Gilmore"
+date: "`r Sys.time()`"
+output:
+  html_document:
+    code_folding: hide
+    number_sections: yes
+    self_contained: yes
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+params: 
+  census_api_key: "abcdefg"
+---
+
+
+# Purpose
+
+This document describes Rick Gilmore's explorations of the `tidycensus` package.
+The goal is to determine whether this package can meet some of the needs for demographic visualization and analysis as outlined <demographics-2.0.html>.
+The package site on GitHub is here: <https://github.com/walkerke/tidycensus>.
+This exploration relies heavily on the documentation provided here: <https://walkerke.github.io/tidycensus/articles/basic-usage.html>.
+
+# Set-up
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+if (!require(tidycensus)) {
+  install.packages('tidycensus')
+}
+if (!require(tidyverse)) {
+  install.packages('tidyverse')
+}
+if (!require(ggplot2)) {
+  install.packages('ggplot2')
+}
+if (!require(viridis)) {
+  install.packages('viridis')
+}
+```
+
+## Load `tidycensus` and associated packages
+
+This document installs `tidycensus`, `tidyverse`, `ggplot2`, and `viridis` if these are not already installed when the document is knit.
+
+```{r}
+library(tidycensus)
+library(tidyverse)
+library(ggplot2)
+library(viridis)
+```
+
+## Add Census API key
+
+According to the `tidycensus` documentation, the following command writes the Census API key to the `.Renviron` environment variable. for use in future sessions if `params$census_api_key` is defined in the `rmarkdown::render()` call to the document.
+For example, run `rmarkdown::render("tidycensus.Rmd", params=list(census_api_key=<YOUR_API_KEY>))` substituting your API key for \<YOUR_API_KEY\>.
+
+```{r store-api-key, eval=FALSE}
+census_api_key(key = params$census_api_key, install = TRUE)
+```
+
+For future runs, execute the following:
+
+```{r read-api-key, eval=TRUE}
+readRenviron("~/.Renviron")
+```
+
+# Testing functionality
+
+## Focus on PA
+
+```{r}
+pa <- get_acs(geography = "county", 
+              variables = c(medincome = "B19013_001"), 
+              state = "PA")
+
+pa
+```
+
+Wow, super.
+Let's see if we can generate a map.
+
+```{r}
+pa_county_income <- get_acs(geography = "county", 
+                            c(medincome = "B19013_001"), state = "PA", 
+                            geometry = TRUE)
+
+ggplot(pa_county_income) + 
+  geom_sf(aes(fill = estimate), color = NA) + 
+  coord_sf(datum = NA) + 
+  theme_minimal() + 
+  scale_fill_viridis_c()
+```
+
+Wow again.
+I wonder if I can filter and show just the counties around Centre County.
+
+## Map of Centre County plus surrounding
+
+```{r}
+centre_plus <- "Centre|Clearfield|Clinton|Union|Mifflin|Huntingdon|Blair"
+
+centre_county_plus_income <- pa_county_income %>%
+  dplyr::filter(stringr::str_detect(NAME, centre_plus))
+
+centre_county_plus_income %>%
+  ggplot(.) + 
+  geom_sf(aes(fill = estimate), color = NA) + 
+  coord_sf(datum = NA) + 
+  theme_minimal() + 
+  scale_fill_viridis_c()  
+```
+
+Sweet.
+While we're here, let's do a local version of the plot with error estimates.
+
+## Plot of Centre County plus surrounding median incomes
+
+```{r}
+centre_county_plus_income %>%
+  mutate(NAME = gsub(" County, Pennsylvania", "", NAME)) %>%
+  ggplot(aes(x = estimate, y = reorder(NAME, estimate))) +
+  geom_errorbarh(aes(xmin = estimate - moe, xmax = estimate + moe)) +
+  geom_point(color = "red", size = 3) +
+  labs(title = "Household income by county in Central Pennsylvania",
+       subtitle = "2013-2017 American Community Survey",
+       y = "",
+       x = "ACS estimate (bars represent margin of error)")
+```
+

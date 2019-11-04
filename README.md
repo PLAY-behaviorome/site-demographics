@@ -11,3 +11,7 @@ Demographic characteristics of prospective PLAY project sites. This repo contain
 - Map of data collection sites. [PDF](site_demo_map.pdf). [Rmd](site_demo_map.Rmd)
 
 To regenerate demographics reports and plots `source("R/render_all.R")`.
+
+## Specific pages
+
+- Exploration of `tidyverse`. | [HTML](tidyverse.html) | [Rmd](tidyverse.Rmd) |

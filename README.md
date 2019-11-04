@@ -14,4 +14,4 @@ To regenerate demographics reports and plots `source("R/render_all.R")`.
 
 ## Specific pages
 
-- Exploration of `tidyverse`. | [HTML](tidyverse.html) | [Rmd](tidyverse.Rmd) |
+- Exploration of `tidyverse` | [HTML](tidycensus.html) | [Rmd](tidycensus.Rmd) |

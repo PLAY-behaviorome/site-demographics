@@ -4,8 +4,8 @@ author: "Rick Gilmore"
 date: "`r Sys.time()`"
 output:
   html_document:
-    code_folding: hide
-    number_sections: yes
+    code_folding: show
+    number_sections: no
     self_contained: yes
     toc: yes
     toc_depth: 3
@@ -130,3 +130,106 @@ centre_county_plus_income %>%
        x = "ACS estimate (bars represent margin of error)")
 ```
 
+# Other demographic variables
+
+Let's see if we can use this approach to generate maps and graphs of other demographic variables we are interested in for PLAY.
+
+## Spanish speaking
+
+Based on the exploration in <spanish_speaking.Rmd>, I'm going to make the following presumptions:
+
+- American Community Survey (ACS) table `B16007` contains info about `AGE BY LANGUAGE SPOKEN AT HOME FOR THE POPULATION 5 YEARS AND OVER`.
+
+Let's try this for PA as a whole before drilling down.
+
+```{r spanish-speaking}
+pa_spanish <- get_acs(geography = "county",
+                      c(spanish_18_64 = "B16007_009"), state = "PA",
+                        geometry = TRUE)
+
+pa_spanish %>% 
+  ggplot(.) + 
+  geom_sf(aes(fill = estimate), color = NA) + 
+  coord_sf(datum = NA) + 
+  theme_minimal() + 
+  scale_fill_viridis_c() +
+  ggtitle("Spanish speakers 18-64 years of age")
+```
+
+Next, let's try searching for 'Speak Spanish' in the ACS variables to make sure we're on track.
+This next chunk is copied verbatim from <https://walkerke.github.io/tidycensus/articles/basic-usage.html>.
+
+```{r}
+v17 <- load_variables(2017, "acs5", cache = TRUE)
+
+View(v17)
+```
+
+Yes, "B16007_009" looks like a reasonable table.
+Let's plot a county-level map and graph like before.
+
+### Centre + surrounding counties, Spanish speakers
+
+```{r}
+centre_pa_spanish <- pa_spanish %>% 
+  dplyr::filter(stringr::str_detect(NAME, centre_plus))
+
+centre_pa_spanish %>%
+  ggplot(.) + 
+  geom_sf(aes(fill = estimate), color = NA) + 
+  coord_sf(datum = NA) + 
+  theme_minimal() + 
+  scale_fill_viridis_c()
+```
+
+```{r}
+centre_pa_spanish %>%
+  mutate(NAME = gsub(" County, Pennsylvania", "", NAME)) %>%
+  ggplot(aes(x = estimate, y = reorder(NAME, estimate))) +
+  geom_errorbarh(aes(xmin = estimate - moe, xmax = estimate + moe)) +
+  geom_point(color = "red", size = 3) +
+  labs(title = "Spanish speakers 18+ years of age by county in Central Pennsylvania",
+       subtitle = "2013-2017 American Community Survey",
+       y = "",
+       x = "ACS estimate (bars represent margin of error)")
+```
+
+So, these data look more like the total population, not the number of Spanish speakers.
+
+Let's try table "B16006_003" for comparison.
+
+```{r}
+pa_spanish_2 <- get_acs(geography = "county",
+                      c(spanish_18_64 = "B16006_003"), state = "PA",
+                        geometry = TRUE)
+
+pa_spanish_2 %>% 
+  ggplot(.) + 
+  geom_sf(aes(fill = estimate), color = NA) + 
+  coord_sf(datum = NA) + 
+  theme_minimal() + 
+  scale_fill_viridis_c() +
+  ggtitle("Spanish speakers")
+
+centre_pa_spanish_2 <- pa_spanish_2 %>% 
+  dplyr::filter(stringr::str_detect(NAME, centre_plus))
+
+centre_pa_spanish_2 %>%
+  ggplot(.) + 
+  geom_sf(aes(fill = estimate), color = NA) + 
+  coord_sf(datum = NA) + 
+  theme_minimal() + 
+  scale_fill_viridis_c()
+
+centre_pa_spanish_2 %>%
+  mutate(NAME = gsub(" County, Pennsylvania", "", NAME)) %>%
+  ggplot(aes(x = estimate, y = reorder(NAME, estimate))) +
+  geom_errorbarh(aes(xmin = estimate - moe, xmax = estimate + moe)) +
+  geom_point(color = "red", size = 3) +
+  labs(title = "Spanish speakers 5+ years of age by county in Central Pennsylvania",
+       subtitle = "2013-2017 American Community Survey",
+       y = "",
+       x = "ACS estimate (bars represent margin of error)")
+```
+
+That seems much more reasonable.

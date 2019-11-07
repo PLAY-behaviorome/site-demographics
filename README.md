@@ -14,4 +14,4 @@ To regenerate demographics reports and plots `source("R/render_all.R")`.
 
 ## Specific pages
 
-- Exploration of `tidyverse` | [HTML](tidycensus.html) | [Rmd](tidycensus.Rmd) |
+- Exploration of `tidyverse` | [HTML](https://play-behaviorome.github.io/site-demographics/tidycensus.html) | [Rmd](https://play-behaviorome.github.io/site-demographics/tidycensus.Rmd) |

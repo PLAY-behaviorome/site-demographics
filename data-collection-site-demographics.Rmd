@@ -26,7 +26,11 @@ knitr::opts_chunk$set(echo = TRUE,
 # }
 
 # Load packages
-pacman::p_load(ggplot2, dplyr, stringr, choroplethr, choroplethrMaps)
+#pacman::p_load(ggplot2, dplyr, stringr, choroplethr, choroplethrMaps)
+library(ggplot2)
+library(tidyverse)
+library(choroplethr)
+library(choroplethrMaps)
 
 # Paths
 csv.dir <- "analysis/csv/"
@@ -52,7 +56,7 @@ data("county.regions")
 
 counties <- left_join(counties, county.regions)
 
-demo <- get_county_demographics(endyear=2013, span=5)
+demo <- choroplethr::get_county_demographics(endyear=2013, span=5)
 
 county.demo <- left_join(counties, demo)
 
@@ -238,14 +242,14 @@ As a first attempt, create vectors of numeric state FIPS and county FIPS codes.
 ```{r generate-geo}
 state.fips <- as.numeric(county.demo$state.fips.character)
 county.fips <- as.numeric(substr(county.demo$county.fips.character,3,5))
-play.geo <- geo.make(state = state.fips, county = county.fips)
+play.geo <- acs::geo.make(state = state.fips, county = county.fips)
 ```
 
 This works, and I use it blow. I also provide the following code to generate site-specific geographies for future use cases.
 
 ```{r generate-site-geo, eval=FALSE}
 Make.county.geo <- function(i, df) {
-  geo.make(state = as.numeric(df$state.fips.character[i]),
+  acs::geo.make(state = as.numeric(df$state.fips.character[i]),
               county =
              as.numeric(substr(county.demo$county.fips.character[i],4, 6)))
 }
@@ -261,10 +265,10 @@ assign(geo.name, Make.county.geo(cty, county.demo))
 ## Education data from ACS
 
 ```{r ed-attain-all-counties}
-ed.attain <- acs.lookup(table.name="Educational Attainment for the Population 25 Years and Over", endyear=2015)
+ed.attain <- acs::acs.lookup(table.name="Educational Attainment for the Population 25 Years and Over", endyear=2015)
 
 # Variables 1:25 seem to contain the relevant info
-play.ed <- acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[1:25],
+play.ed <- acs::acs.fetch(geography = play.geo, endyear = 2015, variable = ed.attain[1:25],
                      col.names = c("Total",
                                    "None",
                                    "<K",
@@ -355,7 +359,7 @@ It looks like table `B19001` contains "HOUSEHOLD INCOME IN THE PAST 12 MONTHS (I
 
 ```{r household-income}
 # Table B19001
-hh.income <- acs.fetch(geography = play.geo, endyear = 2015, table.number = "B19001")
+hh.income <- acs::acs.fetch(geography = play.geo, endyear = 2015, table.number = "B19001")
 
 # If we take $25K for family of 3-4 as poverty rate
 lt.25k <- function(i) sum(hh.income[i,2:5])
@@ -424,7 +428,7 @@ For our purposes, I suggest we define "English speaking" as 9 + 15; "Spanish spe
 
 ```{r lang.at.home}
 # Table B16007
-lang.at.home <- acs.fetch(geography = play.geo, endyear = 2015, table.number = "B16007")
+lang.at.home <- acs::acs.fetch(geography = play.geo, endyear = 2015, table.number = "B16007")
 
 english <- function(i) lang.at.home[i,9] + lang.at.home[i,15]
 spanish  <- function(i) lang.at.home[i,10] + lang.at.home[i,16]

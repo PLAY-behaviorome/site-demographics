@@ -17,7 +17,8 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE, 
                       error = FALSE,
                       message = FALSE,
-                      fig.path = "img/")
+                      fig.path = "img/",
+                      cache = TRUE)
 
 # Install packman for subsequent package management
 # if (!("pacman" %in% installed.packages()[,])) {
@@ -31,7 +32,7 @@ pacman::p_load(ggplot2, dplyr, stringr, choroplethr, choroplethrMaps)
 csv.dir <- "analysis/csv/"
 
 # Helper functions
-source("analysis/R/Cap.all.R")
+source("R/Cap.all.R")
 ```
 
 ## Background

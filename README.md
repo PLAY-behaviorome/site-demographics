@@ -15,3 +15,4 @@ To regenerate demographics reports and plots `source("R/render_all.R")`.
 ## Specific pages
 
 - Exploration of `tidyverse` | [HTML](https://play-behaviorome.github.io/site-demographics/tidycensus.html) | [Rmd](https://play-behaviorome.github.io/site-demographics/tidycensus.Rmd) |
+- New template report for recruiting sites | [HTML](https://play-behaviorome.github.io/site-demographics/PLAY-recruiting-site-report.html) | [Rmd](https://play-behaviorome.github.io/site-demographics/PLAY-recruiting-site-report.Rmd) |

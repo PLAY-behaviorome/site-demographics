@@ -1,0 +1,387 @@
+---
+title: "site-specific-report-page"
+author: "Rick Gilmore"
+date: "`r Sys.time()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      cache = FALSE)
+
+# Cache shapefiles
+options(tigris_use_cache = FALSE)
+```
+
+# Purpose
+
+This document describes the development of a PLAY site specific demographic report page.
+
+# Goals
+
+1. As a PLAY staff member, I want to be able to gather demographic data from the Census for a specific data collection site.
+2. As a PLAY staff member, I want to present the demographic data to PLAY data collection site staff in ways that inform their recruitment efforts.
+3. As a PLAY staff member, I want to be able to gather data from Databrary concerning the data collection sessions already run and evaluate the demographics of the families tested relative to the Census norms for that site.
+
+# Implementation planning
+
+1. Given the counties a data collection site recruits from, gather demographic data from the Census and return it in a data frame or tibble.
+2. Create site-specific `*.html` files with plots or tabular summaries of the demographic data.
+3. Pull session spreadsheet data from Databrary; reconcile the Databrary-specific names for the demographic variables, and add them to the plots or tabular summaries.
+
+# Implementation
+
+## Gather demographic data from Census
+
+```{r}
+get_census_data <- function(state="PA", county="Centre", 
+                        census_table="B19013_001", variable_name="median_inc") {
+  require(tidycensus)
+  require(tidyverse)
+  
+  if (!(is.character(state))) {
+    stop("'state' must be character")
+  }
+  if (!(is.character(county))) {
+    stop("'county' must be character")
+  }
+  if (!(is.character(census_table))) {
+    stop("'census_table' must be character")
+  }
+  if (!(is.character(variable_name))) {
+    stop("'variable_name' must be character")
+  }
+  if (stringr::str_length(state) != 2) {
+    stop("'state' must be of length 2")
+  }
+  
+  get_acs(geography = "county",
+                  assign(variable_name, census_table),
+                  state = state,
+                  county = county,
+                  geometry = TRUE,
+          cache_table = TRUE)
+}
+
+# Test with default parameters
+get_census_data()
+```
+
+The default works.
+Let's see if it takes multiple counties.
+
+```{r}
+get_census_data(county = c("Centre", "Mifflin"))
+```
+
+It does.
+However, the assignment of the variable name is not working.
+Let's hack a fix and move on.
+
+```{r}
+get_census_data <- function(state="PA", county="Centre", 
+                        census_table="B19013_001", variable_name="median_inc") {
+  require(tidycensus)
+  require(tidyverse)
+  
+  if (!(is.character(state))) {
+    stop("'state' must be character")
+  }
+  if (!(is.character(county))) {
+    stop("'county' must be character")
+  }
+  if (!(is.character(census_table))) {
+    stop("'census_table' must be character")
+  }
+  if (!(is.character(variable_name))) {
+    stop("'variable_name' must be character")
+  }
+  if (stringr::str_length(state) != 2) {
+    stop("'state' must be of length 2")
+  }
+  
+  census_data <- get_acs(geography = "county",
+                  assign(variable_name, census_table),
+                  state = state,
+                  county = county,
+                  geometry = TRUE,
+          cache_table = TRUE)
+  # super hacky
+  names(census_data)[3] <- variable_name
+  census_data
+}
+
+# Test with default parameters
+get_census_data()
+```
+
+Let's now test with additional Census Bureau data tables.
+
+```{r}
+get_census_data(census_table = "B16006_003", variable_name = "spanish_speakers")
+```
+
+On second thought, I think that we should _add_ the variable name to the table.
+
+```{r}
+get_census_data <- function(state="PA", county="Centre", 
+                        census_table="B19013_001", variable_name="median_inc") {
+  require(tidycensus)
+  require(tidyverse)
+  
+  if (!(is.character(state))) {
+    stop("'state' must be character")
+  }
+  if (!(is.character(county))) {
+    stop("'county' must be character")
+  }
+  if (!(is.character(census_table))) {
+    stop("'census_table' must be character")
+  }
+  if (!(is.character(variable_name))) {
+    stop("'variable_name' must be character")
+  }
+  if (stringr::str_length(state) != 2) {
+    stop("'state' must be of length 2")
+  }
+  
+  census_data <- get_acs(geography = "county",
+                  assign(variable_name, census_table),
+                  state = state,
+                  county = county,
+                  geometry = TRUE,
+          cache_table = TRUE)
+  # super hacky
+  census_data$variable_name <- variable_name
+  census_data
+}
+
+# Test with default parameters
+get_census_data(census_table = "B16006_003", variable_name = "spanish_speakers")
+```
+
+Make specific convenience functions for the selected tables.
+
+```{r}
+get_median_income <- function(state="PA", county="Centre") {
+  census_table <- "B19013_001"
+  variable_name <- "median_inc"
+  get_census_data(state = state, county = county,
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+get_median_income()
+```
+
+```{r}
+get_spanish_speakers <- function(state="PA", county="Centre") {
+  census_table <- "B16006_003"
+  variable_name <- "spanish_speakers"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+get_spanish_speakers()
+```
+
+```{r, eval=FALSE}
+v17 <- load_variables(2017, "acs5", cache = TRUE)
+View(v17)
+```
+
+For total population, let's try "C02003_002".
+
+```{r}
+get_census_data(census_table = "C02003_002", variable_name="total_pop_1_race")
+get_census_data(census_table = "C02003_009", variable_name="total_pop_mult_race")
+```
+
+```{r}
+get_white_pop <- function(state="PA", county="Centre") {
+  census_table <- "C02003_003" # one race, white
+  variable_name <- "white_pop"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+get_white_pop()
+```
+
+### Educational attainment
+
+After much sleuthing, it seems that table "B15003_nnn" contains the data.
+Let's test to see that it returns something sensible.
+
+```{r}
+get_attain_phd <- function(state="PA", county="Centre") {
+  census_table <- "B15003_025" # total
+  variable_name <- "Ph.D."
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+  
+}
+get_attain_phd()
+get_attain_phd(county=c("Centre", "Mifflin"))
+```
+
+That looks about right.
+I'm going to replicate some of the calculations in `educational_attainment.Rmd`.
+
+```{r}
+get_ed_attain <- function(state="PA", county="Centre") {
+  census_table <- c("B15003_001", # total
+                    "B15003_002", # none
+                    "B15003_003", # <K
+                    "B15003_004", # K
+                    "B15003_005", # 1st
+                    "B15003_006", # 2nd
+                    "B15003_007", # 3rd
+                    "B15003_008", # 4th
+                    "B15003_009", # 5th
+                    "B15003_010", # 6th
+                    "B15003_011", # 7th
+                    "B15003_012", # 8th
+                    "B15003_013", # 9th
+                    "B15003_014", # 10th
+                    "B15003_015", # 11th
+                    "B15003_016", # 12th
+                    "B15003_017", # HS
+                    "B15003_018", # GED
+                    "B15003_019", # Coll<1
+                    "B15003_020", # Coll>1
+                    "B15003_021", # AA
+                    "B15003_022", # BA
+                    "B15003_023", # MA
+                    "B15003_024", # Prof
+                    "B15003_025")  # PhD
+  variable_name <- "ed_attain"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+get_ed_attain()
+```
+
+Now, let's create some categories.
+
+```{r}
+ed_centre <- get_ed_attain()
+
+lt_hs <- function(ed_df) {
+  sum(ed_df$estimate[2:16])
+}
+
+hs_grad <- function(ed_df) {
+  sum(ed_df$estimate[17:18])
+}
+
+hs_plus <- function(ed_df) {
+  sum(ed_df$estimate[19:21])
+}
+
+ba_plus <- function(ed_df) {
+  sum(ed_df$estimate[22:25])
+}
+
+ed_total <- function(ed_df) 
+lt_hs(ed_centre)
+hs_grad(ed_centre)
+hs_plus(ed_centre)
+ba_plus(ed_centre)
+```
+
+This is _not_ tidy.
+A tidier way to do this would be as follows:
+
+```{r}
+compute_lt_hs <- function(df) {
+  d <- dplyr::filter(df, variable %in% c("B15003_002",
+                                     "B15003_003",
+                                     "B15003_004",
+                                     "B15003_005",
+                                     "B15003_006",
+                                     "B15003_007",
+                                     "B15003_008",
+                                     "B15003_009",
+                                     "B15003_010",
+                                     "B15003_011",
+                                     "B15003_012",
+                                     "B15003_013",
+                                     "B15003_014",
+                                     "B15003_015",
+                                     "B15003_016"))
+  
+  d <- dplyr::group_by(d, GEOID)
+  d <- dplyr::mutate(d, lt_hs = sum(estimate))
+  d
+}
+compute_lt_hs(ed_centre)
+```
+
+```{r}
+compute_hs_grad <- function(df) {
+  d <- dplyr::filter(df, variable %in% c("B15003_016",
+                                         "B15003_017"))
+  
+  d <- dplyr::group_by(d, GEOID)
+  d <- dplyr::mutate(d, hs_grad = sum(estimate))
+  d
+}
+compute_hs_grad(ed_centre)
+```
+
+```{r}
+compute_hs_plus <- function(df) {
+  d <- dplyr::filter(df, variable %in% c("B15003_018",
+                                         "B15003_019",
+                                         "B15003_020",
+                                         "B15003_021"))
+  
+  d <- dplyr::group_by(d, GEOID)
+  d <- dplyr::mutate(d, hs_plus = sum(estimate))
+  d
+}
+compute_hs_grad(ed_centre)
+```
+
+```{r}
+compute_ba_plus <- function(df) {
+  d <- dplyr::filter(df, variable %in% c("B15003_022",
+                                         "B15003_023",
+                                         "B15003_024",
+                                         "B15003_025"))
+  
+  d <- dplyr::group_by(d, GEOID)
+  d <- dplyr::mutate(d, ba_plus = sum(estimate))
+  d
+}
+compute_ba_plus(ed_centre)
+```
+
+This seems to work.
+Now, how to knit together.
+The functions return subsets of the larger table, so I think I have to use `join()` to combine them.
+
+```{r, eval=FALSE}
+dplyr::left_join(compute_lt_hs(ed_centre), compute_hs_grad(ed_centre))
+```
+
+These _are_ data frames, but `join()` isn't working.
+I have another idea.
+
+```{r}
+ed_spread <- tidyr::spread(ed_centre, key = variable, value = estimate)
+```
+
+This, and some column renaming, should do what we want.
+
+```{r}
+ed_centre %>% 
+  tidyr::spread(ed_centre, key = variable, value = estimate) %>%
+  dplyr::rename(total = B15003_001,
+               ne = B15003_002,
+                ltK = B15003_003,
+                K = B15003_004)
+```
+

@@ -1,0 +1,192 @@
+# Functions for generating site report
+
+get_census_data <- function(state="PA", county="Centre", 
+                            census_table="B19013_001", variable_name="median_inc",
+                            get_geometry = FALSE) {
+  require(tidycensus)
+  require(tidyverse)
+  
+  if (!(is.character(state))) {
+    stop("'state' must be character")
+  }
+  if (!(is.character(county))) {
+    stop("'county' must be character")
+  }
+  if (!(is.character(census_table))) {
+    stop("'census_table' must be character")
+  }
+  if (!(is.character(variable_name))) {
+    stop("'variable_name' must be character")
+  }
+  if (stringr::str_length(state) != 2) {
+    stop("'state' must be of length 2")
+  }
+  
+  census_data <- get_acs(geography = "county",
+                         assign(variable_name, census_table),
+                         state = state,
+                         county = county,
+                         geometry = get_geometry,
+                         cache_table = TRUE)
+  # super hacky
+  census_data$variable_name <- variable_name
+  census_data
+}
+
+get_spanish_speakers <- function(state="PA", county="Centre") {
+  census_table <- "B16006_003"
+  variable_name <- "spanish_speakers"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+
+get_total_pop <- function(state="PA", county="Centre") {
+  census_table <- "C02003_001" # one race
+  variable_name <- "total_pop_1_race"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+
+get_total_pop_1_race <- function(state="PA", county="Centre") {
+  census_table <- "C02003_002" # one race, white
+  variable_name <- "total_pop_1_race"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+  
+get_total_pop_multi_race <- function(state="PA", county="Centre") {
+  census_table <- "C02003_009" # one race, white
+  variable_name <- "total_pop_mult_race"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+
+get_white_pop <- function(state="PA", county="Centre") {
+  census_table <- "C02003_003" # one race, white
+  variable_name <- "white_pop"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+
+get_ed_attain <- function(state="PA", county="Centre") {
+  census_table <- c("B15003_001", # total
+                    "B15003_002", # none
+                    "B15003_003", # <K
+                    "B15003_004", # K
+                    "B15003_005", # 1st
+                    "B15003_006", # 2nd
+                    "B15003_007", # 3rd
+                    "B15003_008", # 4th
+                    "B15003_009", # 5th
+                    "B15003_010", # 6th
+                    "B15003_011", # 7th
+                    "B15003_012", # 8th
+                    "B15003_013", # 9th
+                    "B15003_014", # 10th
+                    "B15003_015", # 11th
+                    "B15003_016", # 12th
+                    "B15003_017", # HS
+                    "B15003_018", # GED
+                    "B15003_019", # Coll<1
+                    "B15003_020", # Coll>1
+                    "B15003_021", # AA
+                    "B15003_022", # BA
+                    "B15003_023", # MA
+                    "B15003_024", # Prof
+                    "B15003_025")  # PhD
+  variable_name <- "ed_attain"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+
+# make_ed_attain_wide <- function(df) {
+#   d1 <- tidyr::spread(df, key = variable, value = estimate)
+#   d2 <- dplyr::rename(d1, total = B15003_001, # total
+#                           none = B15003_002,  # none
+#                           preK = B15003_003,
+#                       K = B15003_004,
+#                       g01 = B15003_005, # 1st
+#                       g02 = B15003_006, # 2nd
+#                       g03 = B15003_007, # 3rd
+#                       g04 = B15003_008, # 4th
+#                       g05 = B15003_009, # 5th
+#                       g06 = B15003_010, # 6th
+#                       g07 = B15003_011, # 7th
+#                       g08 = B15003_012, # 8th
+#                       g09 = B15003_013, # 9th
+#                       g10 = B15003_014, # 10th
+#                       g11 = B15003_015, # 11th
+#                       g12 = B15003_016, # 12th
+#                       hs  = B15003_017, # HS
+#                       ged = B15003_018, # GED
+#                       coll_lt_1 = B15003_019, # Coll<1
+#                       coll_gt_1 = B15003_020, # Coll>1
+#                       aa = B15003_021, # AA
+#                       ba = B15003_022, # BA
+#                       ma = B15003_023, # MA
+#                       prof = B15003_024, # Prof
+#                       phd = B15003_025)  # PhD
+#   d3 <- dplyr::filter(d2, !is.na(total))
+# }
+
+make_ed_attain_wide <- function(state="PA", county="Centre") {
+  ed <- get_ed_attain(state, county)
+  ed_wide <- data.frame(GEOID = unique(ed$GEOID), 
+                        NAME = unique(ed$NAME),
+                        total = ed$estimate[1], # total
+                        none = ed$estimate[2],  # none
+                        preK = ed$estimate[3],
+                        K = ed$estimate[4],
+                        g01 = ed$estimate[5], # 1st
+                        g02 = ed$estimate[6], # 2nd
+                        g03 = ed$estimate[7], # 3rd
+                        g04 = ed$estimate[8], # 4th
+                        g05 = ed$estimate[9], # 5th
+                        g06 = ed$estimate[10], # 6th
+                        g07 = ed$estimate[11], # 7th
+                        g08 = ed$estimate[12], # 8th
+                        g09 = ed$estimate[13], # 9th
+                        g10 = ed$estimate[14], # 10th
+                        g11 = ed$estimate[15], # 11th
+                        g12 = ed$estimate[16], # 12th
+                        hs  = ed$estimate[17], # HS
+                        ged = ed$estimate[19], # GED
+                        coll_lt_1 = ed$estimate[19], # Coll<1
+                        coll_gt_1 = ed$estimate[20], # Coll>1
+                        aa = ed$estimate[21], # AA
+                        ba = ed$estimate[22], # BA
+                        ma = ed$estimate[23], # MA
+                        prof = ed$estimate[24], # Prof
+                        phd = ed$estimate[25])  # PhD)
+  ed_wide
+}
+
+simplify_ed_attain <- function(df) {
+  lt_hs = sum(df[,4:18])
+  hs_grad = sum(df[,19:20])
+  some_coll = sum(df[,21:23])
+  ba = sum(df[,24])
+  ba_plus = sum(df[,25:27])
+  total = df[,3]
+  
+  df_new <- data.frame(GEOID = df$GEOID,
+                       NAME = df$NAME,
+                       lt_hs = lt_hs,
+                       hs_grad = hs_grad,
+                       some_coll = some_coll,
+                       ba = ba,
+                       ba_plus = ba_plus,
+                       total = total,
+                       p_lt_hs = lt_hs/total,
+                       p_hs_grad = hs_grad/total,
+                       p_some_coll = some_coll/total,
+                       p_ba = ba/total,
+                       p_ba_plus = ba_plus/total)
+  df_new
+}

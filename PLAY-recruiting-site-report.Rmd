@@ -1,0 +1,50 @@
+---
+title: "PLAY Site Demographics"
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    code_folding: hide
+params:
+  counties: Centre
+  state: PA
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("R/site_report_functions.R")
+
+library(tidyverse)
+```
+
+# Population
+
+```{r, warning=FALSE, message=FALSE, error=FALSE}
+total_pop <- get_total_pop(state = params$state, county = params$counties)
+white_pop <- get_white_pop(state = params$state, county = params$counties)
+pop <- data.frame(NAME = total_pop$NAME, total_pop = total_pop$estimate, white_pop = white_pop$estimate)
+
+pop %>% knitr::kable()
+```
+
+# Spanish-speaking
+
+```{r, warning=FALSE, message=FALSE, error=FALSE}
+sp_spkrs <- get_spanish_speakers(state=params$state, county=params$counties)
+
+sp_spkrs %>%
+  dplyr::select(NAME, estimate) %>%
+  dplyr::rename(n_spanish_spkrs = estimate) %>%
+  knitr::kable()
+```
+
+# Educational attainment
+
+```{r, warning=FALSE, message=FALSE, error=FALSE}
+ed_attain <- make_ed_attain_wide(state=params$state, county=params$counties)
+simplified_ed_attain <- simplify_ed_attain(ed_attain)
+
+simplified_ed_attain %>% 
+  dplyr::select(., NAME, p_lt_hs, p_hs_grad, p_some_coll, p_ba, p_ba_plus) %>%
+  knitr::kable()
+```
+

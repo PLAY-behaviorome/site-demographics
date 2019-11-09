@@ -138,57 +138,6 @@ make_ed_attain_wide <- function(df) {
   d2
 }
 
-# make_ed_attain_wide <- function(state="PA", county="Centre") {
-#   ed <- get_ed_attain(state, county)
-#   ed_wide <- data.frame(GEOID = unique(ed$GEOID), 
-#                         NAME = unique(ed$NAME),
-#                         total = ed$estimate[1], # total
-#                         none = ed$estimate[2],  # none
-#                         preK = ed$estimate[3],
-#                         K = ed$estimate[4],
-#                         g01 = ed$estimate[5], # 1st
-#                         g02 = ed$estimate[6], # 2nd
-#                         g03 = ed$estimate[7], # 3rd
-#                         g04 = ed$estimate[8], # 4th
-#                         g05 = ed$estimate[9], # 5th
-#                         g06 = ed$estimate[10], # 6th
-#                         g07 = ed$estimate[11], # 7th
-#                         g08 = ed$estimate[12], # 8th
-#                         g09 = ed$estimate[13], # 9th
-#                         g10 = ed$estimate[14], # 10th
-#                         g11 = ed$estimate[15], # 11th
-#                         g12 = ed$estimate[16], # 12th
-#                         hs  = ed$estimate[17], # HS
-#                         ged = ed$estimate[19], # GED
-#                         coll_lt_1 = ed$estimate[19], # Coll<1
-#                         coll_gt_1 = ed$estimate[20], # Coll>1
-#                         aa = ed$estimate[21], # AA
-#                         ba = ed$estimate[22], # BA
-#                         ma = ed$estimate[23], # MA
-#                         prof = ed$estimate[24], # Prof
-#                         phd = ed$estimate[25])  # PhD)
-#   ed_wide
-# }
-
-# simplify_ed_attain <- function(df) {
-#   lt_hs = sum(df[,4:18])
-#   hs_grad = sum(df[,19:20])
-#   some_coll = sum(df[,21:23])
-#   ba = sum(df[,24])
-#   ba_plus = sum(df[,25:27])
-#   total = df[,3]
-#   
-#   df_new <- data.frame(GEOID = df$GEOID,
-#                        NAME = df$NAME,
-#                        lt_hs = lt_hs,
-#                        hs_grad = hs_grad,
-#                        some_coll = some_coll,
-#                        ba = ba,
-#                        ba_plus = ba_plus,
-#                        total = total)
-#   df_new
-# }
-
 simplify_ed_attain <- function(df) {
   # Calculate aggregate variables
   df_new <- df
@@ -243,11 +192,33 @@ plot_bar_ed_attain <- function(df) {
   p
 }
 
+plot_bar_ed_attain_p <- function(df) {
+  require(ggplot2)
+  # Drop total
+  df <- dplyr::filter(df, ed_attain != 'total')
+  # reorder ed_attain
+  df$ed_attain <- factor(df$ed_attain, levels = c("p_ba_plus", "p_ba", 
+                                                  "p_some_coll", "p_hs_grad", "p_lt_hs"))
+  p <- ggplot(df) +
+    aes(x = NAME, y = n, fill = ed_attain) +
+    geom_bar(stat='identity') +
+    ylab("Population") +
+    xlab("County")
+  p
+}
+
 get_plot_ed_attain <- function(state="PA", county="Centre") {
-  ed <- get_ed_attain(state="PA", county="Centre")
+  ed <- get_ed_attain(state=state, county=county)
   ed_w <- make_ed_attain_wide(ed)
   ed_s <- simplify_ed_attain(ed_w)
   ed_t <- tidy_ed_attain(ed_s)
   plot_bar_ed_attain(ed_t)
 }
 
+get_plot_ed_attain_p <- function(state="PA", county="Centre") {
+  ed <- get_ed_attain(state=state, county=county)
+  ed_w <- make_ed_attain_wide(ed)
+  ed_s <- simplify_ed_attain(ed_w)
+  ed_t <- tidy_ed_attain(ed_s)
+  plot_bar_ed_attain_p(ed_t)
+}

@@ -36,7 +36,7 @@ get_census_data <- function(state="PA", county="Centre",
 get_spanish_speakers <- function(state="PA", county="Centre") {
   # total sample *001, Spanish speakers *003
   census_table <- c("B16006_001", "B16006_003")
-  census_table = c("B16003_001", "B16003_004", "B16003_009")
+  #census_table = c("B16003_001", "B16003_004", "B16003_009")
   variable_name <- "spanish_speakers"
   get_census_data(state = state, county = county, 
                   census_table = census_table,

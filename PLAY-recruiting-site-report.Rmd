@@ -12,7 +12,8 @@ params:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
-                      warning=FALSE, message=FALSE, error=FALSE)
+                      warning=FALSE, message=FALSE, error=FALSE,
+                      ccache = TRUE)
 source("R/site_report_functions.R")
 
 library(tidyverse)

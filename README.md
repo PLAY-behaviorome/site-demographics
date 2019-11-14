@@ -16,3 +16,28 @@ To regenerate demographics reports and plots `source("R/render_all.R")`.
 
 - Exploration of `tidyverse` | [HTML](https://play-behaviorome.github.io/site-demographics/tidycensus.html) | [Rmd](https://play-behaviorome.github.io/site-demographics/tidycensus.Rmd) |
 - New template report for recruiting sites | [HTML](https://play-behaviorome.github.io/site-demographics/PLAY-recruiting-site-report.html) | [Rmd](https://play-behaviorome.github.io/site-demographics/PLAY-recruiting-site-report.Rmd) |
+
+### Individual site reports
+
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-BU.html
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-CHI.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-COR.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-CSF.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-CSL.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-CUNYSI.html
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report.html    
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-NYU.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-OSU.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-PITT.html  
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-PRIN.html  
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-PSU.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-PUR.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-RUTG.html  
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-TUL.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UCD.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UCM.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UCR.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UCSC.html  
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UMIA.html  
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UO.html    
+- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UT.html 

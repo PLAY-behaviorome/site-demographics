@@ -1,0 +1,48 @@
+---
+title: "Generate Multiple Site Reports"
+author: "Rick Gilmore"
+date: "`r Sys.time()`"
+output: html_document
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Purpose
+
+This document explores how to generate multiple data collection site reports.
+
+# Preparatory steps
+
+We need to determine what counties in what states are plausible recruitment targets for each site.
+We'll use a stored `.csv` for the initial testing.
+
+```{r}
+site_data <- readr::read_csv("analysis/csv/city-state-county.csv")
+```
+
+Some sites have multiple counties, but we'll pick the easier set of those with a single county.
+
+```{r}
+single_county_sites <- site_data %>%
+  dplyr::filter(multi == "no")
+```
+
+# Generate single report
+
+We will make a few single site reports to test the functionality.
+
+```{r}
+site_1 <- single_county_sites[1,]
+
+site_1
+```
+
+## Site `r site_1$Site.code`
+
+```{r}
+rmarkdown::render("PLAY-recruiting-site-report.Rmd", params = list(state = site_1$State, counties=site_1$County), output_file = paste0("PLAY-site-report-", site_1$Site.code, ".html"))
+```
+
+This demonstrates that we can script the generation of multiple site reports.

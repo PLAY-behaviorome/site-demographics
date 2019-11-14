@@ -7,44 +7,308 @@ output:
 params:
   counties: Centre
   state: PA
+  target_n: 30
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning=FALSE, message=FALSE, error=FALSE)
 source("R/site_report_functions.R")
 
 library(tidyverse)
 ```
 
-# Population
+```{r helper-functions}
+get_census_data <- function(state="PA", county="Centre", 
+                            census_table="B19013_001", variable_name="median_inc",
+                            get_geometry = FALSE) {
+  require(tidycensus)
+  require(tidyverse)
+  
+  if (!(is.character(state))) {
+    stop("'state' must be character")
+  }
+  if (!(is.character(county))) {
+    stop("'county' must be character")
+  }
+  if (!(is.character(census_table))) {
+    stop("'census_table' must be character")
+  }
+  if (!(is.character(variable_name))) {
+    stop("'variable_name' must be character")
+  }
+  if (stringr::str_length(state) != 2) {
+    stop("'state' must be of length 2")
+  }
+  
+  census_data <- get_acs(geography = "county",
+                         assign(variable_name, census_table),
+                         state = state,
+                         county = county,
+                         geometry = get_geometry,
+                         cache_table = TRUE)
+  # super hacky
+  census_data$variable_name <- variable_name
+  census_data
+}
 
-```{r, warning=FALSE, message=FALSE, error=FALSE}
-total_pop <- get_total_pop(state = params$state, county = params$counties)
-white_pop <- get_white_pop(state = params$state, county = params$counties)
-pop <- data.frame(NAME = total_pop$NAME, total_pop = total_pop$estimate, white_pop = white_pop$estimate)
-
-pop %>% knitr::kable()
+get_pop_tot_white <- function(state="PA", county="Centre") {
+  census_table <- c("C02003_001", "C02003_003")
+  variable_name <- "total_pop_1_race"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
 ```
 
-# Spanish-speaking
+# Data for `r params$counties` County in `r params$state`
 
-```{r, warning=FALSE, message=FALSE, error=FALSE}
-sp_spkrs <- get_spanish_speakers(state=params$state, county=params$counties)
+# Population
 
-sp_spkrs %>%
-  dplyr::select(NAME, estimate) %>%
-  dplyr::rename(n_spanish_spkrs = estimate) %>%
-  knitr::kable()
+```{r population}
+pop <- get_pop_tot_white(state = params$state, county=params$counties)
+pop_clean <- pop %>%
+  dplyr::select(., NAME, variable, estimate) %>%
+  tidyr::spread(., key=variable, value=estimate) %>%
+  dplyr::rename(., total=C02003_001, white=C02003_003) %>%
+  dplyr::mutate(., non_white = total-white,
+                p_white = white/total,
+                p_non_white = non_white/total) %>%
+  tidyr::gather(., key=pop, value=n, -NAME)
+
+pop_n <- pop_clean %>%
+  dplyr::filter(., pop %in% c('white', 'non_white'))
+
+pop_n %>% knitr::kable(.)
+```
+
+## Total
+
+```{r population-total}
+pop_n %>%
+  ggplot(.) +
+  aes(x = NAME, y = n, fill = pop) +
+    geom_bar(stat='identity') +
+    ylab("Population") +
+    xlab("County")
+```
+
+## Proportion
+
+```{r population-proportion}
+pop_p <- pop_clean %>%
+  dplyr::filter(., pop %in% c('p_white', 'p_non_white'))
+
+pop_p %>%
+  ggplot(.) +
+  aes(x = NAME, y = n, fill = pop) +
+    geom_bar(stat='identity') +
+    ylab("Proportion of population") +
+    xlab("County")
+```
+
+# Spanish-speakers
+
+```{r spanish-speakers}
+spanish_tables = c("B16007_001", "B16007_009", "B16007_010", "B16007_011", "B16007_012", "B16007_013", "B16007_014", "B16007_015", "B16007_016", "B16007_017", "B16007_018", "B16007_019")
+
+sp <- get_census_data(state=params$state,
+                      county=params$counties,
+                      census_table=spanish_tables)
+
+sp_clean <- sp %>%
+  dplyr::select(., NAME, variable, estimate) %>%
+  tidyr::spread(., key = variable, value = estimate) %>%
+  dplyr::group_by(NAME) %>%
+  dplyr::mutate(.,
+    English_only = B16007_009 + B16007_015,
+    Spanish = B16007_010 + B16007_015,
+    Other = B16007_011 + B16007_012 + B16007_013 + B16007_017 + B16007_018 + B16007_019,
+    total = B16007_009 + B16007_010 +
+      B16007_011 + B16007_012 +
+      B16007_013 + B16007_014 +
+      B16007_015 + B16007_016 +
+      B16007_017 + B16007_018 +
+      B16007_019,
+    p_English_only = English_only / total,
+    p_Spanish = Spanish / total,
+    p_Other = Other / total
+  ) %>%
+  dplyr::select(.,
+                NAME,
+                English_only,
+                Spanish,
+                Other,
+                p_English_only,
+                p_Spanish,
+                p_Other) %>%
+  tidyr::gather(., key = pop, value = n,-NAME)
+
+sp_n <- sp_clean %>%
+  dplyr::filter(., pop %in% c('English_only',
+                              'Spanish', 'Other'))
+
+sp_p <- sp_clean %>%
+  dplyr::filter(., pop %in% c('p_English_only',
+                              'p_Spanish', 'p_Other'))
+
+sp_n %>% knitr::kable(.)
+```
+
+## Total
+
+```{r spanish-population}
+sp_n %>%
+    ggplot(.) +
+  aes(x = NAME, y = n, fill = pop) +
+    geom_bar(stat='identity') +
+    ylab("Population") +
+    xlab("County")
+```
+
+## Proportion
+
+```{r spanish-proportion}
+sp_p %>%
+    ggplot(.) +
+  aes(x = NAME, y = n, fill = pop) +
+    geom_bar(stat='identity') +
+    ylab("Proportion") +
+    xlab("County")
 ```
 
 # Educational attainment
 
-```{r, warning=FALSE, message=FALSE, error=FALSE}
-ed_attain <- make_ed_attain_wide(state=params$state, county=params$counties)
-simplified_ed_attain <- simplify_ed_attain(ed_attain)
+```{r ed-attain-functions}
+get_ed_attain <- function(state="PA", county="Centre") {
+  census_table <- c("B15003_001", # total
+                    "B15003_002", # none
+                    "B15003_003", # <K
+                    "B15003_004", # K
+                    "B15003_005", # 1st
+                    "B15003_006", # 2nd
+                    "B15003_007", # 3rd
+                    "B15003_008", # 4th
+                    "B15003_009", # 5th
+                    "B15003_010", # 6th
+                    "B15003_011", # 7th
+                    "B15003_012", # 8th
+                    "B15003_013", # 9th
+                    "B15003_014", # 10th
+                    "B15003_015", # 11th
+                    "B15003_016", # 12th
+                    "B15003_017", # HS
+                    "B15003_018", # GED
+                    "B15003_019", # Coll<1
+                    "B15003_020", # Coll>1
+                    "B15003_021", # AA
+                    "B15003_022", # BA
+                    "B15003_023", # MA
+                    "B15003_024", # Prof
+                    "B15003_025")  # PhD
+  variable_name <- "ed_attain"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
 
-simplified_ed_attain %>% 
-  dplyr::select(., NAME, p_lt_hs, p_hs_grad, p_some_coll, p_ba, p_ba_plus) %>%
-  knitr::kable()
+ed <- get_ed_attain(state = params$state, county = params$counties)
 ```
 
+## Population
+
+```{r ed-attain}
+ed_w <- make_ed_attain_wide(ed)
+ed_s <- simplify_ed_attain(ed_w)
+ed_t <- tidy_ed_attain(ed_s)
+
+ed_t %>%
+  knitr::kable(.)
+```
+
+```{r ed-attain-population}
+plot_bar_ed_attain <- function(df) {
+  require(ggplot2)
+  # Drop total
+  df <- dplyr::filter(df, ed_attain != 'total')
+  # reorder ed_attain
+  df$ed_attain <- factor(df$ed_attain, levels = c("ba_plus", "ba", 
+                                                  "some_coll", 
+                                                  "hs_grad", "lt_hs"))
+  p <- ggplot(df) +
+    aes(x = NAME, y = n, fill = ed_attain) +
+    geom_bar(stat='identity') +
+    ylab("Population") +
+    xlab("County")
+  p
+}
+
+plot_bar_ed_attain(ed_t)
+```
+
+## Proportion of population
+
+```{r plot-ed-attainment-proportions}
+ed_p <- ed_s %>%
+  dplyr::mutate(., p_lt_hs = lt_hs/total,
+                p_hs_grad = hs_grad/total,
+                p_some_coll = some_coll/total,
+                p_ba = ba/total,
+                p_ba_plus = ba_plus/total) %>%
+  dplyr::select(., NAME, starts_with("p_")) %>%
+  tidyr::gather(., ed_attain, n, -NAME)
+
+ed_p %>%
+  knitr::kable(.)
+```
+
+```{r}
+plot_bar_ed_attain_p <- function(df) {
+  require(ggplot2)
+  # reorder ed_attain
+  df$ed_attain <- factor(df$ed_attain, levels = c("p_ba_plus", "p_ba", 
+                                                  "p_some_coll",
+                                                  "p_hs_grad", "p_lt_hs"))
+  p <- ggplot(df) +
+    aes(x = NAME, y = n, fill = ed_attain) +
+    geom_bar(stat='identity') +
+    ylab("Proportion of population") +
+    xlab("County")
+  p
+}
+
+plot_bar_ed_attain_p(ed_p)
+```
+
+# Recruiting targets $n=$ `r params$target_n`
+
+These may total > `r params$target_n` due to rounding.
+
+## Race
+
+```{r race-target}
+targ_pop <- pop_p %>%
+  dplyr::mutate(n_target = ceiling(n*30)) %>%
+  dplyr::select(NAME, pop, n_target)
+targ_pop %>% knitr::kable(.)
+```
+
+## Spanish-speakers
+
+```{r spanish-target}
+targ_sp <- sp_p %>%
+  dplyr::mutate(n_target = ceiling(n*30)) %>%
+  dplyr::select(NAME, pop, n_target)
+
+targ_sp %>% knitr::kable(.)
+```
+
+## Educational attainment
+
+```{r ed-attain-target}
+targ_ed <- ed_p %>%
+  dplyr::mutate(n_target = ceiling(n*30)) %>%
+  dplyr::select(NAME, ed_attain, n_target)
+
+targ_ed %>% knitr::kable(.)
+```

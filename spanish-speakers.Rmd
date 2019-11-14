@@ -1,0 +1,121 @@
+---
+title: "Spanish speakers"
+author: "Rick Gilmore"
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    code_folding: hide
+params:
+  counties: !r c("Centre", "Mifflin")
+  state: PA
+---
+
+```{r}
+get_census_data <- function(state = "PA",
+                            county = "Centre",
+                            census_table = "B19013_001",
+                            variable_name = "median_inc",
+                            get_geometry = FALSE) {
+  require(tidycensus)
+  require(tidyverse)
+  
+  if (!(is.character(state))) {
+    stop("'state' must be character")
+  }
+  if (!(is.character(county))) {
+    stop("'county' must be character")
+  }
+  if (!(is.character(census_table))) {
+    stop("'census_table' must be character")
+  }
+  if (!(is.character(variable_name))) {
+    stop("'variable_name' must be character")
+  }
+  if (stringr::str_length(state) != 2) {
+    stop("'state' must be of length 2")
+  }
+  
+  census_data <- get_acs(
+    geography = "county",
+    assign(variable_name, census_table),
+    state = state,
+    county = county,
+    geometry = get_geometry,
+    cache_table = TRUE
+  )
+  # super hacky
+  census_data$variable_name <- variable_name
+  census_data
+}
+```
+
+```{r}
+spanish_tables = c("B16007_001", "B16007_009", "B16007_010", "B16007_011", "B16007_012", "B16007_013", "B16007_014", "B16007_015", "B16007_016", "B16007_017", "B16007_018", "B16007_019")
+
+sp <- get_census_data(state=params$state,
+                      county=params$counties,
+                      census_table=spanish_tables)
+```
+
+```{r}
+sp_clean <- sp %>%
+  dplyr::select(., NAME, variable, estimate) %>%
+  tidyr::spread(., key = variable, value = estimate) %>%
+  dplyr::group_by(NAME) %>%
+  dplyr::mutate(.,
+    English_only = B16007_009 + B16007_015,
+    Spanish = B16007_010 + B16007_015,
+    Other = B16007_011 + B16007_012 + B16007_013 + B16007_017 + B16007_018 + B16007_019,
+    total = B16007_009 + B16007_010 +
+      B16007_011 + B16007_012 +
+      B16007_013 + B16007_014 +
+      B16007_015 + B16007_016 +
+      B16007_017 + B16007_018 +
+      B16007_019,
+    p_English_only = English_only / total,
+    p_Spanish = Spanish / total,
+    p_Other = Other / total
+  ) %>%
+  dplyr::select(.,
+                NAME,
+                English_only,
+                Spanish,
+                Other,
+                p_English_only,
+                p_Spanish,
+                p_Other) %>%
+  tidyr::gather(., key = pop, value = n,-NAME)
+
+sp_n <- sp_clean %>%
+  dplyr::filter(., pop %in% c('English_only',
+                              'Spanish', 'Other'))
+
+sp_p <- sp_clean %>%
+  dplyr::filter(., pop %in% c('p_English_only',
+                              'p_Spanish', 'p_Other'))
+
+sp_n %>% knitr::kable(.)
+sp_p %>% knitr::kable(.)
+```
+
+## Population total
+
+```{r}
+sp_n %>%
+    ggplot(.) +
+  aes(x = NAME, y = n, fill = pop) +
+    geom_bar(stat='identity') +
+    ylab("Population") +
+    xlab("County")
+```
+
+## Proportion
+
+```{r}
+sp_p %>%
+    ggplot(.) +
+  aes(x = NAME, y = n, fill = pop) +
+    geom_bar(stat='identity') +
+    ylab("Proportion") +
+    xlab("County")
+```

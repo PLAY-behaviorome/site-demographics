@@ -1,20 +1,27 @@
 ---
-title: "PLAY Site Demographics"
+title: "PLAY site demographics"
 date: "`r Sys.time()`"
 output: 
   html_document:
     code_folding: hide
 params:
-  counties: Centre
-  state: PA
+  counties: "New York"
+  state: NY
   target_n: 30
+  institution: "NYU"
+  pi: "Karen Adolph"
+  site_code: NYU
+  PLAY_vol: 899
+  db_login: your_account@youremail.edu
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning=FALSE, message=FALSE, error=FALSE,
                       ccache = TRUE)
-source("R/site_report_functions.R")
+
+#source("R/site_report_functions.R")
+source("R/init_cap.R")
 
 library(tidyverse)
 ```
@@ -62,7 +69,9 @@ get_pop_tot_white <- function(state="PA", county="Centre") {
 }
 ```
 
-# Data for `r params$counties` County in `r params$state`
+# `r params$institution` (`r params$site_code`)
+## PI: `r params$pi`
+## `r init_cap(params$counties)` County in `r params$state`
 
 # Population
 
@@ -216,6 +225,60 @@ get_ed_attain <- function(state="PA", county="Centre") {
 ed <- get_ed_attain(state = params$state, county = params$counties)
 ```
 
+```{r}
+make_ed_attain_wide <- function(df) {
+  d0 <- dplyr::select(df, NAME, variable, estimate)
+  d1 <- tidyr::spread(d0, key = variable, value = estimate)
+  d2 <- dplyr::rename(d1, total = B15003_001, # total
+                          none = B15003_002,  # none
+                          preK = B15003_003,
+                      K = B15003_004,
+                      g01 = B15003_005, # 1st
+                      g02 = B15003_006, # 2nd
+                      g03 = B15003_007, # 3rd
+                      g04 = B15003_008, # 4th
+                      g05 = B15003_009, # 5th
+                      g06 = B15003_010, # 6th
+                      g07 = B15003_011, # 7th
+                      g08 = B15003_012, # 8th
+                      g09 = B15003_013, # 9th
+                      g10 = B15003_014, # 10th
+                      g11 = B15003_015, # 11th
+                      g12 = B15003_016, # 12th
+                      hs  = B15003_017, # HS
+                      ged = B15003_018, # GED
+                      coll_lt_1 = B15003_019, # Coll<1
+                      coll_gt_1 = B15003_020, # Coll>1
+                      aa = B15003_021, # AA
+                      ba = B15003_022, # BA
+                      ma = B15003_023, # MA
+                      prof = B15003_024, # Prof
+                      phd = B15003_025)  # PhD
+  d2
+}
+
+simplify_ed_attain <- function(df) {
+  # Calculate aggregate variables
+  df_new <- df
+  df_new <- dplyr::mutate(df_new,
+                          lt_hs = none + preK + g01 + g02 +
+                            g03 + g04 + g05 + g06 + g07 +
+                            g08 + g09 + g10 + g11 + g12,
+                          hs_grad = hs + ged,
+                          some_coll = coll_lt_1 + coll_gt_1 + aa,
+                          ba_plus = ma + prof + phd)
+  df_new <- dplyr::select(df_new,
+                          NAME, total, lt_hs, hs_grad, some_coll, ba,
+                          ba_plus)
+  df_new
+}
+
+tidy_ed_attain <- function(df) {
+  tidyr::gather(df, ed_attain, n, -NAME)
+}
+
+```
+
 ## Population
 
 ```{r ed-attain}
@@ -285,6 +348,32 @@ plot_bar_ed_attain_p(ed_p)
 
 These may total > `r params$target_n` due to rounding.
 
+```{r get-demog-from-databrary}
+databraryapi::login_db(params$db_login)
+
+site_ss <- databraryapi::download_session_csv(vol_id = params$PLAY_vol)
+
+site_stats <- site_ss %>%
+  dplyr::group_by(., exclusion.reason) %>%
+  dplyr::mutate(., n_tested = n()) %>%
+  dplyr::ungroup(.)
+
+sessions_included <- site_stats %>%
+  dplyr::filter(exclusion.reason == "")
+
+compute_n_spanish <- function(df) {
+  span_subs <- dplyr::filter(df, stringr::str_detect(participant.language, "Spanish"))
+  dim(span_subs)[1]
+}
+
+compute_n_nonwhite <- function(df) {
+  non_white <- dplyr::filter(df, participant.race != "White")
+  dim(non_white)[1]
+}
+```
+
+This site has collected $n=$ `r unique(sessions_included$n_tested)` non-pilot sessions.
+
 ## Race
 
 ```{r race-target}
@@ -293,6 +382,8 @@ targ_pop <- pop_p %>%
   dplyr::select(NAME, pop, n_target)
 targ_pop %>% knitr::kable(.)
 ```
+
+This site has recruited $n=$ `r compute_n_nonwhite(sessions_included)` non-white participants out of $n=$ `r unique(sessions_included$n_tested)` non-pilot sessions.
 
 ## Spanish-speakers
 
@@ -303,6 +394,8 @@ targ_sp <- sp_p %>%
 
 targ_sp %>% knitr::kable(.)
 ```
+
+This site has recruited $n=$ `r compute_n_spanish(sessions_included)` Spanish-speaking households out of $n=$ `r unique(sessions_included$n_tested)` non-pilot sessions.
 
 ## Educational attainment
 

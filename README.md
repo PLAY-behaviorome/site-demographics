@@ -19,25 +19,21 @@ To regenerate demographics reports and plots `source("R/render_all.R")`.
 
 ### Individual site reports
 
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-BU.html
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-CHI.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-COR.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-CSF.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-CSL.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-CUNYSI.html
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report.html    
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-NYU.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-OSU.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-PITT.html  
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-PRIN.html  
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-PSU.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-PUR.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-RUTG.html  
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-TUL.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UCD.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UCM.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UCR.html   
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UCSC.html  
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UMIA.html  
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UO.html    
-- https://play-behaviorome.github.io/site-demographics/site-rpts/PLAY-site-report-UT.html 
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_BUN.html
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_COR.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_CSF.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_CSL.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_CUNYSI.html
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_INU.html
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_NYU.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_OSU.html
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_PRIN.html  
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_PSU.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_PUR.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_RUTG.html  
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_TUL.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_UCD.html
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_UCH.html
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_UCM.html
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_UCR.html   
+- https://play-behaviorome.github.io/site-demographics/site-rpts/site_UCSC.html

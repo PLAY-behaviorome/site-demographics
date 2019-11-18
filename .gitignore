@@ -6,3 +6,5 @@
 .DS_Store
 data-collection-site-demographics.html
 .httr-oauth
+.databrary.RData
+*.csv

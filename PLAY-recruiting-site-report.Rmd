@@ -49,7 +49,7 @@ get_census_data <- function(state="PA", county="Centre",
     stop("'state' must be of length 2")
   }
   
-  census_data <- get_acs(geography = "county",
+  census_data <- tidycensus::get_acs(geography = "county",
                          assign(variable_name, census_table),
                          state = state,
                          county = county,
@@ -276,7 +276,6 @@ simplify_ed_attain <- function(df) {
 tidy_ed_attain <- function(df) {
   tidyr::gather(df, ed_attain, n, -NAME)
 }
-
 ```
 
 ## Population

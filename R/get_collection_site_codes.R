@@ -20,7 +20,6 @@ get_collecting_labs <- function(df) {
   collecting_df
 }
 
-
 get_old_county_data <- function() {
   readr::read_csv("analysis/csv/city-state-county.csv")
 }

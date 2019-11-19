@@ -1,0 +1,86 @@
+---
+title: "Set-up for site demographics"
+author: "Rick Gilmore"
+date: "`r Sys.time()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Purpose
+
+This document describes the preparatory steps needed to be taken prior to generating the `PLAY-recruiting-site-report.Rmd` documents.
+
+## Install required external packages
+
+```{r}
+if (!require(tidyverse)) {
+  install.packages("tidyverse")
+}
+if (!require(tidycensus)) {
+  install.packages("tidycensus")
+}
+if (!(require(ggplot2))) {
+  install.packages("ggplot2")
+}
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+if (!(require(databraryapi))) {
+  devtools::install_github("PLAY-behaviorome/databraryapi")
+}
+```
+
+## Get Census API key
+
+1. Request a Census API key using an email you have access to here: <https://api.census.gov/data/key_signup.html>
+2. When you get a confirmation email, follow the link to activate the key.
+3. Keep the API key handy, and run the following code in your R console:
+
+```
+tidycensus::census_api_key(key = <YOUR_CENSUS_API_KEY_SURROUNDED BY_QUOTATION_MARKS>, overwrite = TRUE, install = TRUE)
+```
+
+Substitute your Census API key (surrounded by quotations since it is a string) for `<YOUR_CENSUS_API_KEY_SURROUNDED BY_QUOTATION_MARKS>`.
+This will install the API key in your local `.Renviron` environment for future use.
+It will also overwrite any prior Census API keys you might have used in the past.
+
+## Configure `databraryapi`
+
+1. Run the following code in your console:
+
+```
+databraryapi::config_passwd()
+```
+
+This will store your Databrary password and account ID (email) in your system's secure file used for other passwords.
+On Mac OS, this is called the Keychain.
+
+2. Test that you can log on to Databrary using the API.
+
+Run the following code in your R console:
+
+```
+databraryapi::login_db(email = <YOUR_DATABRARY_LOGIN_EMAIL>)
+```
+
+If this works, you should see a "Login successful." message, and the result of the function call, which is a Boolean value of `TRUE`.
+
+If this fails, talk to Rick.
+
+## Test rendering the default `PLAY-recruiting-site-report.Rmd`
+
+1. Open `PLAY-recruiting-site-report.Rmd`.
+2. Knit it by pressing the `Knit` button above the code window, or by issuing the following command in the R console:
+
+```
+rmarkdown::render("PLAY-recruiting-site-report.Rmd")
+```
+
+This should create an HTML file with information from the NYU PLAY site.
+
+## Try rendering a set of reports
+
+TO BE CONTINUED

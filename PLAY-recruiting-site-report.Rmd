@@ -20,7 +20,18 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning=FALSE, message=FALSE, error=FALSE,
                       ccache = TRUE)
 
-#source("R/site_report_functions.R")
+# Required packages
+if(!require(tidyverse)) {
+  install.packages("tidyverse")
+}
+if(!require(tidycensus)) {
+  install.packages("tidycensus")
+}
+
+# Note: The user must acquire and install a Census API key
+# See the instructions in help("census_api_key")
+
+# Source or load dependencies
 source("R/init_cap.R")
 
 library(tidyverse)

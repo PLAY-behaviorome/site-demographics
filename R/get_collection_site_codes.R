@@ -12,9 +12,9 @@ get_collecting_labs <- function(df) {
   collecting_df <- dplyr::filter(df, Collection_role == "Collecting")
   collecting_df <- dplyr::select(collecting_df,
                                  Institution,
-                                 `PI Last name`,
-                                 `PI First name`,
-                                 `New Site code`,
+                                 `PI_Lastname`,
+                                 `PI_Firstname`,
+                                 `SiteCode`,
                                  City,
                                  State_prov)
   collecting_df

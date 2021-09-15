@@ -1,0 +1,621 @@
+---
+title: "PLAY sites demographics"
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    code_folding: hide
+params:
+  db_login: your_account@youremail.edu
+  csv_path: analysis/csv
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning=FALSE, message=FALSE, error=FALSE,
+                      ccache = TRUE)
+
+# Required packages
+if(!require(tidyverse)) {
+  install.packages("tidyverse")
+}
+if(!require(tidycensus)) {
+  install.packages("tidycensus")
+}
+
+# Note: The user must acquire and install a Census API key
+# See the instructions in help("census_api_key")
+
+# Source or load dependencies
+source("R/init_cap.R")
+
+library(tidyverse)
+```
+
+# Helper functions
+
+```{r helper-functions}
+get_census_data <- function(state="PA", county="Centre", 
+                            census_table="B19013_001", variable_name="median_inc",
+                            get_geometry = FALSE) {
+  require(tidycensus)
+  require(tidyverse)
+  
+  if (!(is.character(state))) {
+    stop("'state' must be character")
+  }
+  if (!(is.character(county))) {
+    stop("'county' must be character")
+  }
+  if (!(is.character(census_table))) {
+    stop("'census_table' must be character")
+  }
+  if (!(is.character(variable_name))) {
+    stop("'variable_name' must be character")
+  }
+  if (stringr::str_length(state) != 2) {
+    stop("'state' must be of length 2")
+  }
+  
+  census_data <- tidycensus::get_acs(geography = "county",
+                         assign(variable_name, census_table),
+                         state = state,
+                         county = county,
+                         geometry = get_geometry,
+                         cache_table = TRUE)
+  # super hacky
+  census_data$variable_name <- variable_name
+  census_data
+}
+```
+
+
+## Load collection site data
+
+Create helper functions.
+
+```{r}
+get_collection_site_data <-
+  function(id = "1V9RuZJNRN4lehLzRSWO0MqVclsXPw7Z-Lxq-VQOvM-A") {
+    tracking_csv <-
+      googledrive::drive_download(googledrive::as_id(id),
+                             path = "tracking.csv",
+                             overwrite = TRUE)
+    tracking_df <- readr::read_csv("tracking.csv")
+    tracking_df
+  }
+
+get_collecting_labs <- function(df) {
+  collecting_df <- dplyr::filter(df, Collection_role == "Collecting")
+  collecting_df <- dplyr::select(collecting_df,
+                                 Institution,
+                                 `PI_Lastname`,
+                                 `PI_Firstname`,
+                                 `SiteCode`,
+                                 City,
+                                 State_prov)
+  collecting_df
+}
+
+get_old_county_data <- function() {
+  readr::read_csv("analysis/csv/city-state-county.csv")
+}
+
+get_collection_site_county_df <- function() {
+  PLAY_all <- get_collection_site_data()
+  PLAY_collecting <- get_collecting_labs(PLAY_all)
+  old_collecting <- readr::read_csv("analysis/csv/city-state-county.csv")
+  dplyr::left_join(PLAY_collecting, old_collecting, by=c("City"="City", "State_prov"="State"))
+}
+```
+
+Generate collection site data frame and save as CSV.
+
+```{r}
+collection_site_df <- get_collection_site_county_df()
+```
+
+## White/non-white population
+
+```{r white-non-white}
+get_site_race <- function(state = "PA", county = "Centre") {
+  census_table <-
+    c(
+      "C02003_001",
+      "C02003_002",
+      "C02003_003",
+      "C02003_004",
+      "C02003_005",
+      "C02003_006",
+      "C02003_007",
+      "C02003_008"
+    )
+  variable_name <- c(
+    "total",
+    "one_race",
+    "white",
+    "black",
+    "am_indian",
+    "asian",
+    "native_hawaiian",
+    "other"
+  )
+  
+  race_df <- get_census_data(
+    state = state,
+    county = county,
+    census_table = census_table,
+    variable_name = variable_name
+  )
+  
+  race_df %>% 
+    dplyr::select(., NAME, variable_name, estimate) %>%
+    dplyr::rename(., n=estimate) %>%
+    tidyr::spread(., key=variable_name, value=n)
+
+}
+```
+
+```{r race}
+make_site_race_df <- function(i, df) {
+  this_site <- df[i,]
+  message(paste0("Gathering race data for site: '", this_site$Institution, "'"))
+  
+  get_site_race(this_site$State_prov, this_site$County)
+}
+```
+
+```{r}
+n_counties <- 1:dim(collection_site_df)[1]
+
+collection_race_bycounty_df <- purrr::map_df(n_counties, make_site_race_df, collection_site_df)
+```
+
+```{r}
+tot_pop <- sum(unlist(collection_race_bycounty_df$total))
+one_race <- sum(unlist(collection_race_bycounty_df$one_race))
+multi_race <- tot_pop - one_race
+(p_multi <- multi_race/tot_pop)
+
+white <- sum(unlist(collection_race_bycounty_df$white)) 
+black <- sum(unlist(collection_race_bycounty_df$black))
+asian <- sum(unlist(collection_race_bycounty_df$asian))
+other <- one_race-(white + black + asian)
+
+(p_white <- white/tot_pop)
+(p_black <- black/tot_pop)
+(p_asian <- asian/tot_pop)
+(p_other <- other/tot_pop)
+
+race_df <- data.frame(race = c("multi", "white", "black", "asian", "other"),
+                      p = c(p_multi, p_white, p_black, p_asian, p_other))
+
+knitr::kable(race_df, format = 'html')
+
+```
+
+# Non-hispanic/Hispanic
+
+```{r hispanic-non-hispanic}
+get_hisp_non <- function(state,
+                         county,
+                         census_table = c("B03001_001", "B03001_002"),
+                         variable_name = c("Non_hisp", "Hisp")) {
+
+  get_census_data(state,
+                  county,
+                  census_table,
+                  variable_name
+  )
+}
+
+make_collection_site_hisp_df <- function(i, df) {
+  this_site <- df[i,]
+  message(paste0("Gathering Hispanic data for site: '", this_site$Institution, "'"))
+  
+  get_hisp_non(this_site$State_prov, this_site$County)
+}
+```
+
+```{r}
+collection_hisp_bycounty_df <- purrr::map_df(n_counties, make_collection_site_hisp_df, collection_site_df)
+```
+
+```{r}
+readr::write_csv(collection_hisp_bycounty_df, file.path(params$csv_path, 'collection-by-county-hispanic.csv'))
+```
+
+```{r}
+collection_hisp_wide_df <- collection_hisp_bycounty_df %>%
+  dplyr::filter(., variable_name %in% c("Non_hisp", "Hisp")) %>%
+  tidyr::pivot_wider(., names_from = variable_name,
+                     values_from = estimate)
+
+pop_non_hisp = sum(unlist(collection_hisp_wide_df$Non_hisp))
+pop_hisp = sum(unlist(collection_hisp_wide_df$Hisp))
+(p_hisp = pop_hisp/(pop_hisp + pop_non_hisp))
+
+hisp_df <- data.frame(eth = c("hisp", "non_hisp"),
+                      p = c(p_hisp, 1-p_hisp))
+
+knitr::kable(hisp_df, format = 'html')
+```
+
+The proportion of Hispanic families in the recruiting areas is `r p_hisp`.
+
+# Spanish-speakers
+
+## Get variables
+
+Get variables from 2019 ACS.
+
+**NB**: The code below does not filter the ACS variables in the way I expect. The subsequent chunk selects relevant variables manually. This should be fixed in the future.
+
+```{r get-acs19-vars}
+acs_v19 <- tidycensus::load_variables(2019, "acs5", cache = TRUE)
+# vars_with_spanish <- acs_v19 %>%
+#   dplyr::filter(., stringr::str_detect(label, "[Ss]panish"))
+# 
+# census_concept <- "^LANGUAGE SPOKEN AT HOME"
+# 
+# lang_at_home_vars <- acs_v19 %>%
+#   dplyr::filter(., stringr::str_match(concept, census_concept))
+```
+
+## Create helper functions
+
+```{r span-speakers}
+spanish_tables <-c("B16007_001", "B16007_009", "B16007_010", "B16007_011", "B16007_012", "B16007_013", "B16007_014", "B16007_015", "B16007_016", "B16007_017", "B16007_018", "B16007_019")
+
+get_county_spanish_speakers <- function(state = "PA",
+                                        county = "Centre",
+                                        census_table = spanish_tables) {
+  
+  get_census_data(state, county, census_table, 
+                  variable_name = "Spanish_speaking")
+}
+
+clean_sp_speakers <- function(df) {
+  sp_clean <- df %>%
+    dplyr::select(., NAME, variable, estimate) %>%
+    tidyr::spread(., key = variable, value = estimate) %>%
+    dplyr::group_by(NAME) %>%
+    dplyr::mutate(
+      .,
+      English_only = B16007_009 + B16007_015,
+      Spanish = B16007_010 + B16007_015,
+      Other = B16007_011 + B16007_012 + B16007_013 + B16007_017 + B16007_018 + B16007_019,
+      total = B16007_009 + B16007_010 +
+        B16007_011 + B16007_012 +
+        B16007_013 + B16007_014 +
+        B16007_015 + B16007_016 +
+        B16007_017 + B16007_018 +
+        B16007_019,
+      p_English_only = English_only / total,
+      p_Spanish = Spanish / total,
+      p_Other = Other / total
+    ) %>%
+    dplyr::select(.,
+                  NAME,
+                  English_only,
+                  Spanish,
+                  Other,
+                  p_English_only,
+                  p_Spanish,
+                  p_Other) %>%
+    tidyr::gather(., key = pop, value = n, -NAME)
+  
+  sp_clean
+}
+```
+
+## Make county df
+
+```{r}
+make_collection_site_sp_df <- function(i, df) {
+  this_site <- df[i,]
+  message(paste0("Gathering Spanish speaker data for site: '", this_site$Institution, "'"))
+  
+  this_sp_df <- get_county_spanish_speakers(this_site$State_prov, this_site$County)
+  clean_sp_speakers(this_sp_df)
+}
+```
+
+Gather data by county.
+
+```{r}
+collection_sp_bycounty_df <- purrr::map_df(n_counties, make_collection_site_sp_df, collection_site_df)
+```
+
+Save data.
+
+```{r}
+readr::write_csv(collection_sp_bycounty_df, file.path(params$csv_path, 'collection-by-county-spanish.csv'))
+```
+
+Calculate summary stats across data collection sites.
+
+```{r}
+collection_sp_wide_df <- collection_sp_bycounty_df %>%
+  dplyr::filter(., pop %in% c('English_only', 'Spanish', 'Other')) %>%
+  tidyr::pivot_wider(., names_from = pop,
+                     values_from = n)
+
+pop_eng <- sum(unlist(collection_sp_wide_df$English_only))
+pop_span <- sum(unlist(collection_sp_wide_df$Spanish))
+pop_oth <- sum(unlist(collection_sp_wide_df$Other))
+pop_total <- pop_eng + pop_span + pop_oth
+p_span <- pop_span/pop_total
+```
+
+The proportion of Spanish-speaking families in the recruitment areas is `r p_span`.
+
+# Educational attainment
+
+```{r ed-attain-functions}
+get_ed_attain <- function(state="PA", county="Centre") {
+  census_table <- c("B15003_001", # total
+                    "B15003_002", # none
+                    "B15003_003", # <K
+                    "B15003_004", # K
+                    "B15003_005", # 1st
+                    "B15003_006", # 2nd
+                    "B15003_007", # 3rd
+                    "B15003_008", # 4th
+                    "B15003_009", # 5th
+                    "B15003_010", # 6th
+                    "B15003_011", # 7th
+                    "B15003_012", # 8th
+                    "B15003_013", # 9th
+                    "B15003_014", # 10th
+                    "B15003_015", # 11th
+                    "B15003_016", # 12th
+                    "B15003_017", # HS
+                    "B15003_018", # GED
+                    "B15003_019", # Coll<1
+                    "B15003_020", # Coll>1
+                    "B15003_021", # AA
+                    "B15003_022", # BA
+                    "B15003_023", # MA
+                    "B15003_024", # Prof
+                    "B15003_025")  # PhD
+  variable_name <- "ed_attain"
+  get_census_data(state = state, county = county, 
+                  census_table = census_table,
+                  variable_name = variable_name)
+}
+```
+
+```{r}
+make_ed_attain_wide <- function(df) {
+  d0 <- dplyr::select(df, NAME, variable, estimate)
+  d1 <- tidyr::spread(d0, key = variable, value = estimate)
+  d2 <- dplyr::rename(d1, total = B15003_001, # total
+                          none = B15003_002,  # none
+                          preK = B15003_003,
+                      K = B15003_004,
+                      g01 = B15003_005, # 1st
+                      g02 = B15003_006, # 2nd
+                      g03 = B15003_007, # 3rd
+                      g04 = B15003_008, # 4th
+                      g05 = B15003_009, # 5th
+                      g06 = B15003_010, # 6th
+                      g07 = B15003_011, # 7th
+                      g08 = B15003_012, # 8th
+                      g09 = B15003_013, # 9th
+                      g10 = B15003_014, # 10th
+                      g11 = B15003_015, # 11th
+                      g12 = B15003_016, # 12th
+                      hs  = B15003_017, # HS
+                      ged = B15003_018, # GED
+                      coll_lt_1 = B15003_019, # Coll<1
+                      coll_gt_1 = B15003_020, # Coll>1
+                      aa = B15003_021, # AA
+                      ba = B15003_022, # BA
+                      ma = B15003_023, # MA
+                      prof = B15003_024, # Prof
+                      phd = B15003_025)  # PhD
+  d2
+}
+
+simplify_ed_attain <- function(df) {
+  # Calculate aggregate variables
+  df_new <- df
+  df_new <- dplyr::mutate(df_new,
+                          lt_hs = none + preK + g01 + g02 +
+                            g03 + g04 + g05 + g06 + g07 +
+                            g08 + g09 + g10 + g11 + g12,
+                          hs_grad = hs + ged,
+                          some_coll = coll_lt_1 + coll_gt_1 + aa,
+                          ba_plus = ma + prof + phd)
+  df_new <- dplyr::select(df_new,
+                          NAME, total, lt_hs, hs_grad, some_coll, ba,
+                          ba_plus)
+  df_new
+}
+
+make_site_ed <- function(i, df) {
+  this_site <- df[i,]
+  message(paste0("Gathering educational attainment data for site: '", this_site$Institution, "'"))
+   
+  this_ed_df <- get_ed_attain(this_site$State_prov, this_site$County)
+  
+  this_ed_wide_df <- make_ed_attain_wide(this_ed_df)
+  
+  simplify_ed_attain(this_ed_wide_df)
+}
+```
+
+Gather data by county.
+
+```{r}
+collection_ed_bycounty_df <- purrr::map_df(n_counties, make_site_ed, collection_site_df)
+```
+
+Save data.
+
+```{r}
+readr::write_csv(collection_ed_bycounty_df, file.path(params$csv_path, 'collection-by-county-education.csv'))
+```
+
+Calculate summary variables.
+
+```{r}
+tot_ed <- sum(unlist(collection_ed_bycounty_df$total))
+lt_hs <- sum(unlist(collection_ed_bycounty_df$lt_hs))
+hs_grad <- sum(unlist(collection_ed_bycounty_df$hs_grad))
+some_coll <- sum(unlist(collection_ed_bycounty_df$some_coll))       
+
+ba <- sum(unlist(collection_ed_bycounty_df$ba))
+ba_plus <- sum(unlist(collection_ed_bycounty_df$ba_plus))
+
+(p_lt_hs <- lt_hs/tot_ed)
+(p_hs_grad <- hs_grad/tot_ed)
+(p_some_coll <- some_coll/tot_ed)
+#(p_ba <- ba/tot_ed)
+#(p_ba_plus <- ba_plus/tot_ed)
+(p_ba_ba_plus <- (ba+ba_plus)/tot_ed)
+
+ed_df <- data.frame(ed = c("lt_hs", "hs_grad", "some_coll", "ba_plus"),
+                     p = c(p_lt_hs, p_hs_grad, p_some_coll, p_ba_ba_plus))
+
+knitr::kable(ed_df, 'html')
+```
+
+# Household income
+
+Find tables.
+
+```{r}
+acs_v19 %>% 
+  filter(., str_detect(concept, "HOUSEHOLD INCOME")) %>% 
+  head(17)
+```
+
+Looks like tables B19001_001:B19001_017
+
+```{r household-income}
+get_household_inc <- function(state = "PA", county = "Centre") {
+  census_table <- c(
+    "B19001_001",
+    # total
+    "B19001_002",
+    # none
+    "B19001_003",
+    # <K
+    "B19001_004",
+    # K
+    "B19001_005",
+    # 1st
+    "B19001_006",
+    # 2nd
+    "B19001_007",
+    # 3rd
+    "B19001_008",
+    # 4th
+    "B19001_009",
+    # 5th
+    "B19001_010",
+    # 6th
+    "B19001_011",
+    # 7th
+    "B19001_012",
+    # 8th
+    "B19001_013",
+    # 9th
+    "B19001_014",
+    # 10th
+    "B19001_015",
+    # 11th
+    "B19001_016",
+    # 12th
+    "B19001_017"
+  )  # PhD
+  
+  variable_name <- c(
+    "total",
+    "<10K", "10-15K",
+    "15-20K",
+    "20-25K",
+    "25-30K",
+    "30-35K",
+    "35-40K",
+    "40-45K",
+    "45-50K",
+    "50-60K",
+    "60-75K",
+    "75-100K",
+    "100-125K",
+    "125-150K",
+    "150-200K",
+    ">200K"
+  )
+  
+  get_census_data(
+    state = state,
+    county = county,
+    census_table = census_table,
+    variable_name = variable_name
+  )
+}
+
+simplify_inc <- function(df) {
+  # Calculate aggregate variables
+  df_new <- df
+  df_new <- dplyr::mutate(df_new,
+                          lt_25K = `<10K` + `10-15K` + `15-20K` + `20-25K`,
+                          b25_50K = `25-30K` + `30-35K` + `35-40K` + `40-45K` + `45-50K`,
+                          b50_100K = `50-60K` + `60-75K` + `75-100K`,
+                          gt_100K = `100-125K` + `125-150K` + `150-200K` + `>200K`)
+  df_new <- dplyr::select(df_new,
+                          NAME, total, lt_25K, b25_50K, b50_100K, gt_100K)
+  df_new
+}
+```
+
+```{r}
+make_site_inc <- function(i, df) {
+  this_site <- df[i, ]
+  message(paste0("Gathering household income data for site: '", this_site$Institution, "'"))
+  
+  this_inc_df <-
+    get_household_inc(this_site$State_prov, this_site$County) %>%
+    dplyr::select(., -variable, -GEOID, -moe) %>%
+    dplyr::rename(., n = estimate)
+  
+  this_inc_wide <- tidyr::pivot_wider(this_inc_df, names_from = variable_name,
+                                      values_from = n)
+  
+  this_inc_wide %>% simplify_inc(.)
+}
+```
+
+```{r}
+collection_inc_bycounty_df <- purrr::map_df(n_counties, make_site_inc, collection_site_df)
+```
+
+Save data.
+
+```{r}
+readr::write_csv(collection_inc_bycounty_df, file.path(params$csv_path, 'collection-by-county-income.csv'))
+```
+
+```{r}
+tot_inc <- sum(unlist(collection_inc_bycounty_df$total))
+lt_25K <- sum(unlist(collection_inc_bycounty_df$lt_25K))
+b25_50K <- sum(unlist(collection_inc_bycounty_df$b25_50K))
+b50_100K <- sum(unlist(collection_inc_bycounty_df$b50_100K))
+gt_100K <- sum(unlist(collection_inc_bycounty_df$gt_100K))
+
+(p_lt_25K <- lt_25K/tot_inc)
+(p_b25_50K <- b25_50K/tot_inc)
+(p_b50_100K <- b50_100K/tot_inc)
+(p_gt_100K <- (gt_100K)/tot_inc)
+
+inc_df <- data.frame(income = c("lt_25K", "b25-50K", "b50-100K", "gt_100K"),
+                     p = c(p_lt_25K, p_b25_50K, p_b50_100K, p_gt_100K))
+
+knitr::kable(inc_df, 'html')
+```
+
+
+

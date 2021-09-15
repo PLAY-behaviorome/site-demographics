@@ -13,6 +13,7 @@ params:
   site_code: NYU
   PLAY_vol: 899
   db_login: your_account@youremail.edu
+  show_recruit_targets: false
 ---
 
 ```{r setup, include=FALSE}
@@ -354,65 +355,71 @@ plot_bar_ed_attain_p <- function(df) {
 plot_bar_ed_attain_p(ed_p)
 ```
 
-# Recruiting targets $n=$ `r params$target_n`
+<!-- # Recruiting targets $n=$ `r params$target_n` -->
 
-These may total > `r params$target_n` due to rounding.
+<!-- These may total > `r params$target_n` due to rounding. -->
 
-```{r get-demog-from-databrary}
-databraryapi::login_db(params$db_login)
+<!-- ```{r get-demog-from-databrary} -->
 
-site_ss <- databraryapi::download_session_csv(vol_id = params$PLAY_vol)
+<!-- if (show_recruit_targets) { -->
+<!--   databraryapi::login_db(params$db_login) -->
 
-site_stats <- site_ss %>%
-  dplyr::group_by(., exclusion.reason) %>%
-  dplyr::mutate(., n_tested = n()) %>%
-  dplyr::ungroup(.)
+<!--   site_ss <- -->
+<!--     databraryapi::download_session_csv(vol_id = params$PLAY_vol) -->
 
-sessions_included <- site_stats %>%
-  dplyr::filter(exclusion.reason == "")
+<!--   site_stats <- site_ss %>% -->
+<!--     dplyr::group_by(., exclusion.reason) %>% -->
+<!--     dplyr::mutate(., n_tested = n()) %>% -->
+<!--     dplyr::ungroup(.) -->
 
-compute_n_spanish <- function(df) {
-  span_subs <- dplyr::filter(df, stringr::str_detect(participant.language, "Spanish"))
-  dim(span_subs)[1]
-}
+<!--   sessions_included <- site_stats %>% -->
+<!--     dplyr::filter(exclusion.reason == "") -->
 
-compute_n_nonwhite <- function(df) {
-  non_white <- dplyr::filter(df, participant.race != "White")
-  dim(non_white)[1]
-}
-```
+<!--   compute_n_spanish <- function(df) { -->
+<!--     span_subs <- -->
+<!--       dplyr::filter(df, stringr::str_detect(participant.language, "Spanish")) -->
+<!--     dim(span_subs)[1] -->
+<!--   } -->
 
-This site has collected $n=$ `r unique(sessions_included$n_tested)` non-pilot sessions.
+<!--   compute_n_nonwhite <- function(df) { -->
+<!--     non_white <- dplyr::filter(df, participant.race != "White") -->
+<!--     dim(non_white)[1] -->
+<!--   } -->
+<!-- } -->
 
-## Race
+<!-- ``` -->
 
-```{r race-target}
-targ_pop <- pop_p %>%
-  dplyr::mutate(n_target = ceiling(n*30)) %>%
-  dplyr::select(NAME, pop, n_target)
-targ_pop %>% knitr::kable(.)
-```
+<!-- This site has collected $n=$ `r unique(sessions_included$n_tested)` non-pilot sessions. -->
 
-This site has recruited $n=$ `r compute_n_nonwhite(sessions_included)` non-white participants out of $n=$ `r unique(sessions_included$n_tested)` non-pilot sessions.
+<!-- ## Race -->
 
-## Spanish-speakers
+<!-- ```{r race-target} -->
+<!-- targ_pop <- pop_p %>% -->
+<!--   dplyr::mutate(n_target = ceiling(n*30)) %>% -->
+<!--   dplyr::select(NAME, pop, n_target) -->
+<!-- targ_pop %>% knitr::kable(.) -->
+<!-- ``` -->
 
-```{r spanish-target}
-targ_sp <- sp_p %>%
-  dplyr::mutate(n_target = ceiling(n*30)) %>%
-  dplyr::select(NAME, pop, n_target)
+<!-- This site has recruited $n=$ `r compute_n_nonwhite(sessions_included)` non-white participants out of $n=$ `r unique(sessions_included$n_tested)` non-pilot sessions. -->
 
-targ_sp %>% knitr::kable(.)
-```
+<!-- ## Spanish-speakers -->
 
-This site has recruited $n=$ `r compute_n_spanish(sessions_included)` Spanish-speaking households out of $n=$ `r unique(sessions_included$n_tested)` non-pilot sessions.
+<!-- ```{r spanish-target} -->
+<!-- targ_sp <- sp_p %>% -->
+<!--   dplyr::mutate(n_target = ceiling(n*30)) %>% -->
+<!--   dplyr::select(NAME, pop, n_target) -->
 
-## Educational attainment
+<!-- targ_sp %>% knitr::kable(.) -->
+<!-- ``` -->
 
-```{r ed-attain-target}
-targ_ed <- ed_p %>%
-  dplyr::mutate(n_target = ceiling(n*30)) %>%
-  dplyr::select(NAME, ed_attain, n_target)
+<!-- This site has recruited $n=$ `r compute_n_spanish(sessions_included)` Spanish-speaking households out of $n=$ `r unique(sessions_included$n_tested)` non-pilot sessions. -->
 
-targ_ed %>% knitr::kable(.)
-```
+<!-- ## Educational attainment -->
+
+<!-- ```{r ed-attain-target} -->
+<!-- targ_ed <- ed_p %>% -->
+<!--   dplyr::mutate(n_target = ceiling(n*30)) %>% -->
+<!--   dplyr::select(NAME, ed_attain, n_target) -->
+
+<!-- targ_ed %>% knitr::kable(.) -->
+<!-- ``` -->

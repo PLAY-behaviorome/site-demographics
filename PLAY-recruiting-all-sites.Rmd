@@ -7,6 +7,7 @@ output:
 params:
   db_login: your_account@youremail.edu
   csv_path: analysis/csv
+  update_tracking_csv: false
 ---
 
 ```{r setup, include=FALSE}
@@ -28,7 +29,7 @@ if(!require(tidycensus)) {
 # Source or load dependencies
 source("R/init_cap.R")
 
-library(tidyverse)
+library(tidyverse) # For pipe %>% and other functions
 ```
 
 # Helper functions
@@ -68,7 +69,6 @@ get_census_data <- function(state="PA", county="Centre",
 }
 ```
 
-
 ## Load collection site data
 
 Create helper functions.
@@ -84,7 +84,11 @@ get_collection_site_data <-
     tracking_df
   }
 
-get_collecting_labs <- function(df) {
+load_site_csv <- function(fn = "tracking.csv") {
+  readr::read_csv(fn)
+}
+
+get_collecting_labs <- function( df = load_site_csv() ) {
   collecting_df <- dplyr::filter(df, Collection_role == "Collecting")
   collecting_df <- dplyr::select(collecting_df,
                                  Institution,
@@ -93,18 +97,35 @@ get_collecting_labs <- function(df) {
                                  `SiteCode`,
                                  City,
                                  State_prov)
+  
+  readr::write_csv(collecting_df, "analysis/csv/collecting-sites.csv")
   collecting_df
+}
+
+de_dupe_collecting_labs <- function(df, drop_PIs = c("Frick", "Perry")) {
+  df %>%
+    dplyr::filter(., !(PI_Lastname %in% drop_PIs ))
 }
 
 get_old_county_data <- function() {
   readr::read_csv("analysis/csv/city-state-county.csv")
 }
 
-get_collection_site_county_df <- function() {
-  PLAY_all <- get_collection_site_data()
-  PLAY_collecting <- get_collecting_labs(PLAY_all)
-  old_collecting <- readr::read_csv("analysis/csv/city-state-county.csv")
-  dplyr::left_join(PLAY_collecting, old_collecting, by=c("City"="City", "State_prov"="State"))
+get_collection_site_county_df <- function(update_tracking = FALSE) {
+  if (update_tracking) {
+    PLAY_all <- get_collection_site_data()
+    PLAY_collecting <- get_collecting_labs(PLAY_all)
+  } else {
+    PLAY_collecting <- get_collecting_labs()
+  }
+  
+  PLAY_collecting <- de_dupe_collecting_labs(PLAY_collecting)
+  
+  old_collecting <-
+    readr::read_csv("analysis/csv/city-state-county.csv")
+  dplyr::left_join(PLAY_collecting,
+                   old_collecting,
+                   by = c("City" = "City", "State_prov" = "State"))
 }
 ```
 
@@ -112,6 +133,7 @@ Generate collection site data frame and save as CSV.
 
 ```{r}
 collection_site_df <- get_collection_site_county_df()
+n_counties <- 1:dim(collection_site_df)[1]
 ```
 
 ## White/non-white population
@@ -160,14 +182,19 @@ make_site_race_df <- function(i, df) {
   this_site <- df[i,]
   message(paste0("Gathering race data for site: '", this_site$Institution, "'"))
   
-  get_site_race(this_site$State_prov, this_site$County)
+  df_out <- get_site_race(this_site$State_prov, this_site$County)
+  
+  df_out$Institution <- this_site$Institution
+  df_out$SiteCode <- this_site$SiteCode
+  
+  df_out
 }
 ```
 
 ```{r}
-n_counties <- 1:dim(collection_site_df)[1]
-
 collection_race_bycounty_df <- purrr::map_df(n_counties, make_site_race_df, collection_site_df)
+
+readr::write_csv(collection_race_bycounty_df, file.path(params$csv_path, 'collection-by-county-race.csv'))
 ```
 
 ```{r}
@@ -190,7 +217,6 @@ race_df <- data.frame(race = c("multi", "white", "black", "asian", "other"),
                       p = c(p_multi, p_white, p_black, p_asian, p_other))
 
 knitr::kable(race_df, format = 'html')
-
 ```
 
 # Non-hispanic/Hispanic
@@ -198,7 +224,7 @@ knitr::kable(race_df, format = 'html')
 ```{r hispanic-non-hispanic}
 get_hisp_non <- function(state,
                          county,
-                         census_table = c("B03001_001", "B03001_002"),
+                         census_table = c("B03001_002", "B03001_003"),
                          variable_name = c("Non_hisp", "Hisp")) {
 
   get_census_data(state,
@@ -210,9 +236,14 @@ get_hisp_non <- function(state,
 
 make_collection_site_hisp_df <- function(i, df) {
   this_site <- df[i,]
+  this_institution <- 
   message(paste0("Gathering Hispanic data for site: '", this_site$Institution, "'"))
   
-  get_hisp_non(this_site$State_prov, this_site$County)
+  df_out <- get_hisp_non(this_site$State_prov, this_site$County)
+  df_out$Institution <- this_site$Institution
+  df_out$SiteCode <- this_site$SiteCode
+  
+  df_out
 }
 ```
 
@@ -241,6 +272,149 @@ knitr::kable(hisp_df, format = 'html')
 ```
 
 The proportion of Hispanic families in the recruiting areas is `r p_hisp`.
+
+```{r}
+collection_hisp_wide_df <- collection_hisp_bycounty_df %>%
+  tidyr::pivot_wider(., id_cols = c('GEOID', 'NAME', 'Institution', 'SiteCode'),
+                     names_from = variable_name,
+                     values_from = estimate) 
+
+pop_non_hisp = sum(unlist(collection_hisp_wide_df$Non_hisp))
+pop_hisp = sum(unlist(collection_hisp_wide_df$Hisp))
+(p_hisp = pop_hisp/(pop_hisp + pop_non_hisp))
+
+hisp_df <- data.frame(eth = c("hisp", "non_hisp"),
+                      p = c(p_hisp, 1-p_hisp))
+
+knitr::kable(hisp_df, format = 'html')
+```
+
+# Hispanic/non-Hispanic by Race
+
+```{r hispanic-non-hispanic}
+get_hisp_non_race <- function(state,
+                         county,
+                         census_table = c("B03002_003",
+                                          "B03002_004",
+                                          "B03002_005",
+                                          "B03002_006",
+                                          "B03002_007",
+                                          "B03002_008",
+                                          "B03002_009",
+                                          "B03002_010",
+                                          "B03002_011",
+                                          "B03002_013",
+                                          "B03002_014",
+                                          "B03002_015",
+                                          "B03002_016",
+                                          "B03002_017",
+                                          "B03002_018",
+                                          "B03002_019",
+                                          "B03002_020",
+                                          "B03002_021"),
+                         variable_name = c("non_hisp_white", 
+                                           "non_hisp_black",
+                                           "non_hisp_am_indian",
+                                           "non_hisp_asian",
+                                           "non_hisp_native_hawaiian",
+                                           "non_hisp_other",
+                                           "non_hisp_two_races",
+                                           "non_hisp_two_races_incl_other",
+                                           "non_hisp_three",
+                                           "hisp_white",
+                                           "hisp_black",
+                                           "hisp_am_indian",
+                                           "hisp_asian",
+                                           "hisp_native_hawaiian",
+                                           "hisp_other",
+                                           "hisp_two_races",
+                                           "hisp_two_races_incl_other",
+                                           "hisp_three")) {
+
+  get_census_data(state,
+                  county,
+                  census_table,
+                  variable_name
+  )
+}
+
+make_collection_site_hisp_race_df <- function(i, df) {
+  this_site <- df[i,]
+  this_institution <- 
+  message(paste0("Gathering Hispanic data for site: '", this_site$Institution, "'"))
+  
+  df_out <- get_hisp_non_race(this_site$State_prov, this_site$County)
+  df_out$Institution <- this_site$Institution
+  df_out$SiteCode <- this_site$SiteCode
+  
+  df_out
+}
+```
+
+```{r}
+collection_hisp_race_bycounty_df <- purrr::map_df(n_counties, make_collection_site_hisp_race_df, collection_site_df)
+```
+
+```{r}
+readr::write_csv(collection_hisp_race_bycounty_df, file.path(params$csv_path, 'collection-by-county-hispanic-race.csv'))
+```
+
+Let's try turning this into an inclusion report table.
+
+```{r}
+hisp_race_df_wider <- collection_hisp_race_bycounty_df %>%
+  tidyr::pivot_wider(., id_cols = c('GEOID', 'NAME', 'Institution', 'SiteCode'),
+                     names_from = variable_name,
+                     values_from = estimate) 
+
+hisp_race_df_wider <- hisp_race_df_wider %>%
+  dplyr::mutate(
+    .,
+    non_hisp_more_than_one = non_hisp_other +
+      non_hisp_two_races_incl_other +
+      non_hisp_two_races +
+      non_hisp_three,
+    hisp_more_than_one = hisp_other +
+      hisp_two_races_incl_other +
+      hisp_two_races +
+      hisp_three
+  ) %>%
+  dplyr::arrange(., SiteCode) %>%
+  dplyr::select(
+    .,
+    -c(
+      'non_hisp_other',
+      'non_hisp_two_races',
+      'non_hisp_two_races_incl_other',
+      'non_hisp_three',
+      'hisp_other',
+      'hisp_two_races',
+      'hisp_two_races_incl_other',
+      'hisp_three'
+    )
+  ) %>%
+  dplyr::select(
+    .,
+    Institution,
+    SiteCode,
+    NAME,
+    non_hisp_white,
+    non_hisp_black,
+    non_hisp_am_indian,
+    non_hisp_native_hawaiian,
+    non_hisp_more_than_one,
+    hisp_white,
+    hisp_black,
+    hisp_am_indian,
+    hisp_native_hawaiian,
+    hisp_more_than_one
+  )
+
+hisp_race_df_wider %>%
+  knitr::kable(., format = 'html')
+
+readr::write_csv(hisp_race_df_wider, file.path(params$csv_path, 'collection-by-county-hispanic-race-wide.csv'))
+```
 
 # Spanish-speakers
 
@@ -316,6 +490,10 @@ make_collection_site_sp_df <- function(i, df) {
   message(paste0("Gathering Spanish speaker data for site: '", this_site$Institution, "'"))
   
   this_sp_df <- get_county_spanish_speakers(this_site$State_prov, this_site$County)
+  
+  this_sp_df$Institution <- this_site$Institution
+  this_sp_df$SiteCode <- this_site$SiteCode
+  
   clean_sp_speakers(this_sp_df)
 }
 ```
@@ -345,6 +523,11 @@ pop_span <- sum(unlist(collection_sp_wide_df$Spanish))
 pop_oth <- sum(unlist(collection_sp_wide_df$Other))
 pop_total <- pop_eng + pop_span + pop_oth
 p_span <- pop_span/pop_total
+
+language_df <- tibble::tibble(pop_eng, pop_span, pop_oth, pop_total, p_span)
+
+language_df %>%
+  knitr::kable(., format = 'html')
 ```
 
 The proportion of Spanish-speaking families in the recruitment areas is `r p_span`.
